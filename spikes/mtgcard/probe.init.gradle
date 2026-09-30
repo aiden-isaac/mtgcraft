@@ -26,6 +26,8 @@ gradle.projectsEvaluated {
         enableAssertions = true
         if (System.getProperty('probe.cards') != null) {
             args System.getProperty('probe.cards'), System.getProperty('probe.output')
+        } else if (System.getProperty('probe.record') != null) {
+            args 'record', System.getProperty('probe.record'), System.getProperty('probe.expectedSlots')
         }
     }
 }

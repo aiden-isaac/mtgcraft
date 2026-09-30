@@ -35,8 +35,8 @@ threads/AI opponents at two, and enables only the duel, Freeform, human and MAD 
 Test mode is explicitly false. The stock native server reached readiness and both
 loopback ports were reachable. This does not prove authenticated seat attachment;
 managed account provisioning and the project HTTP adapter are not implemented.
-Stop with Ctrl-C. Minecraft subsequently generated `eula=false` during the live-server
-probe; the EULA has not been accepted and no active Minecraft world was started.
+Stop with Ctrl-C. The user explicitly authorized EULA acceptance for the disposable
+Minecraft server on 2026-09-30; it was subsequently accepted only in that local instance.
 
 Initial server/client source build: 4 min 5 sec on this workstation (dependency caches
 partly warm). Warm native startup reached the logged listening state on 2026-09-30.
@@ -76,27 +76,42 @@ Candidate service seam: a bootstrap beside `MainManagerFactory`, with guards in
 deck types, and draft cubes, so it is not a managed-match plugin API. A narrow XMage
 patch or custom server bootstrap is needed; runtime client binding remains task 1.4.
 
-## Task 1.2 — custody: BLOCKED / unproven
+## Task 1.2 — storage/custody investigation: COMPLETE; custody gate FAILS
 
 - MTGCard `:fabric:build` passed. `mtgcard/MtgcardProbe.java` also passed metadata
   round-trip and removal-callback tests against the real upstream runtime. It uses a
   synthetic card on a vanilla paper item with explicitly bound empty components;
-  this is **not** a real deckbox/world test. Task 1.2 remains open.
-- Starting `:fabric:runServer --args nogui` reached Minecraft's EULA check and stopped.
-  Its generated `fabric/run/eula.txt` is still false. Live deckbox tests require the
-  user's explicit EULA acceptance. Gradle's successful exit does **not** mean the
-  Minecraft server became ready.
+  this standalone metadata check is **not** a real deckbox/world test.
+- After explicit user EULA approval, the real Fabric dedicated server reached readiness.
+  Its first launch used default binding due to a runner configuration mistake; it was
+  stopped and corrected. All following live tests used `127.0.0.1:25585`, online mode,
+  at most two players, and RCON disabled. The test server was stopped afterward.
+- `mtgcard/live-alias.mcfunction` records the actual console commands. An MTGCard
+  oak deckbox containing a real `mtgcard:card` with Lightning Bolt metadata persisted
+  a format-1 UUID backing record with one slot. An operator-created cloned block
+  retained its UUID. Clearing the clone emptied the shared record, while `/data get`
+  on the original still reported the card. Separate `NbtIo.readCompressed` assertions
+  verified the before/after records contained one and zero slots respectively.
+- `/setblock ... air destroy` then dropped an oak deckbox without custom backing-ID
+  data. This is specific to command destruction; player breaking, placement, held-item
+  inventory custody, menus and automation were **not** runtime-verified. Do not infer
+  survival-player duplication or normal break behavior from the operator fixture.
 - `DeckboxBlock.createDeckboxDrop` retains `mtgcard_deckbox_id`; cloning with data
   can retain the same ID. `DeckboxBlockEntity.loadStorageId` copies stored items into
   its own inventory; a missing record can be recreated. `setChanged` persists it.
 - Opening a block menu, container access, deck-control actions, and
   `SulfurCubeDeckboxCards` are separate access paths. Storage save/load have no
   reservation policy. The removal callback is notification-only, as verified above.
-- **Decision needed before custody implementation:** keep MTGCard as a dependency,
+- **No held-box custody path is approved yet.** Keep MTGCard as a dependency,
   but prototype narrow addon Mixins or an upstream access-policy hook. Both existing
   loaded aliases and future record reads/writes need protection. Locking only the
   file or intercepting removal cannot establish exclusive escrow. No patch/fork
   or claim of complete mutation-path coverage has been made.
+
+For record checks, invoke the existing Gradle init script with `-Dprobe.record=<saved
+.dat path> -Dprobe.expectedSlots=1` (before) or `0` (after), `-Dprobe.dir=<absolute
+spikes/mtgcard>`, and task `:fabric:boundaryProbe`; omit the card-fixture arguments.
+Raw world data stays in ignored `.cache/`, not version control.
 
 ## Task 1.4 — native attachment: PARTIAL
 

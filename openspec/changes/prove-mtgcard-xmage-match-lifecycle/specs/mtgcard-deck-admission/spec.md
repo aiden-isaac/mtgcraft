@@ -33,6 +33,14 @@ Before asking the engine to create a match, Minecraft SHALL durably reserve the 
 - **WHEN** an alternate deckbox reference or open container could access the proposed reservation's backing contents
 - **THEN** the integration layer blocks that access or rejects admission before engine creation
 
+#### Scenario: Loaded aliases diverge from the backing record
+- **WHEN** a loaded deckbox retains a mutable in-memory inventory for the same backing UUID as the submitted item
+- **THEN** admission requires protection of that loaded inventory as well as record reads and writes; protecting the file or removal callback alone SHALL NOT establish exclusivity
+
+#### Scenario: Item loses its backing identity
+- **WHEN** an item has no trustworthy backing identity or its relationship to stored contents cannot be established
+- **THEN** admission fails without guessing a record, reconstructing custody from a display name, or creating an engine match
+
 #### Scenario: Contents change during asynchronous validation
 - **WHEN** the source revision or fingerprint changes between extraction and reservation
 - **THEN** the server rejects the stale admission and requires fresh extraction and validation

@@ -16,6 +16,20 @@ import com.google.gson.*;
 /** Narrow upstream API experiment, not a Minecraft integration or custody test. */
 public class MtgcardProbe {
     public static void main(String[] args) throws Exception {
+        if (args.length == 3 && args[0].equals("record")) {
+            var record = net.minecraft.nbt.NbtIo.readCompressed(Path.of(args[1]), net.minecraft.nbt.NbtAccounter.defaultQuota());
+            assert record.getInt("Version").orElseThrow() == 1;
+            assert record.getString("Id").orElseThrow().equals("11111111-1111-4111-8111-111111111111");
+            var items = record.getList("Items").orElseThrow();
+            assert items.size() == Integer.parseInt(args[2]);
+            if (!items.isEmpty()) {
+                var stackTag = items.getCompound(0).orElseThrow().getCompound("Stack").orElseThrow();
+                assert stackTag.getString("id").orElseThrow().equals("mtgcard:card");
+                assert stackTag.toString().contains("435589bb-27c6-4a6d-9d63-394d5092b9d8");
+            }
+            System.out.println("PASS live backing record: " + args[1] + " slots=" + items.size());
+            return;
+        }
         SharedConstants.tryDetectVersion();
         Bootstrap.bootStrap();
         var card = new ScryfallModels.Card();

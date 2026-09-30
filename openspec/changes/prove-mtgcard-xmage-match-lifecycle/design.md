@@ -89,7 +89,11 @@ See `spikes/README.md` and the runnable probes. Fabric/Minecraft 26.3 and the pi
 XMage server/client build successfully. Programmatic table construction and fixture
 card mapping passed. MTGCard's removal callback cannot veto access; exclusive custody
 will require an addon interception experiment or an upstream policy hook, including
-already loaded backing-record aliases. Keep admission disabled until tested.
+already loaded backing-record aliases. A live operator-created alias fixture confirmed
+that a clone could empty the shared record while the original retained its cached card.
+Command destruction also yielded a deckbox without backing-ID data; ordinary player
+breaking remains unverified. No held-item custody path is currently approved. Keep
+admission disabled until a protection hook and ordinary item lifecycle are tested.
 
 XMage's `ExtensionPackage` is a card/deck/cube extension API, not a server lifecycle
 plugin. Use a narrow bootstrap/server patch around the managers; do not assume a
