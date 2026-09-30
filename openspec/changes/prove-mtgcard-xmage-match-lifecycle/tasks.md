@@ -2,7 +2,7 @@
 
 - [ ] 1.1 Select one buildable Minecraft loader/version and MTGCard release; pin exact artifacts, XMage server/client revision, dependencies, catalog revision, and local run configuration.
 - [ ] 1.2 Inspect and exercise MTGCard deckbox item, placed block, UUID backing record, card metadata, and mutation paths; document the supported held-box custody path and whether addon hooks can enforce exclusive escrow.
-- [ ] 1.3 Spike XMage managed-table creation with one human and one AI from code; record required session, owner, room, and plugin initialization steps and the exact extension seam.
+- [x] 1.3 Spike XMage managed-table creation with one human and one AI from code; record required session, owner, room, and plugin initialization steps and the exact extension seam. Evidence: `spikes/README.md`; prepared-table/AI-construction probe passed, authenticated play remains 1.4.
 - [ ] 1.4 Spike stock XMage client attachment to a precreated managed seat, including authenticated reconnect; identify every native path that can change the submitted deck or match settings.
 - [ ] 1.5 Spike structured match completion, draw/concession handling, and durable result retrieval after controller cleanup; reject a free-text-only winner source.
 - [ ] 1.6 Spike one known normal card, reprint, foil pair, split/multiface card, and unsupported card through MTGCard identity → XMage catalog resolution; record unmapped and ambiguous cases.

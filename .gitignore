@@ -1,0 +1,4 @@
+.cache/
+graphify-out/
+research-corpus/
+**/__pycache__/
