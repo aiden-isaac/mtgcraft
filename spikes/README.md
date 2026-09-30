@@ -131,12 +131,12 @@ Native entry points requiring a complete guard audit include `roomJoinTable`,
 and `matchStart`; public table/option mutation and reconnect paths also need review.
 The READY_TO_START `submitDeck` rejection from task 1.3 alone is not deck enforcement.
 
-## Task 1.5 — result capture: PARTIAL
+## Task 1.5 — structured outcome/history experiment: PASS; production binding unresolved
 
 These two commands passed, in separate JVMs:
 
 ```sh
-PROBE_RESULT=true bash spikes/xmage/run-probe.sh
+PROBE_RESULT=true PROBE_DRAW=true bash spikes/xmage/run-probe.sh
 PROBE_HISTORY_ONLY=true bash spikes/xmage/run-probe.sh
 ```
 
@@ -154,13 +154,17 @@ Its protobuf contains names, wins, draws and quit reasons, but no table/match/pl
 UUID fields, and `TableRecordRepository.add` logs SQL errors without acknowledging
 failure to its caller. A project result journal and stable seat binding remain needed.
 
-`PROBE_RESULT=true PROBE_DRAW=true bash spikes/xmage/run-probe.sh` is a deliberately
-unfinished draw experiment. Direct off-worker draw injection produced a win; the
-current worker-listener attempt timed out. Neither is evidence of an XMage rules bug.
-Use an upstream draw-producing card test or a correctly initialized worker fixture next.
-Source inspection indicates wins-needed-one can continue after a drawn game; do not
-equate every ended game with an ended match. Task 1.5 remains unchecked until draw
-handling and the real managed completion hook have been exercised.
+The draw fixture uses XMage's own custom-start-life option (zero for both seats),
+keeps the human's opening hand through its response API, and lets XMage evaluate its
+rules. A draw increments the draw count without ending this wins-needed-one match.
+A second game with normal starting life ends by human concession, producing one AI
+win and one draw. Both the worker callback and a new JVM assert the structured outcome.
+Earlier off-worker mutation attempts failed; the passing probe waits specifically for
+the human mulligan prompt and uses the engine's existing option/response APIs.
+
+This completes the outcome/history investigation, not the trusted adapter. The real
+native `GameController` hook, project ID binding and acknowledged terminal journal
+remain required in task 3.5; existing history alone does not satisfy that gate.
 
 ## Task 1.6 — metadata/catalog mapping: PASS (2026-09-30)
 

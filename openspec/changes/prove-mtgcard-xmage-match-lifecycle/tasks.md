@@ -4,7 +4,7 @@
 - [x] 1.2 Inspect and exercise MTGCard deckbox item, placed block, UUID backing record, card metadata, and mutation paths; document the supported held-box custody path and whether addon hooks can enforce exclusive escrow. Evidence: `spikes/mtgcard/live-alias.mcfunction` and `spikes/README.md`; negative custody-gate result, no held-box admission path approved. Player interactions/automation still require verification when testing a protection hook.
 - [x] 1.3 Spike XMage managed-table creation with one human and one AI from code; record required session, owner, room, and plugin initialization steps and the exact extension seam. Evidence: `spikes/README.md`; prepared-table/AI-construction probe passed, authenticated play remains 1.4.
 - [ ] 1.4 Spike stock XMage client attachment to a precreated managed seat, including authenticated reconnect; identify every native path that can change the submitted deck or match settings.
-- [ ] 1.5 Spike structured match completion, draw/concession handling, and durable result retrieval after controller cleanup; reject a free-text-only winner source.
+- [x] 1.5 Spike structured match completion, draw/concession handling, and durable result retrieval after controller cleanup; reject a free-text-only winner source. Evidence: `spikes/xmage/ResultProbe.java` and `spikes/README.md`; draw/concession and fresh-process history reads pass, project result binding/acknowledged journal still required in 3.5.
 - [x] 1.6 Spike one known normal card, reprint, foil pair, split/multiface card, and unsupported card through MTGCard identity → XMage catalog resolution; record unmapped and ambiguous cases. Evidence: `spikes/cards/run-probe.sh` and `spikes/README.md` (ten metadata projections; eight mapped, two unsupported).
 - [ ] 1.7 STOP GATE: Review evidence for exclusive custody, exact-deck enforcement, and trustworthy structured result retrieval. Do not proceed to section 2 without explicit user approval. If any gate fails, update design.md, specs, and tasks before further implementation.
 
@@ -12,8 +12,8 @@ Progress evidence (2026-09-30): `spikes/README.md`. The user authorized the loca
 Minecraft EULA; live alias divergence was reproduced and the custody gate fails with
 the inspected public hooks. Task 1.4 passed a
 stock native-session reconnect probe, but not Swing UI/managed-seat enforcement.
-Task 1.5 passed concession and cross-process history reads; draw injection remains
-unsuccessful. These partial experiments are intentionally not checked off.
+Task 1.5 passed draw, concession and cross-process history reads; the native callback
+and durable project result binding remain implementation work. Task 1.4 stays open.
 
 ## 2. Define the project boundary and catalog
 

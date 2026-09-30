@@ -7,7 +7,7 @@ import mage.server.MainManagerFactory;
 import mage.server.game.GameWorker;
 import mage.server.record.TableRecordRepository;
 
-/** Engine-driven concession and upstream history check, with no native client. */
+/** Engine-driven draw/concession and upstream history check, with no native client. */
 class ResultProbe {
     static void run(MainManagerFactory managers, Table table) throws Exception {
         var match = table.getMatch();
@@ -17,20 +17,13 @@ class ResultProbe {
         mage.game.result.ResultProtos.TableProto expected = null;
         boolean probeDraw = Boolean.getBoolean("probe.draw");
         for (boolean draw : probeDraw ? new boolean[]{true, false} : new boolean[]{false}) {
+            // Upstream starting-life option creates a draw fixture without implementing rules.
+            match.getOptions().setCustomStartLifeEnabled(draw);
+            match.getOptions().setCustomStartLife(0);
             match.startGame();
             table.initGame();
             Game game = match.getGame();
             game.setGameOptions(new GameOptions());
-            if (draw) {
-                var injected = new java.util.concurrent.atomic.AtomicBoolean();
-                game.addPlayerQueryEventListener(event -> {
-                    if (game.getState().getPlayersInRange(human.getPlayer().getId(), game).size() == 2
-                            && injected.compareAndSet(false, true)) {
-                        // Rules effects run on the game worker; setDraw is not a network command.
-                        game.setDraw(human.getPlayer().getId());
-                    }
-                });
-            }
             var finished = new CompletableFuture<mage.game.result.ResultProtos.TableProto>();
             var worker = new Thread(() -> {
                 new GameWorker(game, ai.getPlayer().getId(), ignoredText -> {
@@ -47,15 +40,15 @@ class ResultProbe {
                 if (!finished.isDone()) finished.completeExceptionally(new IllegalStateException("worker ended without verified result"));
             });
             worker.start();
-            if (!draw) {
-                // ponytail: inspect the isolated worker's wait; native client prompts are a separate spike.
-                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
-                while (worker.getState() != Thread.State.WAITING && worker.getState() != Thread.State.TIMED_WAITING) {
-                    if (System.nanoTime() > deadline || !worker.isAlive()) throw new IllegalStateException("human prompt did not become pending");
-                    Thread.sleep(10);
-                }
-                game.concede(human.getPlayer().getId());
+            // ponytail: fixture knows the only human prompt is mulligan; no general choice controller.
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
+            while (worker.getState() != Thread.State.WAITING
+                    || java.util.Arrays.stream(worker.getStackTrace()).noneMatch(frame -> frame.getMethodName().equals("chooseMulligan"))) {
+                if (System.nanoTime() > deadline || !worker.isAlive()) throw new IllegalStateException("human prompt did not become pending");
+                Thread.sleep(10);
             }
+            if (draw) human.getPlayer().setResponseBoolean(false); // Keep the initial hand.
+            else game.concede(human.getPlayer().getId());
             expected = finished.get(15, TimeUnit.SECONDS);
             worker.join(2000);
             assert !worker.isAlive();
@@ -67,7 +60,7 @@ class ResultProbe {
         assert !managers.tableManager().getController(table.getId()).isPresent();
         verifyHistory();
         System.out.println("PASS result: concession -> structured AI win; history survives controller cleanup; draws=" + expected.getMatch().getDraws());
-        System.out.println("NOT PROVEN: stable project result/seat binding, persistence acknowledgement, native-client callback path; draw injection remains experimental");
+        System.out.println("NOT PROVEN: stable project result/seat binding, persistence acknowledgement, native-client callback path or full client gameplay");
     }
 
     static void verifyHistory() throws Exception {
