@@ -5,7 +5,7 @@
 - [x] 1.3 Spike XMage managed-table creation with one human and one AI from code; record required session, owner, room, and plugin initialization steps and the exact extension seam. Evidence: `spikes/README.md`; prepared-table/AI-construction probe passed, authenticated play remains 1.4.
 - [ ] 1.4 Spike stock XMage client attachment to a precreated managed seat, including authenticated reconnect; identify every native path that can change the submitted deck or match settings.
 - [ ] 1.5 Spike structured match completion, draw/concession handling, and durable result retrieval after controller cleanup; reject a free-text-only winner source.
-- [ ] 1.6 Spike one known normal card, reprint, foil pair, split/multiface card, and unsupported card through MTGCard identity → XMage catalog resolution; record unmapped and ambiguous cases.
+- [x] 1.6 Spike one known normal card, reprint, foil pair, split/multiface card, and unsupported card through MTGCard identity → XMage catalog resolution; record unmapped and ambiguous cases. Evidence: `spikes/cards/run-probe.sh` and `spikes/README.md` (ten metadata projections; eight mapped, two unsupported).
 - [ ] 1.7 STOP GATE: Review evidence for exclusive custody, exact-deck enforcement, and trustworthy structured result retrieval. Do not proceed to section 2 without explicit user approval. If any gate fails, update design.md, specs, and tasks before further implementation.
 
 ## 2. Define the project boundary and catalog

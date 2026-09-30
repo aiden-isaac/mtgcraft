@@ -18,7 +18,7 @@ import org.apache.log4j.*;
 public class XmageProbe {
     public static void main(String[] args) {
         try {
-            run(args[0]);
+            run(args);
             // Upstream managers own scheduled executors; this disposable JVM ends here.
             System.exit(0);
         } catch (Throwable failure) {
@@ -27,18 +27,19 @@ public class XmageProbe {
         }
     }
 
-    private static void run(String configPath) throws Exception {
+    private static void run(String[] args) throws Exception {
         BasicConfigurator.configure();
         Logger.getRootLogger().setLevel(Level.WARN);
         long start = System.nanoTime();
         RepositoryUtil.bootstrapLocalDb();
         CardScanner.scan();
         System.out.println("catalog_ready_ms=" + (System.nanoTime() - start) / 1_000_000);
+        if (args.length == 3) MappingProbe.run(args[1], args[2]);
         GameFactory.instance.addGameType("Two Player Duel", new TwoPlayerDuelType(), TwoPlayerMatch.class);
         DeckValidatorFactory.instance.addDeckType("Constructed - Freeform", Freeform.class);
         PlayerFactory.instance.addPlayerType("Human", HumanPlayer.class);
         PlayerFactory.instance.addPlayerType("Computer - mad", ComputerPlayerControllableProxy.class);
-        var managers = new MainManagerFactory(new ConfigWrapper(ConfigFactory.loadFromFile(configPath)));
+        var managers = new MainManagerFactory(new ConfigWrapper(ConfigFactory.loadFromFile(args[0])));
         var owner = managers.userManager().createUser("spike-human", "127.0.0.1", null).orElseThrow();
         var options = new MatchOptions("integration-spike", "Two Player Duel", false);
         options.setDeckType("Constructed - Freeform");

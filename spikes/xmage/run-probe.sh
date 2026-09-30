@@ -8,7 +8,7 @@ test "$(git -C "$mage_dir" rev-parse HEAD)" = 7f42784132e054d0c5b6c581fa63fed589
     -Dmdep.outputFile="$project_dir/.cache/xmage-classpath.txt"
 probe_cp="$mage_dir/Mage.Server/target/mage-server-1.4.61.jar:$(cat "$project_dir/.cache/xmage-classpath.txt")"
 mkdir -p "$project_dir/.cache/xmage-probe/classes"
-javac -cp "$probe_cp" -d "$project_dir/.cache/xmage-probe/classes" "$project_dir/spikes/xmage/XmageProbe.java"
+javac -cp "$probe_cp" -d "$project_dir/.cache/xmage-probe/classes" "$project_dir"/spikes/xmage/*.java
 cd "$project_dir/.cache/xmage-probe"
 java -ea -Xmx2g --add-opens=java.base/java.io=ALL-UNNAMED \
-    -cp "classes:$probe_cp" XmageProbe "$mage_dir/Mage.Server/config/config.xml"
+    -cp "classes:$probe_cp" XmageProbe "$mage_dir/Mage.Server/config/config.xml" "$@"

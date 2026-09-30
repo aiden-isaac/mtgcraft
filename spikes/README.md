@@ -54,7 +54,32 @@ patch or custom server bootstrap is needed; runtime client binding remains task 
   `result.proto` contains names, wins, draws and quit reasons, but no table, match or
   player UUID fields. Existing history cannot be assumed to provide durable project
   result identity. Task 1.5 remains open.
-- No card-mapping, reconnect, exclusive-custody or complete-match test has passed yet.
+- No reconnect, exclusive-custody or complete-match test has passed yet.
+
+## Task 1.6 — metadata/catalog mapping: PASS (2026-09-30)
+
+Run `bash spikes/cards/run-probe.sh`. The checked-in fixture contains identity fields
+retrieved from the five documented Scryfall API URLs on 2026-09-30, with no card art.
+The probe writes each record through real MTGCard `CardNBTUtil.populateCardNbt`, reads
+back its stored metadata, exports ten projections (nonfoil/foil), and resolves them in
+a separate XMage JVM using exact set and collector number. Both processes assert
+identity/face preservation. XMage constructs the card implementations and loads each
+supported entry as one deck card.
+
+| Printing | Result |
+| --- | --- |
+| M10/146 Lightning Bolt | `mage.cards.l.LightningBolt` |
+| M11/149 Lightning Bolt | Same implementation and Oracle ID; different Scryfall printing ID |
+| APC/128 Fire // Ice | One `FireIce` object, both halves verified |
+| ISD/51 Delver of Secrets | One transformable `DelverOfSecrets`, reverse face verified |
+| UNH/30 Cheatyface | Missing from pinned XMage catalog; rejected without substitution |
+
+Foil/nonfoil projections share printing/gameplay identity and have distinct physical
+instance IDs. None of these exact tuples was ambiguous. Scryfall's combined DFC name
+differs from XMage's front-face name, which is why a name-only lookup is insufficient.
+XMage does not resolve the Scryfall/Oracle IDs here: the pinned fixture binds them to
+the exact engine tuple. This is a fixture experiment, **not** a general trusted resolver
+or a live deckbox extraction test. Conflicting/untrusted metadata handling remains 2.3–2.4.
 
 ## Graphify
 

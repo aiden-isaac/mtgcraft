@@ -1,0 +1,58 @@
+[
+  {
+    "id": "435589bb-27c6-4a6d-9d63-394d5092b9d8",
+    "oracle_id": "4457ed35-7c10-48c8-9776-456485fdf070",
+    "name": "Lightning Bolt",
+    "set": "m10",
+    "collector_number": "146",
+    "layout": "normal",
+    "faces": [],
+    "source": "https://api.scryfall.com/cards/m10/146"
+  },
+  {
+    "id": "e768c957-3a1f-42f5-853a-96942f645df5",
+    "oracle_id": "4457ed35-7c10-48c8-9776-456485fdf070",
+    "name": "Lightning Bolt",
+    "set": "m11",
+    "collector_number": "149",
+    "layout": "normal",
+    "faces": [],
+    "source": "https://api.scryfall.com/cards/m11/149"
+  },
+  {
+    "id": "f98f4538-5b5b-475d-b98f-49d01dae6f04",
+    "oracle_id": "ae92942b-919c-4ea9-b693-85fcef765d5a",
+    "name": "Fire // Ice",
+    "set": "apc",
+    "collector_number": "128",
+    "layout": "split",
+    "faces": [
+      "Fire",
+      "Ice"
+    ],
+    "source": "https://api.scryfall.com/cards/apc/128"
+  },
+  {
+    "id": "11bf83bb-c95b-4b4f-9a56-ce7a1816307a",
+    "oracle_id": "edd531b9-f615-4399-8c8c-1c5e18c4acbf",
+    "name": "Delver of Secrets // Insectile Aberration",
+    "set": "isd",
+    "collector_number": "51",
+    "layout": "transform",
+    "faces": [
+      "Delver of Secrets",
+      "Insectile Aberration"
+    ],
+    "source": "https://api.scryfall.com/cards/isd/51"
+  },
+  {
+    "id": "ab857e73-ac20-4013-bc34-ed675de84c7c",
+    "oracle_id": "d6202ce1-8dbc-4aa5-8d62-5fe4005fa3d9",
+    "name": "Cheatyface",
+    "set": "unh",
+    "collector_number": "30",
+    "layout": "normal",
+    "faces": [],
+    "source": "https://api.scryfall.com/cards/unh/30"
+  }
+]

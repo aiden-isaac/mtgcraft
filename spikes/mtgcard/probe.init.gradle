@@ -1,0 +1,21 @@
+// Compile a standalone probe against the actual upstream runtime; do not edit it.
+gradle.projectsEvaluated {
+    def fabric = gradle.rootProject.project(':fabric')
+    def output = new File(fabric.buildDir, 'boundary-probe')
+    def compileProbe = fabric.tasks.register('compileBoundaryProbe', JavaCompile) {
+        dependsOn fabric.tasks.named('classes')
+        source new File(System.getProperty('probe.dir'), 'MtgcardProbe.java')
+        classpath = fabric.sourceSets.main.runtimeClasspath
+        destinationDirectory.set(output)
+        options.release.set(25)
+    }
+    fabric.tasks.register('boundaryProbe', JavaExec) {
+        dependsOn compileProbe
+        classpath = fabric.files(output) + fabric.sourceSets.main.runtimeClasspath
+        mainClass.set('MtgcardProbe')
+        enableAssertions = true
+        if (System.getProperty('probe.cards') != null) {
+            args System.getProperty('probe.cards'), System.getProperty('probe.output')
+        }
+    }
+}
