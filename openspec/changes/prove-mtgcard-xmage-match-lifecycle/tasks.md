@@ -8,6 +8,12 @@
 - [x] 1.6 Spike one known normal card, reprint, foil pair, split/multiface card, and unsupported card through MTGCard identity → XMage catalog resolution; record unmapped and ambiguous cases. Evidence: `spikes/cards/run-probe.sh` and `spikes/README.md` (ten metadata projections; eight mapped, two unsupported).
 - [ ] 1.7 STOP GATE: Review evidence for exclusive custody, exact-deck enforcement, and trustworthy structured result retrieval. Do not proceed to section 2 without explicit user approval. If any gate fails, update design.md, specs, and tasks before further implementation.
 
+Progress evidence (2026-09-30): `spikes/README.md`. Task 1.2 is blocked on the local
+Minecraft server's EULA acceptance; custody hooks remain unproven. Task 1.4 passed a
+stock native-session reconnect probe, but not Swing UI/managed-seat enforcement.
+Task 1.5 passed concession and cross-process history reads; draw injection remains
+unsuccessful. These partial experiments are intentionally not checked off.
+
 ## 2. Define the project boundary and catalog
 
 - [ ] 2.1 Define versioned project DTOs for card/printing identity, canonical main-deck entries, immutable snapshot, player/seat binding, match request/status/result, and structured errors without MTGCard or XMage runtime types.

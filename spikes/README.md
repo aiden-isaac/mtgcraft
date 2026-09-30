@@ -35,7 +35,8 @@ threads/AI opponents at two, and enables only the duel, Freeform, human and MAD 
 Test mode is explicitly false. The stock native server reached readiness and both
 loopback ports were reachable. This does not prove authenticated seat attachment;
 managed account provisioning and the project HTTP adapter are not implemented.
-Stop with Ctrl-C. No Minecraft world was started and no EULA setting was written.
+Stop with Ctrl-C. Minecraft subsequently generated `eula=false` during the live-server
+probe; the EULA has not been accepted and no active Minecraft world was started.
 
 Initial server/client source build: 4 min 5 sec on this workstation (dependency caches
 partly warm). Warm native startup reached the logged listening state on 2026-09-30.
@@ -75,17 +76,76 @@ Candidate service seam: a bootstrap beside `MainManagerFactory`, with guards in
 deck types, and draft cubes, so it is not a managed-match plugin API. A narrow XMage
 patch or custom server bootstrap is needed; runtime client binding remains task 1.4.
 
-## Other experiments in progress
+## Task 1.2 — custody: BLOCKED / unproven
 
 - MTGCard `:fabric:build` passed. `mtgcard/MtgcardProbe.java` also passed metadata
   round-trip and removal-callback tests against the real upstream runtime. It uses a
   synthetic card on a vanilla paper item with explicitly bound empty components;
   this is **not** a real deckbox/world test. Task 1.2 remains open.
-- XMage `TableRecorderImpl` writes structured protobuf match history to SQLite.
-  `result.proto` contains names, wins, draws and quit reasons, but no table, match or
-  player UUID fields. Existing history cannot be assumed to provide durable project
-  result identity. Task 1.5 remains open.
-- No reconnect, exclusive-custody or complete-match test has passed yet.
+- Starting `:fabric:runServer --args nogui` reached Minecraft's EULA check and stopped.
+  Its generated `fabric/run/eula.txt` is still false. Live deckbox tests require the
+  user's explicit EULA acceptance. Gradle's successful exit does **not** mean the
+  Minecraft server became ready.
+- `DeckboxBlock.createDeckboxDrop` retains `mtgcard_deckbox_id`; cloning with data
+  can retain the same ID. `DeckboxBlockEntity.loadStorageId` copies stored items into
+  its own inventory; a missing record can be recreated. `setChanged` persists it.
+- Opening a block menu, container access, deck-control actions, and
+  `SulfurCubeDeckboxCards` are separate access paths. Storage save/load have no
+  reservation policy. The removal callback is notification-only, as verified above.
+- **Decision needed before custody implementation:** keep MTGCard as a dependency,
+  but prototype narrow addon Mixins or an upstream access-policy hook. Both existing
+  loaded aliases and future record reads/writes need protection. Locking only the
+  file or intercepting removal cannot establish exclusive escrow. No patch/fork
+  or claim of complete mutation-path coverage has been made.
+
+## Task 1.4 — native attachment: PARTIAL
+
+With `run-server.sh` running, `bash spikes/xmage/run-client-probe.sh` passed against
+the real loopback native transport with authentication enabled and test mode off.
+It creates a random, temporary account directly in the disposable server's authorized
+user database (no registration email), authenticates using stock `SessionImpl`, prepares
+a human/AI table, disconnects while preserving the session, then restores the old
+session with a second `SessionImpl`. The authenticated account remains the table owner
+and sees both seats. The table and temporary account are removed afterward. Passwords
+exist only in process memory and are not printed.
+
+This exercises the stock client **session library**, not the Swing UI, a managed
+server-created seat, an active game, or a Minecraft binding. Task 1.4 remains open.
+Native entry points requiring a complete guard audit include `roomJoinTable`,
+`deckSubmit`, `deckSave`, `roomLeaveTableOrTournament`, `tableSwapSeats`, `tableRemove`,
+and `matchStart`; public table/option mutation and reconnect paths also need review.
+The READY_TO_START `submitDeck` rejection from task 1.3 alone is not deck enforcement.
+
+## Task 1.5 — result capture: PARTIAL
+
+These two commands passed, in separate JVMs:
+
+```sh
+PROBE_RESULT=true bash spikes/xmage/run-probe.sh
+PROBE_HISTORY_ONLY=true bash spikes/xmage/run-probe.sh
+```
+
+The first starts a real `GameWorker` with one human and one AI, waits for the isolated
+worker to wait for a response, and invokes XMage's concession API. Its callback ignores
+the result string and asserts structured `MatchPlayer` wins and winner state. It
+captures `TableProto` **before** `closeTable`, closes/removes the controller, and reads
+the exact snapshot back through `TableRecordRepository`. The second reads the same
+record after the entire probe process has exited. The callback is a test callback,
+not the native `GameController` path; no full game was played through a client UI.
+
+Capture timing matters: `closeTable` clears the validator, so a later `table.toProto()`
+reports `<deck type missing>`. `TableRecorderImpl` records before that cleanup.
+Its protobuf contains names, wins, draws and quit reasons, but no table/match/player
+UUID fields, and `TableRecordRepository.add` logs SQL errors without acknowledging
+failure to its caller. A project result journal and stable seat binding remain needed.
+
+`PROBE_RESULT=true PROBE_DRAW=true bash spikes/xmage/run-probe.sh` is a deliberately
+unfinished draw experiment. Direct off-worker draw injection produced a win; the
+current worker-listener attempt timed out. Neither is evidence of an XMage rules bug.
+Use an upstream draw-producing card test or a correctly initialized worker fixture next.
+Source inspection indicates wins-needed-one can continue after a drawn game; do not
+equate every ended game with an ended match. Task 1.5 remains unchecked until draw
+handling and the real managed completion hook have been exercised.
 
 ## Task 1.6 — metadata/catalog mapping: PASS (2026-09-30)
 

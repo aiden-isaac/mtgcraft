@@ -83,6 +83,28 @@ There is no existing project data to migrate. Implement the project DTOs and pro
 
 ## Open Questions and required experiments
 
+### Evidence from initial implementation probes (2026-09-30)
+
+See `spikes/README.md` and the runnable probes. Fabric/Minecraft 26.3 and the pinned
+XMage server/client build successfully. Programmatic table construction and fixture
+card mapping passed. MTGCard's removal callback cannot veto access; exclusive custody
+will require an addon interception experiment or an upstream policy hook, including
+already loaded backing-record aliases. Keep admission disabled until tested.
+
+XMage's `ExtensionPackage` is a card/deck/cube extension API, not a server lifecycle
+plugin. Use a narrow bootstrap/server patch around the managers; do not assume a
+drop-in lifecycle plugin exists. Native authenticated session restoration passed for
+a prepared table, but stock Swing UI attachment and managed-deck guards remain open.
+
+Structured concession state and upstream SQLite history survive controller cleanup
+and a probe JVM restart. Capture before `Table.closeTable` clears its validator.
+`result.proto` has no stable table/match/player UUIDs, and repository writes swallow
+SQL exceptions, so upstream history alone cannot satisfy project result identity and
+durable acknowledgement. The service must snapshot its stable bindings alongside the
+structured outcome and persist with an acknowledged commit before release/cleanup.
+Draw runtime handling is unresolved; an ended game must not automatically terminate
+a wins-needed-one match. No full Minecraft-to-XMage-to-Minecraft lifecycle has passed.
+
 1. Which XMage API/extension seam can create a managed table programmatically without a normal lobby owner, and can it persist a unique project marker before any ambiguous failure?
 2. How does the stock external client authenticate and attach to the precreated human seat, and which native deck submission paths must be blocked to enforce the snapshot?
 3. Which structured XMage match result survives controller cleanup and can be read again after service restart? How are conceding, draws, errors, and cancellation represented?

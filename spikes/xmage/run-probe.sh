@@ -10,5 +10,7 @@ probe_cp="$mage_dir/Mage.Server/target/mage-server-1.4.61.jar:$(cat "$project_di
 mkdir -p "$project_dir/.cache/xmage-probe/classes"
 javac -cp "$probe_cp" -d "$project_dir/.cache/xmage-probe/classes" "$project_dir"/spikes/xmage/*.java
 cd "$project_dir/.cache/xmage-probe"
-java -ea -Xmx2g --add-opens=java.base/java.io=ALL-UNNAMED \
+java -ea -Xmx2g -Dprobe.result="${PROBE_RESULT:-false}" -Dprobe.historyOnly="${PROBE_HISTORY_ONLY:-false}" \
+    -Dprobe.draw="${PROBE_DRAW:-false}" \
+    --add-opens=java.base/java.io=ALL-UNNAMED \
     -cp "classes:$probe_cp" XmageProbe "$mage_dir/Mage.Server/config/config.xml" "$@"

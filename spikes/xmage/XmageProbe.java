@@ -18,6 +18,10 @@ import org.apache.log4j.*;
 public class XmageProbe {
     public static void main(String[] args) {
         try {
+            if (Boolean.getBoolean("probe.historyOnly")) {
+                ResultProbe.verifyHistory();
+                System.exit(0);
+            }
             run(args);
             // Upstream managers own scheduled executors; this disposable JVM ends here.
             System.exit(0);
@@ -67,6 +71,10 @@ public class XmageProbe {
         assert !managers.tableManager().submitDeck(owner.getId(), table.getId(), new DeckCardLists());
         System.out.println("PASS table: registered human + MAD AI; exact 60-card decks; native submitDeck rejected in READY_TO_START");
         System.out.println("NOT PROVEN: authenticated client attachment, gameplay, comprehensive deck enforcement, durable result binding");
+        if (Boolean.getBoolean("probe.result")) {
+            ResultProbe.run(managers, table);
+            return;
+        }
         managers.tableManager().removeTable(table.getId());
         assert !managers.tableManager().getController(table.getId()).isPresent();
         System.out.println("PASS cleanup: prepared table controller removed");
