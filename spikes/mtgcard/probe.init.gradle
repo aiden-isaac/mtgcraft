@@ -2,6 +2,16 @@
 gradle.projectsEvaluated {
     def fabric = gradle.rootProject.project(':fabric')
     def output = new File(fabric.buildDir, 'boundary-probe')
+    fabric.tasks.register('boundaryDependencies') {
+        doLast {
+            def records = fabric.configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.collect { artifact ->
+                [artifact: artifact.moduleVersion.id.toString(),
+                 filename: artifact.file.name,
+                 sha256: java.security.MessageDigest.getInstance('SHA-256').digest(artifact.file.bytes).encodeHex().toString()]
+            }.sort { it.artifact }
+            new File(System.getProperty('probe.dependencies')).text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(records)) + '\n'
+        }
+    }
     def compileProbe = fabric.tasks.register('compileBoundaryProbe', JavaCompile) {
         dependsOn fabric.tasks.named('classes')
         source new File(System.getProperty('probe.dir'), 'MtgcardProbe.java')

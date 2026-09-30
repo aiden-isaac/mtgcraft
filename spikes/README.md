@@ -12,6 +12,37 @@ Do not admit player cards using this code.
 - XMage card-content version 241, expansion-content version 18. The commit and
   Mage.Sets artifact must also be pinned: these counters alone do not identify a catalog.
 
+## Task 1.1 — buildable pinned stack: PASS (2026-09-30)
+
+`bash spikes/build-stack.sh` fetches the exact commits, checks Maven's archive SHA-512,
+and builds the Fabric artifact plus XMage server/client. It overrides upstream's floating
+Loom snapshot with **1.17.21**. Both builds passed on the JDK above. The Minecraft target
+is Java 25; XMage compiles its upstream Java 8 target. This selects the source-built
+MTGCard release-version artifact, not a verified publisher-hosted release download.
+
+`artifacts.lock.json` records SHA-256 for 178 observed Minecraft/XMage build artifacts
+and resolved XMage server/client dependencies. `mtgcard/dependencies.lock.json` records
+resolved Fabric runtime dependency coordinates and hashes. Upstream generated Maven
+jars contain build timestamps, so rebuilding may change hashes; review and re-pin
+artifacts rather than treating these files as a reproducible-build guarantee. These are
+observed dependency manifests, not Gradle/Maven's automatic dependency-lock mechanism.
+The pinned catalog is the `mage-sets` jar hash plus the upstream commit and DB counters.
+
+`bash spikes/xmage/run-server.sh` starts the actual native server in a separate JVM,
+with a 2 GiB heap cap and disposable state under `.cache/xmage-server`. Its checked-in
+config binds `127.0.0.1:17171` and `127.0.0.1:17179`, enables authentication, caps game
+threads/AI opponents at two, and enables only the duel, Freeform, human and MAD plugins.
+Test mode is explicitly false. The stock native server reached readiness and both
+loopback ports were reachable. This does not prove authenticated seat attachment;
+managed account provisioning and the project HTTP adapter are not implemented.
+Stop with Ctrl-C. No Minecraft world was started and no EULA setting was written.
+
+Initial server/client source build: 4 min 5 sec on this workstation (dependency caches
+partly warm). Warm native startup reached the logged listening state on 2026-09-30.
+No AI latency, match memory-growth, concurrency or cleanup performance claim is made.
+The server emits reflective-access warnings on JDK 26; client gameplay compatibility
+still needs testing before this runtime is used beyond the spike.
+
 ## Task 1.3 — table creation: PASS (2026-09-30)
 
 `xmage/XmageProbe.java` compiled and executed against actual upstream jars with assertions

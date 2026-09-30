@@ -1,0 +1,728 @@
+{
+  "status": "observed-build-lock; verify checksums before reusing these built artifacts",
+  "mtgcard_commit": "bab304144c9b94e9d005a85cddb77ed41f6c2385",
+  "xmage_commit": "7f42784132e054d0c5b6c581fa63fed5893327ab",
+  "java": "OpenJDK 26.0.2.1",
+  "gradle": "9.5.0",
+  "loom": "1.17.21",
+  "maven": "3.9.9",
+  "catalog": {
+    "card_content_version": 241,
+    "expansion_content_version": 18,
+    "implementation": "org/mage/mage-sets/1.4.61/mage-sets-1.4.61.jar"
+  },
+  "artifacts": [
+    {
+      "artifact": "asm/asm/3.0/asm-3.0.jar",
+      "sha256": "bfcb35900ec1d5a1346fb0dc91dd9d772cf93e3165cb8701aec3ed277b5a53ba"
+    },
+    {
+      "artifact": "asm/asm-commons/3.0/asm-commons-3.0.jar",
+      "sha256": "32b516ca5738b87077afac83d08bae7e3f3cea4ce6ff6d7a18506b38c3729640"
+    },
+    {
+      "artifact": "asm/asm-tree/3.0/asm-tree-3.0.jar",
+      "sha256": "ad82cad09bb2f7752d4ddb8ebb2aaf893ecc4a801bcbe813c75027830f496255"
+    },
+    {
+      "artifact": "ch/qos/reload4j/reload4j/1.2.22/reload4j-1.2.22.jar",
+      "sha256": "222f90d3e69541218ef6e70547749d693bd4c1846817e5bd7949b3e28950f99f"
+    },
+    {
+      "artifact": "com/google/code/findbugs/annotations/3.0.1u2/annotations-3.0.1u2.jar",
+      "sha256": "acc0d2c06be70e9094d70cd05dffa077735c8f9d1a870eafda130b0592528200"
+    },
+    {
+      "artifact": "com/google/code/gson/gson/2.13.2/gson-2.13.2.jar",
+      "sha256": "dd0ce1b55a3ed2080cb70f9c655850cda86c206862310009dcb5e5c95265a5e0"
+    },
+    {
+      "artifact": "com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0.jar",
+      "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
+    },
+    {
+      "artifact": "com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar",
+      "sha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb"
+    },
+    {
+      "artifact": "com/google/guava/guava/33.4.8-jre/guava-33.4.8-jre.jar",
+      "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+    },
+    {
+      "artifact": "com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
+    },
+    {
+      "artifact": "com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0.jar",
+      "sha256": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64"
+    },
+    {
+      "artifact": "com/google/protobuf/protobuf-java/3.25.8/protobuf-java-3.25.8.jar",
+      "sha256": "72bdb32eb38cafb7dcd288262c29a34d57cba2e19101af9685155ba8c0a56008"
+    },
+    {
+      "artifact": "com/googlecode/jspf/jspf-core/0.9.1/jspf-core-0.9.1.jar",
+      "sha256": "270cf91dd5b4b7becf7b0e770a91945805d5d7df1db05f98fefc2a0707edbf5a"
+    },
+    {
+      "artifact": "com/googlecode/soundlibs/jlayer/1.0.1.4/jlayer-1.0.1.4.jar",
+      "sha256": "863a51470ab4d581c6269dcd5a0471a226932ec5b2ef3f79fe86ab559387ac5c"
+    },
+    {
+      "artifact": "com/googlecode/soundlibs/mp3spi/1.9.5.4/mp3spi-1.9.5.4.jar",
+      "sha256": "f2bd4d0b63532b52eaf9c086528ed8379e5a8805af759c4dbdea5b7a40e4e87e"
+    },
+    {
+      "artifact": "com/googlecode/soundlibs/tritonus-share/0.3.7.4/tritonus-share-0.3.7.4.jar",
+      "sha256": "6f626b41dc72074656059de1a25bc6f1c5abb202b57d37c538f5714f54efdab4"
+    },
+    {
+      "artifact": "com/h2database/h2/1.4.197/h2-1.4.197.jar",
+      "sha256": "37f5216e14af2772930dff9b8734353f0a80e89ba3f33e065441de6537c5e842"
+    },
+    {
+      "artifact": "com/intellij/forms_rt/7.0.3/forms_rt-7.0.3.jar",
+      "sha256": "51d100f7f19e85bce8fd8fda551e433188174994f470d6e9f51c7f7b2227d9e3"
+    },
+    {
+      "artifact": "com/j256/ormlite/ormlite-core/5.7/ormlite-core-5.7.jar",
+      "sha256": "5f1254ca4338d8ce8975d550ab1856073186b8d3128282908abac56d806ca1bd"
+    },
+    {
+      "artifact": "com/j256/ormlite/ormlite-jdbc/5.7/ormlite-jdbc-5.7.jar",
+      "sha256": "156e789cf16ba12cb7176cee86bacaae440316f8b53094cd640876bfef636c29"
+    },
+    {
+      "artifact": "com/jgoodies/forms/1.2.1/forms-1.2.1.jar",
+      "sha256": "df801e4d1ced23fbabd70d02d685179bf47894a9305787ed3a4dab5b58d030a9"
+    },
+    {
+      "artifact": "com/jhlabs/filters/2.0.235/filters-2.0.235.jar",
+      "sha256": "be6a1d54ebb043495e31e25e72b440f69156a5624cdd7e1c55c47e30d4fae308"
+    },
+    {
+      "artifact": "com/sun/activation/jakarta.activation/2.0.1/jakarta.activation-2.0.1.jar",
+      "sha256": "b9e24b7dd6e07495562ea96531be3130c96dba4d78e1dfd88adbbdebf4332871"
+    },
+    {
+      "artifact": "com/sun/istack/istack-commons-runtime/4.0.1/istack-commons-runtime-4.0.1.jar",
+      "sha256": "9f91115f449384886f572bd62c8812ee1004273d4b5c85cac65179ad4c16990f"
+    },
+    {
+      "artifact": "com/sun/jersey/contribs/jersey-multipart/1.19.4/jersey-multipart-1.19.4.jar",
+      "sha256": "f0ada237ad993ff5749abfff88dfa15c1f60bcb7e0522a1f17251cb670fcc448"
+    },
+    {
+      "artifact": "com/sun/jersey/jersey-client/1.19.4/jersey-client-1.19.4.jar",
+      "sha256": "639c825c5db580f8115bf49ffc893093526d2ed1079fbc929b6a5fbd0b2eda40"
+    },
+    {
+      "artifact": "com/sun/jersey/jersey-core/1.19.4/jersey-core-1.19.4.jar",
+      "sha256": "64b03198e0264849d0fc341857ebcc9c882b1909a2dc35a0972fe7d901b826e5"
+    },
+    {
+      "artifact": "com/sun/xml/bind/jaxb-impl/2.3.1/jaxb-impl-2.3.1.jar",
+      "sha256": "e6c9e0f1830fd5f7c30c25ecf5e2046c5668b06d304add89d2f027d5072297d0"
+    },
+    {
+      "artifact": "commons-beanutils/commons-beanutils/1.9.4/commons-beanutils-1.9.4.jar",
+      "sha256": "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a"
+    },
+    {
+      "artifact": "commons-codec/commons-codec/1.19.0/commons-codec-1.19.0.jar",
+      "sha256": "5c3881e4f556855e9c532927ee0c9dfde94cc66760d5805c031a59887070af5f"
+    },
+    {
+      "artifact": "commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar",
+      "sha256": "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8"
+    },
+    {
+      "artifact": "commons-io/commons-io/2.17.0/commons-io-2.17.0.jar",
+      "sha256": "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
+    },
+    {
+      "artifact": "commons-io/commons-io/2.20.0/commons-io-2.20.0.jar",
+      "sha256": "df90bba0fe3cb586b7f164e78fe8f8f4da3f2dd5c27fa645f888100ccc25dd72"
+    },
+    {
+      "artifact": "commons-logging/commons-logging/1.3.0/commons-logging-1.3.0.jar",
+      "sha256": "66d3c980470b99b0c511dad3dfc0ae7b265ec1fb144e96bc0253a8a175fd34d9"
+    },
+    {
+      "artifact": "concurrent/concurrent/1.3.4/concurrent-1.3.4.jar",
+      "sha256": "12639def9a5b5ebf56040ab764bd42b7e662523d3b983e5d5da04bf37be152f9"
+    },
+    {
+      "artifact": "global/namespace/service-wight/service-wight-annotation/0.6.0/service-wight-annotation-0.6.0.jar",
+      "sha256": "a257eafc102b84c8732b19040afdf067c1611e2298c42104dc3f557bd115f9ba"
+    },
+    {
+      "artifact": "global/namespace/service-wight/service-wight-core/0.6.0/service-wight-core-0.6.0.jar",
+      "sha256": "7d49c587f165e796470356eb06cc4390539a8c0e528d6ea24e0c843323db1a57"
+    },
+    {
+      "artifact": "jakarta/xml/bind/jakarta.xml.bind-api/3.0.1/jakarta.xml.bind-api-3.0.1.jar",
+      "sha256": "b8fb4bee3ff5b5c1ef77144d8411316018d7bbd41fcf1ede0646f7978546b867"
+    },
+    {
+      "artifact": "javax/activation/activation/1.1/activation-1.1.jar",
+      "sha256": "2881c79c9d6ef01c58e62beea13e9d1ac8b8baa16f2fc198ad6e6776defdcdd3"
+    },
+    {
+      "artifact": "javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar",
+      "sha256": "43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393"
+    },
+    {
+      "artifact": "javax/inject/javax.inject/1/javax.inject-1.jar",
+      "sha256": "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff"
+    },
+    {
+      "artifact": "javax/mail/mail/1.5.0-b01/mail-1.5.0-b01.jar",
+      "sha256": "04f10be09bc598b4b65b93e5eb55bb380abe1ca76c440cf0c8233d86e868f1c7"
+    },
+    {
+      "artifact": "javax/ws/rs/jsr311-api/1.1.1/jsr311-api-1.1.1.jar",
+      "sha256": "ab1534b73b5fa055808e6598a5e73b599ccda28c3159c3c0908977809422ee4a"
+    },
+    {
+      "artifact": "javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar",
+      "sha256": "88b955a0df57880a26a74708bc34f74dcaf8ebf4e78843a28b50eae945732b06"
+    },
+    {
+      "artifact": "javazoom/jlayer/1.0.1/jlayer-1.0.1.jar",
+      "sha256": "850508c837454a1b06017c32a36876fae516de1e89a829f725fee1e6dcc52000"
+    },
+    {
+      "artifact": "jboss/jboss-serialization/4.2.2.GA/jboss-serialization-4.2.2.GA.jar",
+      "sha256": "53a12ccfc2a382dbcc8527b8b45ab038b1c3fb8839fa797c70fb7381a7c02d14"
+    },
+    {
+      "artifact": "jdom/jdom/1.0/jdom-1.0.jar",
+      "sha256": "3b23bc3979aec14a952a12aafc483010dc57579775f2ffcacef5256a90eeda02"
+    },
+    {
+      "artifact": "junit/junit/4.13.2/junit-4.13.2.jar",
+      "sha256": "8e495b634469d64fb8acfa3495a065cbacc8a0fff55ce1e31007be4c16dc57d3"
+    },
+    {
+      "artifact": "net/java/truecommons/truecommons-cio/2.5.0/truecommons-cio-2.5.0.jar",
+      "sha256": "61a0db290c036fbf44743113a714b50e5112ff3ffb9f7a817aa0eaed9ef978bb"
+    },
+    {
+      "artifact": "net/java/truecommons/truecommons-io/2.5.0/truecommons-io-2.5.0.jar",
+      "sha256": "b6ef4065d2567076d2c234697929d5936fe7bc86149f78fb93be156e05d7a312"
+    },
+    {
+      "artifact": "net/java/truecommons/truecommons-key-console/2.5.0/truecommons-key-console-2.5.0.jar",
+      "sha256": "24763cbc37caaa9cbd62b912dc1c4a6e0fdb13c29ae6be07b0055bc6e2c87d7c"
+    },
+    {
+      "artifact": "net/java/truecommons/truecommons-key-default/2.5.0/truecommons-key-default-2.5.0.jar",
+      "sha256": "90ee3487865b0ca38a529749a2b7fbffabf3d223a466157ec04e9dff72accc10"
+    },
+    {
+      "artifact": "net/java/truecommons/truecommons-key-spec/2.5.0/truecommons-key-spec-2.5.0.jar",
+      "sha256": "a7103fd23c95a80dc6c82be5a407a4e2c587fb74a087ff3808c0ccc20b4043f7"
+    },
+    {
+      "artifact": "net/java/truecommons/truecommons-key-swing/2.5.0/truecommons-key-swing-2.5.0.jar",
+      "sha256": "157ca62ad0a5cc7de4678ca649a4c2507fb3c187386c654ab44a8f9053b73c45"
+    },
+    {
+      "artifact": "net/java/truecommons/truecommons-logging/2.5.0/truecommons-logging-2.5.0.jar",
+      "sha256": "a791a0c23a724aa920b9a4dee3801569948ac29c4bbc7b5abb1f3fc4534db605"
+    },
+    {
+      "artifact": "net/java/truecommons/truecommons-services/2.5.0/truecommons-services-2.5.0.jar",
+      "sha256": "edec057e71c53620460d4c49448e4d32d988da6042419e1372aa6bce463c3ee7"
+    },
+    {
+      "artifact": "net/java/truecommons/truecommons-shed/2.5.0/truecommons-shed-2.5.0.jar",
+      "sha256": "9b70bb63b79faa0e4c4b1aa820c610c1aa1c9fc9d4653edbe76a328f0d3c1a75"
+    },
+    {
+      "artifact": "net/java/truevfs/truevfs-access/0.14.0/truevfs-access-0.14.0.jar",
+      "sha256": "2187354eeb8b766aa91210b9eece6f0e24102d4658e1721ad59fea3748d720e5"
+    },
+    {
+      "artifact": "net/java/truevfs/truevfs-access-swing/0.14.0/truevfs-access-swing-0.14.0.jar",
+      "sha256": "c2ef8b5db392a676a706e66469c13074c92965b06e84b4a4ece1685cc237f596"
+    },
+    {
+      "artifact": "net/java/truevfs/truevfs-comp-ibm437/0.14.0/truevfs-comp-ibm437-0.14.0.jar",
+      "sha256": "9e1f29d4e119422d29b85fdb6c703b4dabd89dfa7c196ba5207e5d8e46dab4aa"
+    },
+    {
+      "artifact": "net/java/truevfs/truevfs-comp-zip/0.14.0/truevfs-comp-zip-0.14.0.jar",
+      "sha256": "92a3d0136a7e2367210e768975e5d92d07d4648e6d411c92ae5e1af66b7372c2"
+    },
+    {
+      "artifact": "net/java/truevfs/truevfs-comp-zipdriver/0.14.0/truevfs-comp-zipdriver-0.14.0.jar",
+      "sha256": "23a63bc4ff1b91c7ff287a18f6bd18fa758998a1ee734d7c4180fab8ec5fb662"
+    },
+    {
+      "artifact": "net/java/truevfs/truevfs-driver-file/0.14.0/truevfs-driver-file-0.14.0.jar",
+      "sha256": "015019c98a676b10e90b5947489a2e05e6c692babcf1330256510d0cee43e08b"
+    },
+    {
+      "artifact": "net/java/truevfs/truevfs-driver-jar/0.14.0/truevfs-driver-jar-0.14.0.jar",
+      "sha256": "eda0e5f89db203fa9999c6e2c0edd7aa9be6a0d00f38ac8e7ae1a6b1b58f05ed"
+    },
+    {
+      "artifact": "net/java/truevfs/truevfs-driver-zip/0.14.0/truevfs-driver-zip-0.14.0.jar",
+      "sha256": "b60bc5e489aa775b18f320132bae86c1eca00ed764aee388870c3485fdd32c28"
+    },
+    {
+      "artifact": "net/java/truevfs/truevfs-kernel-impl/0.14.0/truevfs-kernel-impl-0.14.0.jar",
+      "sha256": "4bcb55bf8d74c0a3245c81f3f85f9bd3895572a53daf114f4e45f4e71e764166"
+    },
+    {
+      "artifact": "net/java/truevfs/truevfs-kernel-spec/0.14.0/truevfs-kernel-spec-0.14.0.jar",
+      "sha256": "890590596fda3796601c517e7b27610d88bb3d6111a153c872c0eba34fc41e28"
+    },
+    {
+      "artifact": "net/java/truevfs/truevfs-profile-base/0.14.0/truevfs-profile-base-0.14.0.jar",
+      "sha256": "269914ff6f07767af2538b3a54380331787ed888703b64a1ffe5622358614f04"
+    },
+    {
+      "artifact": "net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar",
+      "sha256": "3c8616203d61a12a7e3487e8b34f3c198c2b5ba9e90da0c7ea32d99cd4958012"
+    },
+    {
+      "artifact": "org/apache/commons/commons-compress/1.20/commons-compress-1.20.jar",
+      "sha256": "0aeb625c948c697ea7b205156e112363b59ed5e2551212cd4e460bdb72c7c06e"
+    },
+    {
+      "artifact": "org/apache/commons/commons-compress/1.28.0/commons-compress-1.28.0.jar",
+      "sha256": "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca"
+    },
+    {
+      "artifact": "org/apache/commons/commons-lang3/3.18.0/commons-lang3-3.18.0.jar",
+      "sha256": "4eeeae8d20c078abb64b015ec158add383ac581571cddc45c68f0c9ae0230720"
+    },
+    {
+      "artifact": "org/apache/shiro/shiro-cache/1.13.0/shiro-cache-1.13.0.jar",
+      "sha256": "e409e36056060224dc1b0ad42959cd51c61ac3dbbb0558be26c39e387f85c5a3"
+    },
+    {
+      "artifact": "org/apache/shiro/shiro-config-core/1.13.0/shiro-config-core-1.13.0.jar",
+      "sha256": "2f5cd02a5cf72a9d3e20417ad4b56ca692acfd1579f8c9bafe939e71e02888eb"
+    },
+    {
+      "artifact": "org/apache/shiro/shiro-config-ogdl/1.13.0/shiro-config-ogdl-1.13.0.jar",
+      "sha256": "f067d8775ebde81e55f78603c0d5b3a0d1ce493726d4eff325b7a848c7bbf6e3"
+    },
+    {
+      "artifact": "org/apache/shiro/shiro-core/1.13.0/shiro-core-1.13.0.jar",
+      "sha256": "ddb03b68cdc08792ec2a18f0ae6edb298ce94073a87862cb44b5db3fa40643ff"
+    },
+    {
+      "artifact": "org/apache/shiro/shiro-crypto-cipher/1.13.0/shiro-crypto-cipher-1.13.0.jar",
+      "sha256": "aa30868a10055d5fe1e0d8dd8915f174532fabf6d00c810076da94a82deae75f"
+    },
+    {
+      "artifact": "org/apache/shiro/shiro-crypto-core/1.13.0/shiro-crypto-core-1.13.0.jar",
+      "sha256": "f9a103b92c4261258b9ae9cfcd83af43c2500309b0689ec149a45565cf44342d"
+    },
+    {
+      "artifact": "org/apache/shiro/shiro-crypto-hash/1.13.0/shiro-crypto-hash-1.13.0.jar",
+      "sha256": "c06c9f2e37fb8838842853e47035fab0c064c3b144948e60bdcf96e694f286a3"
+    },
+    {
+      "artifact": "org/apache/shiro/shiro-event/1.13.0/shiro-event-1.13.0.jar",
+      "sha256": "a4c6a9304ec16c948eec258fab577c13b446d1e82b6f49c41d40974b7fb191e9"
+    },
+    {
+      "artifact": "org/apache/shiro/shiro-lang/1.13.0/shiro-lang-1.13.0.jar",
+      "sha256": "8c3eb1676191db97311218d5cccead1cee0f0ecdb3467f1ac9e0c4449378c97d"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-anim/1.19/batik-anim-1.19.jar",
+      "sha256": "9b3f6f8c84c0efd88174012a8fbac4427697e5854aef194d57c5f0910c15280a"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-awt-util/1.19/batik-awt-util-1.19.jar",
+      "sha256": "c9ac9ed24e0b20984e7c65ce2fbe4915003c67f9ae96177bc32bef901b557a9a"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-bridge/1.19/batik-bridge-1.19.jar",
+      "sha256": "9ae79c592efbab0804923de85363d524a2cb36ebdc1f27faeec10c1907427e26"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-constants/1.19/batik-constants-1.19.jar",
+      "sha256": "e1d42c4da56dd8b7a3a794285fe3ed05f932d0a2b5ce3face198f02cc501331f"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-css/1.19/batik-css-1.19.jar",
+      "sha256": "c66afd6ac61d630e62e859db03670fa7a4f7241daaee29b531614e6900b9c6a9"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-dom/1.19/batik-dom-1.19.jar",
+      "sha256": "1dabf83687b2ec5a4ccd4a55e3520f7cd8863a4c23ba7f5e54ef3f882819997a"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-ext/1.19/batik-ext-1.19.jar",
+      "sha256": "e6264faa65d00d187eed932dff96e40da80e17fea66a1d92af4776ddb7811256"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-gvt/1.19/batik-gvt-1.19.jar",
+      "sha256": "c8b1ea700d1c26dffe3a08a543efcaadc5fb77d5949e6a9a300c5e35c289c915"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-i18n/1.19/batik-i18n-1.19.jar",
+      "sha256": "eb95e07c29feb276cf91aca9cf5362b43fe17601395aab5d8a6147a6d0859716"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-parser/1.19/batik-parser-1.19.jar",
+      "sha256": "602e331c1c79de4a04525d75266dadbaf969524841155105d31ad54a7731de20"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-script/1.19/batik-script-1.19.jar",
+      "sha256": "1aacf6445f85d1e029c5691d55505ca1ba140414cba2c9620d7f82fc6aee55f3"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-shared-resources/1.19/batik-shared-resources-1.19.jar",
+      "sha256": "e2dad47cfeff5c7d686e97787996accf85a5b19f602acb30b83fce9c247deecd"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-svg-dom/1.19/batik-svg-dom-1.19.jar",
+      "sha256": "f5cc6730ce1b6c552e9ccc0c41b4e4c233cc6260b6c3a10038ad41ea21364c2a"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-svggen/1.19/batik-svggen-1.19.jar",
+      "sha256": "6bf89ede81483da574b25d8645e512e030965e8fbe5605e2938bccaa87ebb6a6"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-transcoder/1.19/batik-transcoder-1.19.jar",
+      "sha256": "12045f8e21d6c7fd2a729f42317207233f8e3446f3a2f6ea1171000864972274"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-util/1.19/batik-util-1.19.jar",
+      "sha256": "3f1389bbdbed3c4659a58a50ce12166fd31e3d066994dd63b5144d9245fd3db6"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/batik-xml/1.19/batik-xml-1.19.jar",
+      "sha256": "9b9364f7dec75c41c4a611596bd4dcbf08b51b753b6726573b542998addec6a5"
+    },
+    {
+      "artifact": "org/apache/xmlgraphics/xmlgraphics-commons/2.11/xmlgraphics-commons-2.11.jar",
+      "sha256": "1a37948ebfedab0cd292cfc5007e65c2fa16a701b94c206152720d3a738561bc"
+    },
+    {
+      "artifact": "org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+      "sha256": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38"
+    },
+    {
+      "artifact": "org/assertj/assertj-core/3.21.0/assertj-core-3.21.0.jar",
+      "sha256": "04bf8242755dac66999ebabce8e6eb89ad3dcd9b64abf0e95e0d2409cf608516"
+    },
+    {
+      "artifact": "org/bouncycastle/bcprov-jdk15on/1.68/bcprov-jdk15on-1.68.jar",
+      "sha256": "f732a46c8de7e2232f2007c682a21d1f4cc8a8a0149b6b7bd6aa1afdc65a0f8d"
+    },
+    {
+      "artifact": "org/glassfish/jaxb/jaxb-core/3.0.2/jaxb-core-3.0.2.jar",
+      "sha256": "f9a360b939597643b2676e35fc497afb561d20e8a513128a5c0070366db11bbd"
+    },
+    {
+      "artifact": "org/glassfish/jaxb/txw2/3.0.2/txw2-3.0.2.jar",
+      "sha256": "b4bcf94fb0a759456e2521724513baec94b78e93127544af162e3cff08d93343"
+    },
+    {
+      "artifact": "org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar",
+      "sha256": "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9"
+    },
+    {
+      "artifact": "org/jboss/jboss-common-core/2.5.0.Final/jboss-common-core-2.5.0.Final.jar",
+      "sha256": "fd3948f9dfeed1c3bc426cf09efcd55998c6dbc8a4ad71b55c9a934d707dea26"
+    },
+    {
+      "artifact": "org/jboss/logging/jboss-logging-spi/2.1.2.GA/jboss-logging-spi-2.1.2.GA.jar",
+      "sha256": "aa6a785a52d9dec8d36b4f84219ca4a7c208dcb018f4472b4711f5b9a6c74028"
+    },
+    {
+      "artifact": "org/jboss/remoting/jboss-remoting/2.5.4.SP5/jboss-remoting-2.5.4.SP5.jar",
+      "sha256": "383c9d01f1f442441fc7d77afea2a0210a45af349a1a2b8ad80f180f7814dc27"
+    },
+    {
+      "artifact": "org/jdesktop/beansbinding/1.2.1/beansbinding-1.2.1.jar",
+      "sha256": "2c7b4e8d3af02d7410e350e20da92e65aa48c69250b855387721705f7dccfd99"
+    },
+    {
+      "artifact": "org/jetlang/jetlang/0.2.23/jetlang-0.2.23.jar",
+      "sha256": "25e9f5902d36429aa9945f802c454eaf1734c231fcbad7bb59c6295226e55cbe"
+    },
+    {
+      "artifact": "org/jsoup/jsoup/1.21.2/jsoup-1.21.2.jar",
+      "sha256": "f05496e255734759f0d4b5632da7b24f81313147c78c69e90ad045d096191344"
+    },
+    {
+      "artifact": "org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
+      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+    },
+    {
+      "artifact": "org/junit/jupiter/junit-jupiter/5.8.1/junit-jupiter-5.8.1.jar",
+      "sha256": "8f1049ee24b34a10b60cd810048099f781c2658cde2181e831496ab30a982985"
+    },
+    {
+      "artifact": "org/junit/jupiter/junit-jupiter-api/5.8.1/junit-jupiter-api-5.8.1.jar",
+      "sha256": "ce3374a7efba605e2d2b69a3fef90134032bab3ecc3ed8579a4871b1c2c4729c"
+    },
+    {
+      "artifact": "org/junit/jupiter/junit-jupiter-engine/5.8.1/junit-jupiter-engine-5.8.1.jar",
+      "sha256": "4689bc902255a19fe98277683ba3231c094d107c54c8d35f2b6f9c97d226418e"
+    },
+    {
+      "artifact": "org/junit/jupiter/junit-jupiter-params/5.8.1/junit-jupiter-params-5.8.1.jar",
+      "sha256": "389b8d13a8d8872fcbd4f0eba7b2c46afc628419f9a1b2a3a9f93241a06a7218"
+    },
+    {
+      "artifact": "org/junit/platform/junit-platform-commons/1.8.1/junit-platform-commons-1.8.1.jar",
+      "sha256": "fa4fa68c8bd54dd0cb49c3fcbe9b2e42f4da6bedbe7e7ccf2a05f1a1e609b593"
+    },
+    {
+      "artifact": "org/junit/platform/junit-platform-engine/1.8.1/junit-platform-engine-1.8.1.jar",
+      "sha256": "702868ed7e86b9b4672ede0f1e185e905baca9afab57746a7c650be3c7bca047"
+    },
+    {
+      "artifact": "org/junit/vintage/junit-vintage-engine/5.8.1/junit-vintage-engine-5.8.1.jar",
+      "sha256": "176b53cd1bdbf9233e96c8b0c7a9e5b864282fbbdeba43b5ceafdedb29a49156"
+    },
+    {
+      "artifact": "org/jvnet/mimepull/mimepull/1.9.3/mimepull-1.9.3.jar",
+      "sha256": "072eb5692f180ed0685705fb31c900eca0986b4523c23eefc0779e87d79eea35"
+    },
+    {
+      "artifact": "org/mage/mage/1.4.61/mage-1.4.61.jar",
+      "sha256": "9fd869639315fd8391444330c749df300b04f1a94768607d5b9f71b7559f4ab8"
+    },
+    {
+      "artifact": "org/mage/mage-common/1.4.61/mage-common-1.4.61.jar",
+      "sha256": "b2da3fe2d2ac4965364bc37c30da8f38669ff7c1cedbc2c0766ea429567c698e"
+    },
+    {
+      "artifact": "org/mage/mage-counter-plugin/0.1/mage-counter-plugin-0.1.jar",
+      "sha256": "f3566dccb9a6fbb9563c3d38e9e29355806e1883fc88893b639116cb6c1029bb"
+    },
+    {
+      "artifact": "org/mage/mage-deck-constructed/1.4.61/mage-deck-constructed-1.4.61.jar",
+      "sha256": "0c4c35661771298c6362caf91fb7eed6402ce74b3c3b572d870f561a3b4c09bb"
+    },
+    {
+      "artifact": "org/mage/mage-deck-limited/1.4.61/mage-deck-limited-1.4.61.jar",
+      "sha256": "27ac33ebfb2f4db428697464653823d7483a988674d0702db49fcb715496cf9a"
+    },
+    {
+      "artifact": "org/mage/mage-game-brawlduel/1.4.61/mage-game-brawlduel-1.4.61.jar",
+      "sha256": "e8aa113a1c265e69a8237b17fa6b4bb03f2d659de48b23607f870aa28d194a91"
+    },
+    {
+      "artifact": "org/mage/mage-game-brawlfreeforall/1.4.61/mage-game-brawlfreeforall-1.4.61.jar",
+      "sha256": "06a9dca5f40b1f81ee1b7c05f8fa91d650a5053651445fab4d820231072a2af0"
+    },
+    {
+      "artifact": "org/mage/mage-game-canadianhighlanderduel/1.4.61/mage-game-canadianhighlanderduel-1.4.61.jar",
+      "sha256": "425e2d387c5afdcf79d1156f64ee2f73cb8ee1f64b9bc74b8b281a003e5b9bd3"
+    },
+    {
+      "artifact": "org/mage/mage-game-commanderduel/1.4.61/mage-game-commanderduel-1.4.61.jar",
+      "sha256": "3f3596adf5642d58d9bf0245ca70f3c51ce33d1d093bd97e7a6ea12295df3fe4"
+    },
+    {
+      "artifact": "org/mage/mage-game-commanderfreeforall/1.4.61/mage-game-commanderfreeforall-1.4.61.jar",
+      "sha256": "b6696f7fd7da74ca9c6652a815e8fa37170f17848a8ba2caa0c718e2a4f4937c"
+    },
+    {
+      "artifact": "org/mage/mage-game-custompillaroftheparunsduel/1.4.61/mage-game-custompillaroftheparunsduel-1.4.61.jar",
+      "sha256": "772539e1c3c6765229aadfab63708d01f0f485327b5d98fa708c789951bf648a"
+    },
+    {
+      "artifact": "org/mage/mage-game-freeforall/1.4.61/mage-game-freeforall-1.4.61.jar",
+      "sha256": "dadb38c004ccff5da632dda0b6d2e7758092a14fdff16fb5d2d0e5a0ba37967b"
+    },
+    {
+      "artifact": "org/mage/mage-game-freeformcommanderduel/1.4.61/mage-game-freeformcommanderduel-1.4.61.jar",
+      "sha256": "8dbebc26c37f30d8c4c966d9cee7aaff4dad768f4fd2264fba589b574f92746c"
+    },
+    {
+      "artifact": "org/mage/mage-game-freeformcommanderfreeforall/1.4.61/mage-game-freeformcommanderfreeforall-1.4.61.jar",
+      "sha256": "c5de6e0099bef5c039c3b27428e86f6e0b71240fe3cbe4e8fc54a30d187f5dfb"
+    },
+    {
+      "artifact": "org/mage/mage-game-freeformunlimitedcommander/1.4.61/mage-game-freeformunlimitedcommander-1.4.61.jar",
+      "sha256": "9e6ab6eef5a7f3be7cc82f0a0ce2f4fb615ec558eba70b0a4fbbc8278130b81f"
+    },
+    {
+      "artifact": "org/mage/mage-game-momirduel/1.4.61/mage-game-momirduel-1.4.61.jar",
+      "sha256": "7ddd0e5ca3efd9b01322aeee61458eec528726c7503c5a1c34a5f25f7706dc31"
+    },
+    {
+      "artifact": "org/mage/mage-game-momirfreeforall/1.4.61/mage-game-momirfreeforall-1.4.61.jar",
+      "sha256": "562ffca1077f074b9fe317c07ebb0a94e9c9eeee37b1db47c325e2c9f2fb931b"
+    },
+    {
+      "artifact": "org/mage/mage-game-oathbreakerduel/1.4.61/mage-game-oathbreakerduel-1.4.61.jar",
+      "sha256": "48214ba57678f83759f868d7bdf0f68fc1e95bc65d6c989daa5619e86e0ec82b"
+    },
+    {
+      "artifact": "org/mage/mage-game-oathbreakerfreeforall/1.4.61/mage-game-oathbreakerfreeforall-1.4.61.jar",
+      "sha256": "1e431a837c83ab139e7ce82b99b9de8edecc34bb4656044217f01878aeb0e3f2"
+    },
+    {
+      "artifact": "org/mage/mage-game-pennydreadfulcommanderfreeforall/1.4.61/mage-game-pennydreadfulcommanderfreeforall-1.4.61.jar",
+      "sha256": "4e683480f313b8ce8b3d077481b03ffb4ecdf12af7686fe85df5a1159cf240ac"
+    },
+    {
+      "artifact": "org/mage/mage-game-tinyleadersduel/1.4.61/mage-game-tinyleadersduel-1.4.61.jar",
+      "sha256": "a052eb00dbd6768e16e6fd744b1120172a0299b321453c9313a2780b23d97019"
+    },
+    {
+      "artifact": "org/mage/mage-game-twoplayerduel/1.4.61/mage-game-twoplayerduel-1.4.61.jar",
+      "sha256": "9c14e76574514695f4c045e485ca1f1087a6f9ed3da9e364ae4035a662932f3e"
+    },
+    {
+      "artifact": "org/mage/mage-player-ai/1.4.61/mage-player-ai-1.4.61.jar",
+      "sha256": "3f4604cdbdbfa40b5e4c22f5c805195f706ead91e45f097b1b4a4d1c46bb57fc"
+    },
+    {
+      "artifact": "org/mage/mage-player-ai-draftbot/1.4.61/mage-player-ai-draftbot-1.4.61.jar",
+      "sha256": "a237db921489518c2774e67c07fc66a6fcf4c7f902d97371de63775b1cadd174"
+    },
+    {
+      "artifact": "org/mage/mage-player-ai-mad/1.4.61/mage-player-ai-mad-1.4.61.jar",
+      "sha256": "cf86ad777d6be7e22ef0b46700354ad944396e78512e95d1a72620bc65f7daf8"
+    },
+    {
+      "artifact": "org/mage/mage-player-ai-mcts/1.4.61/mage-player-ai-mcts-1.4.61.jar",
+      "sha256": "255857ad033910269a0a17c7bb7503f674cdbba6a53c6fa9e207f6d255974c91"
+    },
+    {
+      "artifact": "org/mage/mage-player-human/1.4.61/mage-player-human-1.4.61.jar",
+      "sha256": "669e74659e63ef93296bdc3567e5870d046485e3b0efd9481258d12362325255"
+    },
+    {
+      "artifact": "org/mage/mage-sets/1.4.61/mage-sets-1.4.61.jar",
+      "sha256": "2692e83f110985b00ea87ae259a78c1d3b264ee923e7cdc25ecfb94db13943ff"
+    },
+    {
+      "artifact": "org/mage/mage-tournament-boosterdraft/1.4.61/mage-tournament-boosterdraft-1.4.61.jar",
+      "sha256": "475b5ec8b65b8466b5e15635e0e2d6973bfdb9844f69067e73916bfc89e30d0d"
+    },
+    {
+      "artifact": "org/mage/mage-tournament-constructed/1.4.61/mage-tournament-constructed-1.4.61.jar",
+      "sha256": "3c9520667f2c5b691f5e9c78077611694285eb87cb15ef4124f0b98dea1a39c0"
+    },
+    {
+      "artifact": "org/mage/mage-tournament-sealed/1.4.61/mage-tournament-sealed-1.4.61.jar",
+      "sha256": "6309ff859dbe8908f13b42b7b289032f90b4bc78264c974a0845bbde574a5d9c"
+    },
+    {
+      "artifact": "org/ocpsoft/prettytime/prettytime/4.0.6.Final/prettytime-4.0.6.Final.jar",
+      "sha256": "c4a6ad3d38577f631cea7cef212e42691ed81d59cf25e5c3e93e00ef4506c000"
+    },
+    {
+      "artifact": "org/openjfx/javafx-base/17.0.20/javafx-base-17.0.20-linux.jar",
+      "sha256": "e076cfeb5538da450d9621a0320c5f7ae94bbfbe221f66cd264c63d162a33e1b"
+    },
+    {
+      "artifact": "org/openjfx/javafx-base/17.0.20/javafx-base-17.0.20.jar",
+      "sha256": "bf4a88baa7cb2ae0ab0f27cc937ec7640832909d276b50cb5df291216aa9b918"
+    },
+    {
+      "artifact": "org/openjfx/javafx-controls/17.0.20/javafx-controls-17.0.20-linux.jar",
+      "sha256": "e754189ee6ce2dc1034951d984e8ae2c9a7c3f679387d17f642faf304aab5276"
+    },
+    {
+      "artifact": "org/openjfx/javafx-controls/17.0.20/javafx-controls-17.0.20.jar",
+      "sha256": "100d3ff2ec9e05b89419f7623cad7dcf7c03aa512461db667dad497071dc69f4"
+    },
+    {
+      "artifact": "org/openjfx/javafx-graphics/17.0.20/javafx-graphics-17.0.20-linux.jar",
+      "sha256": "8f0005603703f383f9e4091913d7a5d7e4a32a9d4fcc229699ffb3b2df82af03"
+    },
+    {
+      "artifact": "org/openjfx/javafx-graphics/17.0.20/javafx-graphics-17.0.20.jar",
+      "sha256": "4e4d1922fc4f64bbcca5c13718c4dbca30a3135fd7f9eb931cdc8c05858b302e"
+    },
+    {
+      "artifact": "org/openjfx/javafx-media/17.0.20/javafx-media-17.0.20-linux.jar",
+      "sha256": "eeb308b0de4db62d705ef90168625506282d8cfed4a62603d2bfc2f170ac3c69"
+    },
+    {
+      "artifact": "org/openjfx/javafx-media/17.0.20/javafx-media-17.0.20.jar",
+      "sha256": "8dc10a825e42ff4879a020dec854146550b5e2b8cbc23ea83561b20256c20932"
+    },
+    {
+      "artifact": "org/openjfx/javafx-swing/17.0.20/javafx-swing-17.0.20-linux.jar",
+      "sha256": "1a7d80cd2c3dacccb3b30aed5c3ea840c08b057382fee05bca927d3f9cf20486"
+    },
+    {
+      "artifact": "org/openjfx/javafx-swing/17.0.20/javafx-swing-17.0.20.jar",
+      "sha256": "ec4620b5610ba0d79ef6515dd526511a87fa1c97e360cbdd172ddbf7b81ca012"
+    },
+    {
+      "artifact": "org/openjfx/javafx-web/17.0.20/javafx-web-17.0.20-linux.jar",
+      "sha256": "dc6cb4a5260e2083552dc86419243206f6beaf2a844a5727d2f9804aa3977671"
+    },
+    {
+      "artifact": "org/openjfx/javafx-web/17.0.20/javafx-web-17.0.20.jar",
+      "sha256": "507704f49733d00224270bcacde3caf31289a27f49842b87f6e356a6837f1896"
+    },
+    {
+      "artifact": "org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar",
+      "sha256": "58812de60898d976fb81ef3b62da05c6604c18fd4a249f5044282479fc286af2"
+    },
+    {
+      "artifact": "org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar",
+      "sha256": "7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832"
+    },
+    {
+      "artifact": "org/slf4j/slf4j-reload4j/2.0.17/slf4j-reload4j-2.0.17.jar",
+      "sha256": "62dfd069563dbce91d276c9a38d557da49df7be15b03bb898b63b5390c6bb889"
+    },
+    {
+      "artifact": "org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar",
+      "sha256": "7b526ac5fabec1e9d1ec6c764e68188bdf4c7bd96c23d91d3450592fc4a6ba85"
+    },
+    {
+      "artifact": "org/swinglabs/swing-worker/1.1/swing-worker-1.1.jar",
+      "sha256": "8367bc401d38d96ec987ef72502a310599552210dd60cb9e494b58a7c23be1ca"
+    },
+    {
+      "artifact": "org/swinglabs/swingx/1.6.1/swingx-1.6.1.jar",
+      "sha256": "ad9e3577517e8b4d08ca58f637338ebed79ef8bd955b734600d95c8ad182840f"
+    },
+    {
+      "artifact": "org/unbescape/unbescape/1.1.6.RELEASE/unbescape-1.1.6.RELEASE.jar",
+      "sha256": "597cf87d5b1a4f385b9d1cec974b7b483abb3ee85fc5b3f8b62af8e4bec95c2c"
+    },
+    {
+      "artifact": "org/xerial/sqlite-jdbc/3.53.2.0/sqlite-jdbc-3.53.2.0.jar",
+      "sha256": "dc320e4102884c135ccc30c3c6fc3fb190b750e1586a100e3aba3be783cf33a9"
+    },
+    {
+      "artifact": "trove/trove/1.0.2/trove-1.0.2.jar",
+      "sha256": "ad68a86cfd0255a2bc0525ce11ec49640caea7e34ff91eb89c3193dcccd77f05"
+    },
+    {
+      "artifact": "xml-apis/xml-apis/1.4.01/xml-apis-1.4.01.jar",
+      "sha256": "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad"
+    },
+    {
+      "artifact": "xml-apis/xml-apis-ext/1.3.04/xml-apis-ext-1.3.04.jar",
+      "sha256": "d0b4887dc34d57de49074a58affad439a013d0baffa1a8034f8ef2a5ea191646"
+    },
+    {
+      "artifact": ".cache/upstream/mage/Mage.Client/target/mage-client-1.4.61.jar",
+      "sha256": "a9145dffb1a2d54b2dda0ea56611950a589d0af71124894fb0634f894da91d3b"
+    },
+    {
+      "artifact": ".cache/upstream/mage/Mage.Server/target/mage-server-1.4.61.jar",
+      "sha256": "b90c29b6f894df027738424bec9303d9a794a260e6821797caabc4afba76db64"
+    },
+    {
+      "artifact": ".cache/upstream/mtgcard/fabric/build/libs/MtgCard-fabric-1.7.0-26.3.jar",
+      "sha256": "c4185125cb8c4290a2d1a969827dfdd6077dd1c3cafab57642ab95a548a507c0"
+    }
+  ]
+}
