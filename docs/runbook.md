@@ -2,13 +2,16 @@
 
 This milestone is an experimental server addon and a separate managed XMage
 service. Admission defaults off. Automated custody, native protocol and lifecycle
-checks pass; task 6.1 still requires interactive Minecraft/stock Swing acceptance.
+checks pass; task 6.1 passed a user-confirmed interactive Minecraft/stock Swing run
+on 2026-10-01. The small catalog and external-client workflow remain experimental.
 See [diagnostics.md](diagnostics.md) for measured results and limits.
 
 ## Build and check
 
 Use the pinned environment: OpenJDK 26.0.2.1, Maven 3.9.9 and Gradle 9.5.0.
 Minecraft/project classes target Java 25; XMage's upstream target is Java 8.
+Run the stock Swing desktop client with Java 21: its JavaFX news window crashed
+under Java 26 during interactive acceptance, while the same client ran with Java 21.
 The scripts use cached source builds under `.cache/` and the existing Maven/Gradle
 repositories. From the repository root:
 
@@ -75,12 +78,13 @@ Non-loopback control URLs require HTTPS and normal certificate/hostname checks.
 The provided executable bootstrap and native deployment are loopback configurations;
 remote native exposure and certificate provisioning are not part of this spike.
 
-## Interactive acceptance still required — task 6.1
+## Interactive acceptance procedure — task 6.1
 
-The completed headless tests use the stock native session library in external JVMs.
-They do not establish a real player's interaction with the Minecraft and Swing UIs.
+The headless tests use the stock native session library in external JVMs. A separate
+real-player run on 2026-10-01 completed the procedure below; see
+[diagnostics.md](diagnostics.md) for the user confirmation and durable-record audit.
 Use a disposable world with the configuration above and enable admission there
-when conducting this acceptance run. Record a sanitized observation; keep credentials
+when repeating this acceptance run. Record a sanitized observation; keep credentials
 and private deck contents out of public logs.
 
 1. Prepare at least forty main-deck cards using supported printings from
@@ -88,6 +92,14 @@ and private deck contents out of public logs.
    a general catalog. Its M10/230 Plains row asserts no Scryfall/Oracle UUID and
    supports the null-ID fixture specifically. Printing identity mismatches fail
    closed; do not relabel unsupported cards to bypass them.
+   For the confirmed interactive fixture, enter Creative mode, obtain
+   `mtgcard:card_store` and `mtgcard:deckbox` with `/give @s`, place them adjacent,
+   and use the Card Store to buy forty Lightning Bolts from M10, collector 146.
+   Search `Lightning Bolt set:m10` and confirm the exact printing before purchase.
+   Creative printing is free and routes into adjacent boxes; wait for all forty
+   cards, check the main grid and empty side slots, then switch to Survival before
+   breaking and collecting the box. This freeform fixture has no mana sources;
+   finish by native concession rather than treating it as a playable deck benchmark.
 2. Load the physical MTGCard deckbox, remove it from the world and hold its one
    UUID-backed item. The approved scoped loot hook preserves the backing UUID
    and tint on the existing ordinary drop. Loaded placed aliases, embedded/legacy
@@ -97,11 +109,31 @@ and private deck contents out of public logs.
    snapshot, rechecks the physical fingerprint, acknowledges escrow in the
    journal/player data, then creates the remote match. Keep the returned match UUID.
 4. Use `/mtgcraft access <match UUID>` for private host/port/username/password.
-   Start the pinned stock Swing client on a separate JVM, log in with those
+   Start the pinned stock Swing client on a separate Java 21 JVM, log in with those
    credentials and attach to its precreated human seat. Its main class is
    `mage.client.MageFrame`; use the built client jar plus
    `.cache/xmage-client-classpath.txt`, with a working directory outside the repo's
    tracked files. Confirm the exact submitted deck and unchanged settings in the UI.
+   To launch from the repository root using the Minecraft launcher's bundled Java
+   21 on this Arch host (adjust the runtime path on other machines):
+
+   ```bash
+   project_dir=$PWD
+   client_java="$HOME/.minecraft/runtime/java-runtime-delta/linux/java-runtime-delta/bin/java"
+   mkdir -p .cache/local-acceptance/client/plugins .cache/local-acceptance/client/config
+   cp .cache/upstream/mage/Mage.Client/plugins/mage-counter-plugin.jar .cache/local-acceptance/client/plugins/
+   cp .cache/upstream/mage/Mage.Client/release/config/log4j.properties .cache/local-acceptance/client/config/
+   cd .cache/local-acceptance/client
+   "$client_java" -Xmx1g --add-opens=java.base/java.io=ALL-UNNAMED \
+     -Dlog4j.configuration=file:config/log4j.properties \
+     -cp "$project_dir/.cache/upstream/mage/Mage.Client/target/mage-client-1.4.61.jar:$(cat "$project_dir/.cache/xmage-client-classpath.txt")" \
+     mage.client.MageFrame
+   ```
+
+   Close the news window if shown. Connect to `127.0.0.1:17171` with the private
+   seat credentials; the precreated seat's waiting table should open automatically.
+   The first desktop launch builds its local card database. The Java 21 fallback
+   applies to this upstream client only; the service and addon still use Java 26.
 5. Use `/mtgcraft start <match UUID>` after native authentication. Play against
    the pinned MAD AI (sixty Plains). A legal native concession can end this
    best-of-one fixture; its purpose is integration, not an AI-quality assessment.
@@ -182,4 +214,5 @@ Versions, catalog identity, hashes and license declarations are documented in
 [dependency-notices.md](dependency-notices.md), [dependency-notices.tsv](dependency-notices.tsv),
 [protocol.md](protocol.md), [boundaries.md](boundaries.md) and [diagnostics.md](diagnostics.md). MTGCard's contradictory
 license files and unresolved dependency declarations are recorded rather than
-silently resolved. Keep the change experimental until interactive acceptance passes.
+silently resolved. Interactive acceptance passed for the documented local fixture;
+this remains an experimental integration, with the limits in the diagnostic report.

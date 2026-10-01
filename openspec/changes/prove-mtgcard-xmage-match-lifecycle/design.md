@@ -165,3 +165,21 @@ Production admission remains disabled until return/crash tests and the full life
 are demonstrated. The fixture transfers the actual server-created item entity into
 a server-side player hand; networked player input and external-client acceptance
 remain section 6. The disposable probe mod is excluded from the production addon jar.
+
+### Completed interactive lifecycle acceptance (2026-10-01)
+
+The earlier probe limitations above describe the evidence at those stages. All
+implementation gates and task 6.1 now have evidence: the user completed the runbook
+with a real Minecraft client, forty Card Store-printed M10/146 Lightning Bolts, and
+the pinned external Swing client, confirming the deck, concession, status, original
+return and repeated claims. Read-only journal checks confirm matching immutable
+requests and COMPLETED results in both applications, HUMAN LOSS / AI WIN, RETURNED
+custody, no conflict and cleared terminal access. See `docs/diagnostics.md` for the
+observation limits and Java 21 desktop-client workaround; the addon/service retain
+Java 26. Admission remains an explicit opt-in and defaults off in shipped config.
+
+This establishes the scoped integration milestone. The small catalog, manual
+UUID/native-login workflow and external client remain in place. Automatic seat
+connection, card-image presentation and a Minecraft gameplay frontend require
+future changes; the separate-engine and recipient-scoped view/decision boundaries
+remain the intended extension path. Swing embedding is still outside this change.

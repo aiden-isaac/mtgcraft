@@ -91,13 +91,44 @@ or native clients remained running after these checks.
 - Unsupported Cheatyface produced a named validation error without physical
   transfer, a match or a lingering reservation.
 
-Interactive acceptance remains pending: the external clients above use stock
-session/transport classes in separate JVMs, without Swing windows. Minecraft
-players are server-side fixture entities, with disconnect represented by removing
-the online player. A real person using Minecraft and the stock Swing game UI is
-still needed for task 6.1. Long active-game disconnect/reattach timing and session
-expiry were not measured; the three-minute native expiry is source evidence only.
+The automated runs above use stock session/transport classes without Swing windows
+and server-side Minecraft fixture players. They are distinct from the interactive
+acceptance below. Long active-game disconnect/reattach timing and session expiry
+were not measured; the three-minute native expiry is source evidence only.
+
+## Interactive acceptance — task 6.1
+
+On 2026-10-01 the user followed the local runbook with a real authenticated Minecraft
+client and the pinned stock Swing client, then reported that all steps worked.
+The physical fixture contained forty Card Store-printed M10/146 Lightning Bolts in
+a UUID-backed deckbox. The procedure covered held submission, private native login,
+service-authorized start, native concession, terminal status, original-box return,
+and repeated status/claim checks. The user confirmed the UI and return checks;
+these were not inferred from headless test output.
+
+A subsequent read-only audit of the private service and Minecraft custody journals
+confirmed identical immutable requests and terminal statuses, COMPLETED with HUMAN
+LOSS / AI WIN, acknowledged RETURNED custody, no conflict, and a cleared terminal
+password. The original backing UUID remained associated with forty card slots and
+the snapshot contained forty M10/146 cards. The user confirmed the physical return
+and duplicate-claim behavior; the audit did not record a video or independently
+capture every interaction. No credentials, player identifiers or private runtime
+files are included in this report.
+
+The stock desktop client's JavaFX news page crashed under OpenJDK 26.0.2.1 with a
+native SIGSEGV in `WebPage.twkGetDocument`. Relaunching the same pinned client under
+the Minecraft launcher's bundled Microsoft OpenJDK 21.0.7 completed startup and
+the manual match. Minecraft and the service retained Java 26. The client logged
+missing card symbols and sound assets; card-image presentation remains unfinished.
+A transient Minecraft authentication timeout occurred before native login and
+resolved on retry without changing player identity or disabling authentication.
+
+Manual UUID entry and native seat credentials remain part of this prototype.
+Automatic connection and a Minecraft gameplay interface are future changes, not
+features established by this acceptance. The forty-Bolt fixture and sixty-Plains
+AI prove the integration/concession path, not deck balance or AI gameplay quality.
 
 Raw logs, heap output, statuses and credentials are kept in ignored private
-`.cache/lifecycle-*` fixture directories. The checked-in report includes aggregate
+`.cache/lifecycle-*` fixture directories and `.cache/local-acceptance/` for the
+interactive run. The checked-in report includes aggregate
 measurements and public fixture names only; do not publish those private directories.
