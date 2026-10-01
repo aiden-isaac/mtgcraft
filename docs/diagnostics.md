@@ -85,6 +85,9 @@ or native clients remained running after these checks.
 - Six seconds of service unreachability while Minecraft survived did not release
   custody. Authenticated restart history interrupted the remaining old-incarnation
   match once, with NONE outcomes; no winner or prize was inferred.
+- Reusing a returned box in a new match preserves both histories. A late conflict
+  flags the old delivered record without undoing delivery or removing the current
+  backing guard; duplicate old claims and journal reloads do not duplicate the box.
 - Unsupported Cheatyface produced a named validation error without physical
   transfer, a match or a lingering reservation.
 

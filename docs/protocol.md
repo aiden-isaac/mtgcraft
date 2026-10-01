@@ -88,7 +88,9 @@ a durable local start authorization; CANCELLED requires a pending cancellation.
 Revision increases monotonically. Exact terminal replay is idempotent; lower-revision
 nonterminal responses are ignored. Conflicting terminal IDs/bindings/revisions or
 incarnations quarantine without replacing the accepted result. Result IDs are unique
-across local matches. First terminal/result acceptance and RETURN_PENDING commit in
+across local matches. A late conflict after acknowledged delivery is recorded
+without reversing the RETURNED tombstone or touching a later match using that
+physical backing. First terminal/result acceptance and RETURN_PENDING commit in
 one atomic world-journal write; item delivery has its own acknowledged tombstone.
 
 The service's exclusive persistent-state lock establishes restart fencing. It retains

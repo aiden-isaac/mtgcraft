@@ -153,10 +153,8 @@ public final class CustodyProbe implements ModInitializer {
                 assert restored.getStorageId().equals(backing) && restored.getItem(0).getCount() == 40;
                 var wrongWorld = new Status(1, UUID.randomUUID(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.PREPARED, 1, null);
                 reject(() -> afterReturn.persistStatus(request.matchId(), wrongWorld));
-                assert afterReturn.requireOwner(player.getUUID(), request.matchId()).phase() == Custody.Phase.QUARANTINED;
+                assert afterReturn.requireOwner(player.getUUID(), request.matchId()).phase() == Custody.Phase.RETURNED && afterReturn.requireOwner(player.getUUID(), request.matchId()).conflicted();
                 assert afterReturn.requireOwner(player.getUUID(), request.matchId()).observed().equals(terminal);
-                // This fixture now owns the returned physical record; restore its acknowledged tombstone before the independent delivery-crash case.
-                var restoredJournal = Custody.read(journalDirectory.resolve("escrow-" + request.matchId() + ".dat")); restoredJournal.putString("Phase", "RETURNED"); Custody.write(journalDirectory.resolve("escrow-" + request.matchId() + ".dat"), restoredJournal);
                 // Inject a crash at the persisted delivery intent, independently of whether an item reached player data.
                 var uncertain = MatchRequest.create(request.worldId(), UUID.randomUUID(), request.seats(), request.snapshot(), request.aiProfile());
                 var root = Custody.read(server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("mtgcraft/escrow-" + request.matchId() + ".dat"));
@@ -170,6 +168,7 @@ public final class CustodyProbe implements ModInitializer {
                 System.out.println("PASS return claims: offline/full pending, owner binding, one original item, durable tombstone, re-placement, fresh alias cache and crash quarantine");
                 System.out.println("PASS world journal: immutable request/result bindings, monotonic observations, terminal replay/reload and independent return phase");
                 checkBindings(server, card);
+                checkReuse(server, card);
                 CommandProbe.run(server, card);
             } catch (Throwable failure) { failure.printStackTrace(); server.halt(false); }
         });
@@ -194,6 +193,34 @@ public final class CustodyProbe implements ModInitializer {
             reject(() -> custody.claim(owner, request.matchId()));
         }
         System.out.println("PASS result boundary conflicts: wrong world/snapshot/seat/incarnation and unauthorized start quarantine while preserving custody and first observation");
+    }
+    private static void checkReuse(net.minecraft.server.MinecraftServer server, ItemStack card) throws Exception {
+        var custody = Custody.current(); custody.proveAdmissionForProbe(); var owner = new ServerPlayer(server, server.overworld(), new GameProfile(UUID.randomUUID(), "ReuseOwner"), ClientInformation.createDefault());
+        var backing = UUID.randomUUID(); var items = net.minecraft.core.NonNullList.withSize(102, ItemStack.EMPTY); items.set(0, card.copy());
+        DeckboxStorage.save(server, owner.registryAccess(), backing, "mtgcard:oak_deckbox", "fixture", items);
+        var box = new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse("mtgcard:oak_deckbox"))); var data = new CompoundTag(); data.putString(DeckboxStorage.ITEM_ID_KEY, backing.toString()); box.set(DataComponents.CUSTOM_DATA, CustomData.of(data)); owner.setItemInHand(InteractionHand.MAIN_HAND, box);
+        Compatibility compatibility; try (var input = Matches.class.getResourceAsStream("/mtgcraft-compatibility.json")) { compatibility = mtgcraft.protocol.Json.read(input.readAllBytes(), Compatibility.class); }
+        var incarnation = UUID.randomUUID(); MatchRequest prior = null; Status priorStatus = null;
+        for (int cycle = 0; cycle < 2; cycle++) {
+            var source = MtgcardAdapter.readHeld(owner);
+            var request = MatchRequest.create(custody.worldId(), UUID.randomUUID(), List.of(new Seat(UUID.randomUUID(), Role.HUMAN, owner.getUUID()), new Seat(UUID.randomUUID(), Role.AI, null)), DeckSnapshot.create(compatibility, source.entries()), "mad-plains-v1"); custody.reserve(owner, source, request);
+            if (prior != null) {
+                var invalid = new Status(1, UUID.randomUUID(), prior.matchId(), prior.requestDigest(), prior.snapshot().digest(), incarnation, prior.seats(), State.PREPARED, 1, null);
+                var oldMatch = prior.matchId(); reject(() -> Custody.current().persistStatus(oldMatch, invalid));
+                assert custody.require(oldMatch).conflicted() && custody.require(oldMatch).phase() == Custody.Phase.RETURNED && custody.require(oldMatch).observed().equals(priorStatus);
+                assert Custody.locked(server, backing) && custody.require(request.matchId()).phase() == Custody.Phase.RESERVED;
+                var recovered = new Custody(server); Custody.install(recovered); custody = recovered; custody.proveAdmissionForProbe();
+                assert custody.claim(owner, oldMatch) == Custody.Phase.RETURNED && owner.getInventory().countItem(box.getItem()) == 0 && Custody.locked(server, backing);
+            }
+            custody.intend(owner.getUUID(), request.matchId(), Custody.Pending.CANCEL);
+            var result = new Result(UUID.randomUUID(), request.worldId(), request.matchId(), request.snapshot().digest(), incarnation, State.CANCELLED, 1, request.seats().stream().map(seat -> new SeatOutcome(seat, Outcome.NONE)).toList());
+            var status = new Status(1, request.worldId(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.CANCELLED, 1, result);
+            custody.persistStatus(request.matchId(), status); assert custody.claim(owner, request.matchId()) == Custody.Phase.RETURNED;
+            assert owner.getInventory().countItem(box.getItem()) == 1 && !Custody.locked(server, backing);
+            prior = request; priorStatus = status;
+        }
+        Custody.install(new Custody(server));
+        System.out.println("PASS original-box reuse: late conflict is recorded without undoing delivery, duplicate old claim cannot unlock the current reservation, both returns reload without duplicate backing or item");
     }
     private static void reject(Checked action) throws Exception {
         try { action.run(); } catch (IllegalArgumentException expected) { return; }

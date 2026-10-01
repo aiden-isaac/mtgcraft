@@ -125,7 +125,10 @@ before remote creation; create/start/cancel retry the same IDs and digest.
 Authenticated terminal acceptance atomically records the first result and return
 intent. Exact repeats have no domain effect. Lower-revision nonterminal messages
 are ignored; conflicting bindings, incarnations or terminal records quarantine
-custody without overwriting the first accepted result.
+custody without overwriting the first accepted result. If physical delivery was
+already acknowledged, a late conflict is flagged on that old record while its
+RETURNED tombstone stays intact. It cannot relock or unlock the same box in a
+later reservation. Duplicate old claims never issue another item.
 
 A Minecraft player disconnect does not discard the association or release escrow.
 Completion while offline leaves `RETURN_PENDING`; a full inventory also stays
