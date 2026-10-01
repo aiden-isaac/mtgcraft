@@ -16,6 +16,7 @@ repositories. From the repository root:
 bash spikes/build-stack.sh
 bash scripts/check.sh managed
 bash scripts/check-addon.sh
+bash scripts/check-boundaries.sh
 bash scripts/check-custody.sh
 bash scripts/check-custody-crashes.sh
 python3 tests/lifecycle.py
@@ -176,6 +177,6 @@ completion share one service lock; the first committed terminal result wins.
 
 Versions, catalog identity, hashes and license declarations are documented in
 [dependency-notices.md](dependency-notices.md), [dependency-notices.tsv](dependency-notices.tsv),
-[protocol.md](protocol.md) and [diagnostics.md](diagnostics.md). MTGCard's contradictory
+[protocol.md](protocol.md), [boundaries.md](boundaries.md) and [diagnostics.md](diagnostics.md). MTGCard's contradictory
 license files and unresolved dependency declarations are recorded rather than
 silently resolved. Keep the change experimental until interactive acceptance passes.
