@@ -1,156 +1,181 @@
-# Local service runbook
+# Local MTGCard/XMage runbook
 
-Build the pinned upstream stack with `bash spikes/build-stack.sh`, then run project
-checks with `bash scripts/check.sh`. Project shared/service jars are separate under
-`.cache/project/`; only the service build receives the XMage classpath.
+This milestone is an experimental server addon and a separate managed XMage
+service. Admission defaults off. Automated custody, native protocol and lifecycle
+checks pass; task 6.1 still requires interactive Minecraft/stock Swing acceptance.
+See [diagnostics.md](diagnostics.md) for measured results and limits.
 
-Copy `service/config.properties.example` to a private local file. Use a persistent
-world UUID and a random token file with mode 0600. Paths in properties resolve
-relative to that file. Default control/native bindings are loopback; native
-authentication is required and test mode is disabled. Match capacity defaults to
-two (allowed range 1–16).
+## Build and check
 
-Start with `bash scripts/run-service.sh <absolute-properties-path> [state-directory]`.
-The default state is `.cache/match-service`. Retain this directory across restarts.
-The process owns an exclusive file lock and atomically persists a new incarnation
-UUID, with file and parent-directory fsync, before serving requests. Never copy the
-live state or run a second service with the same credential in another directory.
-The lock stays held until process exit, after engine workers stop.
+Use the pinned environment: OpenJDK 26.0.2.1, Maven 3.9.9 and Gradle 9.5.0.
+Minecraft/project classes target Java 25; XMage's upstream target is Java 8.
+The scripts use cached source builds under `.cache/` and the existing Maven/Gradle
+repositories. From the repository root:
 
-HTTP health authenticates the world/token and reports pinned compatibility,
-incarnation, service readiness and configured capacity. Preparation/status/start,
-owner-scoped seat access and cancellation are implemented. Service readiness is
-independent of Minecraft custody verification. Keep physical admission off until
-the custody experiment passes.
+```bash
+bash spikes/build-stack.sh
+bash scripts/check.sh managed
+bash scripts/check-addon.sh
+bash scripts/check-custody.sh
+bash scripts/check-custody-crashes.sh
+python3 tests/lifecycle.py
+python3 scripts/dependency-notices.py
+```
 
-`python3 tests/service-smoke.py` starts and terminates two real pinned XMage JVMs,
-checks authenticated HTTP health/native listening and persisted incarnation changes.
-It uses disposable state and private randomly generated credentials, with no card
-custody. Stop other local native servers on ports 17171/17179 first.
+The custody scripts reuse only the already-approved disposable local Minecraft
+EULA. They bind loopback, choose an ephemeral Minecraft port and use fixture
+players in offline mode. Do not copy that offline configuration to a public server.
+Each crash case abruptly halts a JVM, then recovers in another; a nonzero injected
+process exit is expected. The runner must also find its matching PASS evidence.
 
-The deployment still uses the dependency/license inventory and measured limitations
-in `spikes/README.md`, `spikes/artifacts.lock.json` and the Fabric dependency manifest.
-Full lifecycle acceptance and resource measurements remain pending.
+Build outputs are `.cache/project/mtgcraft-shared.jar`,
+`.cache/project/mtgcraft-service.jar` and
+`addon/build/libs/mtgcraft-addon-0.1.0.jar`. The addon bundles project protocol
+records, not the engine. Probe classes and their admission bypass stay out of the
+production addon. Rebuilt upstream jars can contain new timestamps: the manifests
+record observed artifact hashes, not a bit-for-bit reproducible-build guarantee.
 
-`bash scripts/check.sh engine` additionally exercises real XMage deck construction,
-Freeform validation and exact installed quantities/face relationships. The manifest
-is deliberately limited to the probed printings plus M10/230 Plains; other cards
-fail closed. It supports normal, split and transform layouts. These are integration
-fixtures, not an AI deck-quality or complete catalog claim.
+## Configure local applications
 
-`bash scripts/check.sh managed` additionally exercises durable human/AI preparation,
-identical/conflicting retries, capacity, seat readiness and crash-intent fencing.
-The sole pinned AI profile is `mad-plains-v1` (60 M10/230 Plains). This isolates
-orchestration from AI quality. Creation commits intent and table association before
-seat installation; an ambiguous retry fences the marker and returns a stable failed
-tombstone. Restart acquires the exclusive process lock and records nonterminal old
-matches as interrupted, with no winner. A world stamp prevents state-directory reuse
-by another world. Health stays unavailable for physical admission until native policy
-and authoritative terminal persistence are verified; Minecraft admission still needs
-its separate custody gate.
+1. Run a Fabric 26.3 server with Loader 0.19.5, Fabric API 0.160.5+26.3,
+   MTGCard 1.7.0-26.3 and the addon jar. Install the same pinned MTGCard stack in
+   the Minecraft client. For a development server, the pinned wrapper can run
+   `bash .cache/upstream/mtgcard/gradlew -p addon runServer --no-daemon` from this
+   repository; its default world/config live in `addon/run/`.
+2. Start Minecraft without a service config first. Join locally and use
+   `/mtgcraft world` to obtain its durable world UUID. Stop the server for setup.
+   Retain the world's `mtgcraft/` directory and player/backing files together.
+3. Generate a random token into a private file; for example, use Python's
+   `secrets.token_urlsafe(32)` and mode 0600. Never put the token in chat, a
+   screenshot or a command-line argument. Both applications use the same file.
+4. Copy `service/config.properties.example` to an ignored private local file.
+   Set `worldId`, `tokenFile`, `mappingFile` and `nativeConfig`; paths resolve
+   relative to that properties file. Use the checked-in mapping and
+   `spikes/xmage/config.xml`. Control binds `127.0.0.1:17180`; native ports are
+   17171 and 17179. The native service requires authentication, test mode off,
+   and a dedicated managed-only deployment. Stop other servers on those ports.
+5. Copy `addon/config.properties.example` to Minecraft
+   `config/mtgcraft.properties`. Set `endpoint` and `tokenFile`; keep
+   `admissionEnabled=false` until interactive acceptance is established.
+6. Start the service with
+   `bash scripts/run-service.sh <absolute-properties-path> <persistent-state-directory>`.
+   The heap cap is 2 GiB. Retain that state directory across restarts. Start
+   Minecraft again. The addon pins compatibility from the manifest at build time;
+   service health and deck validation must match it exactly before admission.
 
-The native deployment is dedicated to managed matches: registration/reset/admin
-login, client table/tournament creation/join/leave, deck submit/save, native start,
-seat swaps/removal and cheats are rejected before engine mutation. Authenticated
-managed accounts reconnect to their existing seat; they cannot create an alternative
-table. Gameplay dispatch checks the bound human and current game; rollback is off.
-The native session test uses a separate stock session-library JVM and verifies the
-original human UUID and 60 Plains survive all tested mutations. It is not Swing UI
-or active-game reconnect acceptance. Seat access checks the persisted Minecraft
-owner and uses private control responses, never a public table name as authorization.
+The service owns an exclusive state-directory lock until its process exits, after
+engine workers stop. Never run a second service with the same credential in another
+state directory, copy live state, or delete history to fix a match. Match capacity
+is two by default (range 1–16). In the pinned native config, game threads and AI
+opponents are also capped at two. A larger control limit does not increase those
+native limits.
 
-`service/patches/lifecycle.patch` inserts three acknowledged cleanup callbacks into
-the pinned TableController/TableManagerImpl sources. The build copies and patches
-those two files under `.cache/project/patched/`, compiles them into the service jar
-and places that jar before the upstream server jar on the classpath. The upstream
-checkout is unchanged. Review this patch together with the upstream commit; do not
-run the extension against another XMage revision. The installed Mage.Sets SHA-256
-must match the mapping manifest before readiness.
+Non-loopback control URLs require HTTPS and normal certificate/hostname checks.
+The provided executable bootstrap and native deployment are loopback configurations;
+remote native exposure and certificate provisioning are not part of this spike.
 
-The native controller callback records structured match-winner flags and bound
-human/AI UUIDs before controller/deck cleanup. A game draw which continues the
-match stays active. Polling reads the acknowledged journal; it does not derive a
-winner from a message or advance engine state. Failed persistence prevents cleanup.
-Cancellation aborts outstanding engine prompts, commits one terminal record, then
-cleans up. Completion/cancellation share the service lock and first terminal commit
-wins. Account access is revoked and persisted terminal records discard passwords.
-The native fixture waits for an actual choice prompt before using XMage's concede
-action, then stays attached until the service acknowledges terminal persistence and
-cleanup. An immediate quit/disconnect fixture did not establish native completion.
+## Interactive acceptance still required — task 6.1
 
-The managed check also races active native concession against control cancellation,
-tests deck/start guards in six table phases, and reads the exact result in a fresh
-JVM whose classpath contains no XMage runtime. These checks passed on 2026-10-01.
-The second native client showed roughly 18 seconds of callback delay and an upstream
-closed-connection warning; its phase deadline is 45 seconds. This is fixture evidence,
-not a measured reconnect/turn-latency SLA. Swing UI and physical custody acceptance
-remain unverified.
+The completed headless tests use the stock native session library in external JVMs.
+They do not establish a real player's interaction with the Minecraft and Swing UIs.
+Use a disposable world with the configuration above and enable admission there
+when conducting this acceptance run. Record a sanitized observation; keep credentials
+and private deck contents out of public logs.
 
-# Current physical integration gate
+1. Prepare at least forty main-deck cards using supported printings from
+   `service/catalog/manifest.json`. The manifest is deliberately small; it is not
+   a general catalog. Its M10/230 Plains row asserts no Scryfall/Oracle UUID and
+   supports the null-ID fixture specifically. Printing identity mismatches fail
+   closed; do not relabel unsupported cards to bypass them.
+2. Load the physical MTGCard deckbox, remove it from the world and hold its one
+   UUID-backed item. The approved scoped loot hook preserves the backing UUID
+   and tint on the existing ordinary drop. Loaded placed aliases, embedded/legacy
+   containers, auxiliary slots and unavailable/malformed backing records are
+   rejected. Only the pinned MTGCard access paths and addon guards are supported.
+3. Use `/mtgcraft submit`. The server reads and validates its own immutable
+   snapshot, rechecks the physical fingerprint, acknowledges escrow in the
+   journal/player data, then creates the remote match. Keep the returned match UUID.
+4. Use `/mtgcraft access <match UUID>` for private host/port/username/password.
+   Start the pinned stock Swing client on a separate JVM, log in with those
+   credentials and attach to its precreated human seat. Its main class is
+   `mage.client.MageFrame`; use the built client jar plus
+   `.cache/xmage-client-classpath.txt`, with a working directory outside the repo's
+   tracked files. Confirm the exact submitted deck and unchanged settings in the UI.
+5. Use `/mtgcraft start <match UUID>` after native authentication. Play against
+   the pinned MAD AI (sixty Plains). A legal native concession can end this
+   best-of-one fixture; its purpose is integration, not an AI-quality assessment.
+6. Use `/mtgcraft status <match UUID>` to see the authoritative terminal state,
+   then `/mtgcraft claim <match UUID>`. Verify the original UUID/tint/contents
+   returned once. Repeat status and claim; verify the result ID/record and item
+   count stay unchanged. The diagnostics describe the corresponding headless proof.
 
-Build the pinned addon with `bash scripts/check-addon.sh`. Run its real disposable
-server experiment with `bash scripts/check-custody.sh`; it reuses only the previously
-approved local test EULA and never connects players to a public server.
+Status, access, start, cancel and claim accept only an owner-scoped match UUID.
+The client supplies neither deck metadata nor a winner. No prize or ownership
+change occurs. To abandon a match, use `/mtgcraft cancel <match UUID>` and wait for
+its verified terminal response before claiming. Native table creation/join/leave,
+deck submit/save, swaps/removal, start and cheats are denied before mutation.
+Gameplay dispatch requires the bound human/current game; rollback is disabled.
 
-The addon includes the explicitly approved normal-loot compatibility fix: it preserves
-the existing block UUID/tint on its existing drop, without another box or record.
-The live probe passes survival destruction, exact contents, placed-source rejection,
-durable physical transfer, storage/cache/world-access/placement guards and journal
-reload. Its probe mod and admission bypass are excluded from the production addon jar.
-Return claims pass offline/full-inventory retention, owner checks, repeated/reloaded
-one-time delivery, original-box re-placement and ambiguous-delivery quarantine.
-The return keeps original item components plus a project custody marker; no card
-ownership or prize changes occur. Production admission defaults off until complete interactive acceptance. The crash
-matrix and authenticated lifecycle checks now pass.
-No background test server remains running after a successful probe.
+## Recovery and interruption
 
-Copy `addon/config.properties.example` to Minecraft `config/mtgcraft.properties`.
-Set its endpoint and a private token file (mode 0600), shared with the service.
-Use `/mtgcraft world` to get the durable world UUID for the service configuration.
-The compiled addon pins the mapping/catalog/engine compatibility; changing the
-manifest requires rebuilding it. Keep `admissionEnabled=false` until acceptance.
+The world journal records immutable requests, operation intents, acknowledged
+service status and physical delivery phases separately. Reservation is durable
+before remote creation; create/start/cancel retry the same IDs and digest.
+Authenticated terminal acceptance atomically records the first result and return
+intent. Exact repeats have no domain effect. Lower-revision nonterminal messages
+are ignored; conflicting bindings, incarnations or terminal records quarantine
+custody without overwriting the first accepted result.
 
-Players hold one eligible box and use `/mtgcraft submit`. The server validates its
-own snapshot asynchronously and rechecks the source before transfer. Use
-`/mtgcraft access <match UUID>` for private native credentials, attach in XMage,
-then `/mtgcraft start <match UUID>`. Status/cancel use the same owner-scoped ID.
-`/mtgcraft claim <match UUID>` delivers only a durable return-ready claim.
-Verified terminal acceptance atomically records the first result and a return intent;
-physical delivery remains a separate acknowledged, one-time owner claim. The live command probe uses an authenticated
-HTTP engine fixture and captured private player messages, without an engine game.
+A Minecraft player disconnect does not discard the association or release escrow.
+Completion while offline leaves `RETURN_PENDING`; a full inventory also stays
+pending. Claims require the owner and an available slot, acknowledge player data,
+then persist a delivery tombstone before unlocking the original backing record.
+Crashes during transfer or delivery can be ambiguous: `INTENT`/`CLAIMING` recover
+as `QUARANTINED`, with no automatic replacement or override. Keep those journals,
+player data and physical backing files for an operator audit.
 
-`bash scripts/check-custody-crashes.sh` abruptly halts the test JVM at twelve
-admission/return boundaries, then starts a fresh server for each recovery. It verifies
-player data, unchanged physical card UID/count, durable phase/tombstone and no
-replacement issuance. Ambiguous intents/deliveries remain quarantined and protected;
-the addon provides no automatic quarantine override. Retain their journal and backing
-files for an operator audit. The regular live probe also blocks hopper, sleeve and
-sulfur-cube fallback access, including embedded container data.
+Minecraft restart loads the same world/match/seat/snapshot bindings and asynchronously
+queries surviving service history. At most sixteen background requests are in flight.
+Failures back off 4, 8, 16, then 30 seconds; owner commands can retry immediately.
+Timeouts, connection loss, a missing previously acknowledged match and changed
+health incarnation alone retain custody. No deadline invents a winner.
 
-Lifecycle reconciliation polls reserved matches asynchronously with at most sixteen
-requests in flight. Failed requests back off (4, 8, 16, then 30 seconds); owner commands
-can retry immediately. Timeouts, connection failures, unknown matches after an
-acknowledged creation, and changed health incarnation alone retain custody. Only
-an authenticated, correctly bound terminal record schedules return. In this pinned
-deployment the service's exclusive state-directory lock proves the former process
-has exited; restart persists `INTERRUPTED` under the match's original incarnation,
-with all seat outcomes `NONE`, before serving it. Losing or replacing that history
-requires operator investigation, never an automatic box replacement or winner.
+On service restart, its exclusive process lock establishes that old workers can no
+longer run. Before accepting control requests it persists `INTERRUPTED` for old
+nonterminal records, with the match's original incarnation and all seat outcomes
+`NONE`. Only the authenticated, bound terminal history schedules the physical
+return. Lost/replaced history requires investigation; no automatic replay,
+mid-decision restoration, winner or prize is supplied. A conflicting late result
+cannot reverse the interruption.
 
-`python3 tests/lifecycle.py` runs three independent Minecraft JVMs, a real pinned
-XMage service and two external stock-session JVMs. It reserves two physical
-forty-Plains boxes before creation, starts both games, abruptly stops Minecraft,
-reattaches tracking while both games survive, concedes through the native protocol,
-and claims the original first box once after offline completion. It then keeps
-Minecraft alive through service unreachability, restarts the exclusively locked
-service and verifies old-incarnation interruption/NONE outcomes before returning
-the second original box. The private disposable directory under `.cache/lifecycle-*`
-contains logs, acknowledged statuses and raw memory/latency samples. It contains
-private test credentials: do not publish the directory. All owned processes stop
-on success or failure. This is a headless native-session experiment; it does not
-verify Swing interaction or a networked Minecraft player's full experience.
+The native reconnect fixture disconnects while preserving the session, restores
+the old session ID and verifies the same human UUID/deck. Actual pending-choice
+reconnect timing is unmeasured. Pinned `UserManagerImpl` checks activity every
+30 seconds, marks connection problems after 30 seconds, expires sessions after
+three minutes and removes users after eight minutes. Those are source constants,
+not a measured grace period or promise of indefinite reconnect. An expired user
+can cause controller cleanup; the guarded service hook records interruption when
+there is no authoritative completed match outcome.
 
-The real lifecycle script also submits an unsupported MTGCard Cheatyface box through
-`/mtgcraft submit` to the actual service. The private player response is
-`No approved engine implementation — Cheatyface`; the original source fingerprint
-and held item stay unchanged, with no reservation or additional engine match.
+## Evidence, patches and notices
+
+`tests/lifecycle.py` uses independent Minecraft/service/native-client JVMs, two
+simultaneous real games, a Minecraft hard halt, offline concession, six seconds
+of service unreachability, exclusive-process restart and one-time original-box
+claims. It also exercises unsupported real-card submission without custody.
+Private `.cache/lifecycle-*` directories contain credentials and raw diagnostics:
+do not publish them. Every owned process stops on success/failure.
+
+`service/patches/lifecycle.patch` adds three acknowledged callbacks to pinned
+TableController/TableManagerImpl cleanup. Builds copy/patch those sources under
+`.cache/project/patched/` with zero fuzz and place the extension jar first on the
+service classpath. Upstream source is unchanged. Structured winner flags and bound
+player IDs are journaled before cleanup; polling never derives a result from text
+or advances the engine. Failed persistence prevents cleanup. Cancellation and
+completion share one service lock; the first committed terminal result wins.
+
+Versions, catalog identity, hashes and license declarations are documented in
+[dependency-notices.md](dependency-notices.md), [dependency-notices.tsv](dependency-notices.tsv),
+[protocol.md](protocol.md) and [diagnostics.md](diagnostics.md). MTGCard's contradictory
+license files and unresolved dependency declarations are recorded rather than
+silently resolved. Keep the change experimental until interactive acceptance passes.

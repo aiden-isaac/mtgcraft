@@ -1,0 +1,307 @@
+scope	artifact	observed_sha256	declared_license	evidence
+xmage	asm/asm/3.0/asm-3.0.jar	bfcb35900ec1d5a1346fb0dc91dd9d772cf93e3165cb8701aec3ed277b5a53ba	UNKNOWN	no local declaration resolved
+xmage	asm/asm-commons/3.0/asm-commons-3.0.jar	32b516ca5738b87077afac83d08bae7e3f3cea4ce6ff6d7a18506b38c3729640	UNKNOWN	no local declaration resolved
+xmage	asm/asm-tree/3.0/asm-tree-3.0.jar	ad82cad09bb2f7752d4ddb8ebb2aaf893ecc4a801bcbe813c75027830f496255	UNKNOWN	no local declaration resolved
+xmage	ch/qos/reload4j/reload4j/1.2.22/reload4j-1.2.22.jar	222f90d3e69541218ef6e70547749d693bd4c1846817e5bd7949b3e28950f99f	The Apache Software License, Version 2.0	local POM
+xmage	com/google/code/findbugs/annotations/3.0.1u2/annotations-3.0.1u2.jar	acc0d2c06be70e9094d70cd05dffa077735c8f9d1a870eafda130b0592528200	GNU Lesser Public License	local POM
+xmage	com/google/code/gson/gson/2.13.2/gson-2.13.2.jar	dd0ce1b55a3ed2080cb70f9c655850cda86c206862310009dcb5e5c95265a5e0	Apache-2.0	local POM
+xmage	com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0.jar	77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5	Apache 2.0	local POM
+xmage	com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar	cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb	Apache License, Version 2.0	inherited local POM
+xmage	com/google/guava/guava/33.4.8-jre/guava-33.4.8-jre.jar	f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed	Apache License, Version 2.0	inherited local POM
+xmage	com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar	b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99	The Apache Software License, Version 2.0	inherited local POM
+xmage	com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0.jar	88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64	Apache License, Version 2.0	local POM
+xmage	com/google/protobuf/protobuf-java/3.25.8/protobuf-java-3.25.8.jar	72bdb32eb38cafb7dcd288262c29a34d57cba2e19101af9685155ba8c0a56008	BSD-3-Clause	inherited local POM
+xmage	com/googlecode/jspf/jspf-core/0.9.1/jspf-core-0.9.1.jar	270cf91dd5b4b7becf7b0e770a91945805d5d7df1db05f98fefc2a0707edbf5a	UNKNOWN	no local declaration resolved
+xmage	com/googlecode/soundlibs/jlayer/1.0.1.4/jlayer-1.0.1.4.jar	863a51470ab4d581c6269dcd5a0471a226932ec5b2ef3f79fe86ab559387ac5c	LGPL 2.1 license	inherited local POM
+xmage	com/googlecode/soundlibs/mp3spi/1.9.5.4/mp3spi-1.9.5.4.jar	f2bd4d0b63532b52eaf9c086528ed8379e5a8805af759c4dbdea5b7a40e4e87e	LGPL 2.1 license	inherited local POM
+xmage	com/googlecode/soundlibs/tritonus-share/0.3.7.4/tritonus-share-0.3.7.4.jar	6f626b41dc72074656059de1a25bc6f1c5abb202b57d37c538f5714f54efdab4	LGPL 2.1 license	inherited local POM
+xmage	com/h2database/h2/1.4.197/h2-1.4.197.jar	37f5216e14af2772930dff9b8734353f0a80e89ba3f33e065441de6537c5e842	MPL 2.0 or EPL 1.0	local POM
+xmage	com/intellij/forms_rt/7.0.3/forms_rt-7.0.3.jar	51d100f7f19e85bce8fd8fda551e433188174994f470d6e9f51c7f7b2227d9e3	Apache License 2	local POM
+xmage	com/j256/ormlite/ormlite-core/5.7/ormlite-core-5.7.jar	5f1254ca4338d8ce8975d550ab1856073186b8d3128282908abac56d806ca1bd	ISC License	local POM
+xmage	com/j256/ormlite/ormlite-jdbc/5.7/ormlite-jdbc-5.7.jar	156e789cf16ba12cb7176cee86bacaae440316f8b53094cd640876bfef636c29	ISC License	local POM
+xmage	com/jgoodies/forms/1.2.1/forms-1.2.1.jar	df801e4d1ced23fbabd70d02d685179bf47894a9305787ed3a4dab5b58d030a9	The BSD License	local POM
+xmage	com/jhlabs/filters/2.0.235/filters-2.0.235.jar	be6a1d54ebb043495e31e25e72b440f69156a5624cdd7e1c55c47e30d4fae308	Apache License, Version 2.0	local POM
+xmage	com/sun/activation/jakarta.activation/2.0.1/jakarta.activation-2.0.1.jar	b9e24b7dd6e07495562ea96531be3130c96dba4d78e1dfd88adbbdebf4332871	EDL 1.0	inherited local POM
+xmage	com/sun/istack/istack-commons-runtime/4.0.1/istack-commons-runtime-4.0.1.jar	9f91115f449384886f572bd62c8812ee1004273d4b5c85cac65179ad4c16990f	Eclipse Distribution License - v 1.0	inherited local POM
+xmage	com/sun/jersey/contribs/jersey-multipart/1.19.4/jersey-multipart-1.19.4.jar	f0ada237ad993ff5749abfff88dfa15c1f60bcb7e0522a1f17251cb670fcc448	CDDL 1.1; GPL2 w/ CPE	inherited local POM
+xmage	com/sun/jersey/jersey-client/1.19.4/jersey-client-1.19.4.jar	639c825c5db580f8115bf49ffc893093526d2ed1079fbc929b6a5fbd0b2eda40	CDDL 1.1; GPL2 w/ CPE	inherited local POM
+xmage	com/sun/jersey/jersey-core/1.19.4/jersey-core-1.19.4.jar	64b03198e0264849d0fc341857ebcc9c882b1909a2dc35a0972fe7d901b826e5	CDDL 1.1; GPL2 w/ CPE	inherited local POM
+xmage	com/sun/xml/bind/jaxb-impl/2.3.1/jaxb-impl-2.3.1.jar	e6c9e0f1830fd5f7c30c25ecf5e2046c5668b06d304add89d2f027d5072297d0	CDDL+GPL License	inherited local POM
+xmage	commons-beanutils/commons-beanutils/1.9.4/commons-beanutils-1.9.4.jar	7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a	Apache License, Version 2.0	inherited local POM
+xmage	commons-codec/commons-codec/1.19.0/commons-codec-1.19.0.jar	5c3881e4f556855e9c532927ee0c9dfde94cc66760d5805c031a59887070af5f	Apache-2.0	inherited local POM
+xmage	commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar	eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8	Apache License, Version 2.0	inherited local POM
+xmage	commons-io/commons-io/2.17.0/commons-io-2.17.0.jar	4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b	Apache-2.0	inherited local POM
+xmage	commons-io/commons-io/2.20.0/commons-io-2.20.0.jar	df90bba0fe3cb586b7f164e78fe8f8f4da3f2dd5c27fa645f888100ccc25dd72	Apache-2.0	inherited local POM
+xmage	commons-logging/commons-logging/1.3.0/commons-logging-1.3.0.jar	66d3c980470b99b0c511dad3dfc0ae7b265ec1fb144e96bc0253a8a175fd34d9	Apache-2.0	inherited local POM
+xmage	concurrent/concurrent/1.3.4/concurrent-1.3.4.jar	12639def9a5b5ebf56040ab764bd42b7e662523d3b983e5d5da04bf37be152f9	Public domain, Sun Microsoystems	local POM
+xmage	global/namespace/service-wight/service-wight-annotation/0.6.0/service-wight-annotation-0.6.0.jar	a257eafc102b84c8732b19040afdf067c1611e2298c42104dc3f557bd115f9ba	Apache License, Version 2.0	inherited local POM
+xmage	global/namespace/service-wight/service-wight-core/0.6.0/service-wight-core-0.6.0.jar	7d49c587f165e796470356eb06cc4390539a8c0e528d6ea24e0c843323db1a57	Apache License, Version 2.0	inherited local POM
+xmage	jakarta/xml/bind/jakarta.xml.bind-api/3.0.1/jakarta.xml.bind-api-3.0.1.jar	b8fb4bee3ff5b5c1ef77144d8411316018d7bbd41fcf1ede0646f7978546b867	Eclipse Distribution License - v 1.0	inherited local POM
+xmage	javax/activation/activation/1.1/activation-1.1.jar	2881c79c9d6ef01c58e62beea13e9d1ac8b8baa16f2fc198ad6e6776defdcdd3	Common Development and Distribution License (CDDL) v1.0	local POM
+xmage	javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar	43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393	CDDL/GPLv2+CE	inherited local POM
+xmage	javax/inject/javax.inject/1/javax.inject-1.jar	91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff	The Apache Software License, Version 2.0	local POM
+xmage	javax/mail/mail/1.5.0-b01/mail-1.5.0-b01.jar	04f10be09bc598b4b65b93e5eb55bb380abe1ca76c440cf0c8233d86e868f1c7	CDDL; GPLv2+CE	inherited local POM
+xmage	javax/ws/rs/jsr311-api/1.1.1/jsr311-api-1.1.1.jar	ab1534b73b5fa055808e6598a5e73b599ccda28c3159c3c0908977809422ee4a	CDDL License	local POM
+xmage	javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar	88b955a0df57880a26a74708bc34f74dcaf8ebf4e78843a28b50eae945732b06	CDDL 1.1; GPL2 w/ CPE	inherited local POM
+xmage	javazoom/jlayer/1.0.1/jlayer-1.0.1.jar	850508c837454a1b06017c32a36876fae516de1e89a829f725fee1e6dcc52000	GNU Lesser General Public License	local POM
+xmage	jboss/jboss-serialization/4.2.2.GA/jboss-serialization-4.2.2.GA.jar	53a12ccfc2a382dbcc8527b8b45ab038b1c3fb8839fa797c70fb7381a7c02d14	UNKNOWN	no local declaration resolved
+xmage	jdom/jdom/1.0/jdom-1.0.jar	3b23bc3979aec14a952a12aafc483010dc57579775f2ffcacef5256a90eeda02	UNKNOWN	no local declaration resolved
+xmage	junit/junit/4.13.2/junit-4.13.2.jar	8e495b634469d64fb8acfa3495a065cbacc8a0fff55ce1e31007be4c16dc57d3	Eclipse Public License 1.0	local POM
+xmage	net/java/truecommons/truecommons-cio/2.5.0/truecommons-cio-2.5.0.jar	61a0db290c036fbf44743113a714b50e5112ff3ffb9f7a817aa0eaed9ef978bb	Eclipse Public License, Version 1.0	inherited local POM
+xmage	net/java/truecommons/truecommons-io/2.5.0/truecommons-io-2.5.0.jar	b6ef4065d2567076d2c234697929d5936fe7bc86149f78fb93be156e05d7a312	Eclipse Public License, Version 1.0	inherited local POM
+xmage	net/java/truecommons/truecommons-key-console/2.5.0/truecommons-key-console-2.5.0.jar	24763cbc37caaa9cbd62b912dc1c4a6e0fdb13c29ae6be07b0055bc6e2c87d7c	Eclipse Public License, Version 1.0	inherited local POM
+xmage	net/java/truecommons/truecommons-key-default/2.5.0/truecommons-key-default-2.5.0.jar	90ee3487865b0ca38a529749a2b7fbffabf3d223a466157ec04e9dff72accc10	Eclipse Public License, Version 1.0	inherited local POM
+xmage	net/java/truecommons/truecommons-key-spec/2.5.0/truecommons-key-spec-2.5.0.jar	a7103fd23c95a80dc6c82be5a407a4e2c587fb74a087ff3808c0ccc20b4043f7	Eclipse Public License, Version 1.0	inherited local POM
+xmage	net/java/truecommons/truecommons-key-swing/2.5.0/truecommons-key-swing-2.5.0.jar	157ca62ad0a5cc7de4678ca649a4c2507fb3c187386c654ab44a8f9053b73c45	Eclipse Public License, Version 1.0	inherited local POM
+xmage	net/java/truecommons/truecommons-logging/2.5.0/truecommons-logging-2.5.0.jar	a791a0c23a724aa920b9a4dee3801569948ac29c4bbc7b5abb1f3fc4534db605	Eclipse Public License, Version 1.0	inherited local POM
+xmage	net/java/truecommons/truecommons-services/2.5.0/truecommons-services-2.5.0.jar	edec057e71c53620460d4c49448e4d32d988da6042419e1372aa6bce463c3ee7	Eclipse Public License, Version 1.0	inherited local POM
+xmage	net/java/truecommons/truecommons-shed/2.5.0/truecommons-shed-2.5.0.jar	9b70bb63b79faa0e4c4b1aa820c610c1aa1c9fc9d4653edbe76a328f0d3c1a75	Eclipse Public License, Version 1.0	inherited local POM
+xmage	net/java/truevfs/truevfs-access/0.14.0/truevfs-access-0.14.0.jar	2187354eeb8b766aa91210b9eece6f0e24102d4658e1721ad59fea3748d720e5	Apache License, Version 2.0	local POM
+xmage	net/java/truevfs/truevfs-access-swing/0.14.0/truevfs-access-swing-0.14.0.jar	c2ef8b5db392a676a706e66469c13074c92965b06e84b4a4ece1685cc237f596	Apache License, Version 2.0	local POM
+xmage	net/java/truevfs/truevfs-comp-ibm437/0.14.0/truevfs-comp-ibm437-0.14.0.jar	9e1f29d4e119422d29b85fdb6c703b4dabd89dfa7c196ba5207e5d8e46dab4aa	Apache License, Version 2.0	local POM
+xmage	net/java/truevfs/truevfs-comp-zip/0.14.0/truevfs-comp-zip-0.14.0.jar	92a3d0136a7e2367210e768975e5d92d07d4648e6d411c92ae5e1af66b7372c2	Apache License, Version 2.0	local POM
+xmage	net/java/truevfs/truevfs-comp-zipdriver/0.14.0/truevfs-comp-zipdriver-0.14.0.jar	23a63bc4ff1b91c7ff287a18f6bd18fa758998a1ee734d7c4180fab8ec5fb662	Apache License, Version 2.0	local POM
+xmage	net/java/truevfs/truevfs-driver-file/0.14.0/truevfs-driver-file-0.14.0.jar	015019c98a676b10e90b5947489a2e05e6c692babcf1330256510d0cee43e08b	Apache License, Version 2.0	local POM
+xmage	net/java/truevfs/truevfs-driver-jar/0.14.0/truevfs-driver-jar-0.14.0.jar	eda0e5f89db203fa9999c6e2c0edd7aa9be6a0d00f38ac8e7ae1a6b1b58f05ed	Apache License, Version 2.0	local POM
+xmage	net/java/truevfs/truevfs-driver-zip/0.14.0/truevfs-driver-zip-0.14.0.jar	b60bc5e489aa775b18f320132bae86c1eca00ed764aee388870c3485fdd32c28	Apache License, Version 2.0	local POM
+xmage	net/java/truevfs/truevfs-kernel-impl/0.14.0/truevfs-kernel-impl-0.14.0.jar	4bcb55bf8d74c0a3245c81f3f85f9bd3895572a53daf114f4e45f4e71e764166	Apache License, Version 2.0	local POM
+xmage	net/java/truevfs/truevfs-kernel-spec/0.14.0/truevfs-kernel-spec-0.14.0.jar	890590596fda3796601c517e7b27610d88bb3d6111a153c872c0eba34fc41e28	Apache License, Version 2.0	local POM
+xmage	net/java/truevfs/truevfs-profile-base/0.14.0/truevfs-profile-base-0.14.0.jar	269914ff6f07767af2538b3a54380331787ed888703b64a1ffe5622358614f04	Apache License, Version 2.0	local POM
+xmage	net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar	3c8616203d61a12a7e3487e8b34f3c198c2b5ba9e90da0c7ea32d99cd4958012	GNU Lesser General Public License 2.1	local POM
+xmage	org/apache/commons/commons-compress/1.20/commons-compress-1.20.jar	0aeb625c948c697ea7b205156e112363b59ed5e2551212cd4e460bdb72c7c06e	Apache License, Version 2.0	inherited local POM
+xmage	org/apache/commons/commons-compress/1.28.0/commons-compress-1.28.0.jar	e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca	Apache-2.0	inherited local POM
+xmage	org/apache/commons/commons-lang3/3.18.0/commons-lang3-3.18.0.jar	4eeeae8d20c078abb64b015ec158add383ac581571cddc45c68f0c9ae0230720	Apache-2.0	inherited local POM
+xmage	org/apache/shiro/shiro-cache/1.13.0/shiro-cache-1.13.0.jar	e409e36056060224dc1b0ad42959cd51c61ac3dbbb0558be26c39e387f85c5a3	Apache-2.0	inherited local POM
+xmage	org/apache/shiro/shiro-config-core/1.13.0/shiro-config-core-1.13.0.jar	2f5cd02a5cf72a9d3e20417ad4b56ca692acfd1579f8c9bafe939e71e02888eb	Apache-2.0	inherited local POM
+xmage	org/apache/shiro/shiro-config-ogdl/1.13.0/shiro-config-ogdl-1.13.0.jar	f067d8775ebde81e55f78603c0d5b3a0d1ce493726d4eff325b7a848c7bbf6e3	Apache-2.0	inherited local POM
+xmage	org/apache/shiro/shiro-core/1.13.0/shiro-core-1.13.0.jar	ddb03b68cdc08792ec2a18f0ae6edb298ce94073a87862cb44b5db3fa40643ff	Apache-2.0	inherited local POM
+xmage	org/apache/shiro/shiro-crypto-cipher/1.13.0/shiro-crypto-cipher-1.13.0.jar	aa30868a10055d5fe1e0d8dd8915f174532fabf6d00c810076da94a82deae75f	Apache-2.0	inherited local POM
+xmage	org/apache/shiro/shiro-crypto-core/1.13.0/shiro-crypto-core-1.13.0.jar	f9a103b92c4261258b9ae9cfcd83af43c2500309b0689ec149a45565cf44342d	Apache-2.0	inherited local POM
+xmage	org/apache/shiro/shiro-crypto-hash/1.13.0/shiro-crypto-hash-1.13.0.jar	c06c9f2e37fb8838842853e47035fab0c064c3b144948e60bdcf96e694f286a3	Apache-2.0	inherited local POM
+xmage	org/apache/shiro/shiro-event/1.13.0/shiro-event-1.13.0.jar	a4c6a9304ec16c948eec258fab577c13b446d1e82b6f49c41d40974b7fb191e9	Apache-2.0	inherited local POM
+xmage	org/apache/shiro/shiro-lang/1.13.0/shiro-lang-1.13.0.jar	8c3eb1676191db97311218d5cccead1cee0f0ecdb3467f1ac9e0c4449378c97d	Apache-2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-anim/1.19/batik-anim-1.19.jar	9b3f6f8c84c0efd88174012a8fbac4427697e5854aef194d57c5f0910c15280a	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-awt-util/1.19/batik-awt-util-1.19.jar	c9ac9ed24e0b20984e7c65ce2fbe4915003c67f9ae96177bc32bef901b557a9a	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-bridge/1.19/batik-bridge-1.19.jar	9ae79c592efbab0804923de85363d524a2cb36ebdc1f27faeec10c1907427e26	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-constants/1.19/batik-constants-1.19.jar	e1d42c4da56dd8b7a3a794285fe3ed05f932d0a2b5ce3face198f02cc501331f	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-css/1.19/batik-css-1.19.jar	c66afd6ac61d630e62e859db03670fa7a4f7241daaee29b531614e6900b9c6a9	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-dom/1.19/batik-dom-1.19.jar	1dabf83687b2ec5a4ccd4a55e3520f7cd8863a4c23ba7f5e54ef3f882819997a	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-ext/1.19/batik-ext-1.19.jar	e6264faa65d00d187eed932dff96e40da80e17fea66a1d92af4776ddb7811256	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-gvt/1.19/batik-gvt-1.19.jar	c8b1ea700d1c26dffe3a08a543efcaadc5fb77d5949e6a9a300c5e35c289c915	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-i18n/1.19/batik-i18n-1.19.jar	eb95e07c29feb276cf91aca9cf5362b43fe17601395aab5d8a6147a6d0859716	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-parser/1.19/batik-parser-1.19.jar	602e331c1c79de4a04525d75266dadbaf969524841155105d31ad54a7731de20	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-script/1.19/batik-script-1.19.jar	1aacf6445f85d1e029c5691d55505ca1ba140414cba2c9620d7f82fc6aee55f3	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-shared-resources/1.19/batik-shared-resources-1.19.jar	e2dad47cfeff5c7d686e97787996accf85a5b19f602acb30b83fce9c247deecd	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-svg-dom/1.19/batik-svg-dom-1.19.jar	f5cc6730ce1b6c552e9ccc0c41b4e4c233cc6260b6c3a10038ad41ea21364c2a	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-svggen/1.19/batik-svggen-1.19.jar	6bf89ede81483da574b25d8645e512e030965e8fbe5605e2938bccaa87ebb6a6	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-transcoder/1.19/batik-transcoder-1.19.jar	12045f8e21d6c7fd2a729f42317207233f8e3446f3a2f6ea1171000864972274	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-util/1.19/batik-util-1.19.jar	3f1389bbdbed3c4659a58a50ce12166fd31e3d066994dd63b5144d9245fd3db6	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/batik-xml/1.19/batik-xml-1.19.jar	9b9364f7dec75c41c4a611596bd4dcbf08b51b753b6726573b542998addec6a5	The Apache Software License, Version 2.0	inherited local POM
+xmage	org/apache/xmlgraphics/xmlgraphics-commons/2.11/xmlgraphics-commons-2.11.jar	1a37948ebfedab0cd292cfc5007e65c2fa16a701b94c206152720d3a738561bc	The Apache Software License, Version 2.0	local POM
+xmage	org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar	b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38	The Apache License, Version 2.0	local POM
+xmage	org/assertj/assertj-core/3.21.0/assertj-core-3.21.0.jar	04bf8242755dac66999ebabce8e6eb89ad3dcd9b64abf0e95e0d2409cf608516	Apache License, Version 2.0	inherited local POM
+xmage	org/bouncycastle/bcprov-jdk15on/1.68/bcprov-jdk15on-1.68.jar	f732a46c8de7e2232f2007c682a21d1f4cc8a8a0149b6b7bd6aa1afdc65a0f8d	Bouncy Castle Licence	local POM
+xmage	org/glassfish/jaxb/jaxb-core/3.0.2/jaxb-core-3.0.2.jar	f9a360b939597643b2676e35fc497afb561d20e8a513128a5c0070366db11bbd	Eclipse Distribution License - v 1.0	inherited local POM
+xmage	org/glassfish/jaxb/txw2/3.0.2/txw2-3.0.2.jar	b4bcf94fb0a759456e2521724513baec94b78e93127544af162e3cff08d93343	Eclipse Distribution License - v 1.0	inherited local POM
+xmage	org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar	66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9	New BSD License	inherited local POM
+xmage	org/jboss/jboss-common-core/2.5.0.Final/jboss-common-core-2.5.0.Final.jar	fd3948f9dfeed1c3bc426cf09efcd55998c6dbc8a4ad71b55c9a934d707dea26	Apache License Version 2.0	local POM
+xmage	org/jboss/logging/jboss-logging-spi/2.1.2.GA/jboss-logging-spi-2.1.2.GA.jar	aa6a785a52d9dec8d36b4f84219ca4a7c208dcb018f4472b4711f5b9a6c74028	lgpl	inherited local POM
+xmage	org/jboss/remoting/jboss-remoting/2.5.4.SP5/jboss-remoting-2.5.4.SP5.jar	383c9d01f1f442441fc7d77afea2a0210a45af349a1a2b8ad80f180f7814dc27	lgpl	inherited local POM
+xmage	org/jdesktop/beansbinding/1.2.1/beansbinding-1.2.1.jar	2c7b4e8d3af02d7410e350e20da92e65aa48c69250b855387721705f7dccfd99	UNKNOWN	no local declaration resolved
+xmage	org/jetlang/jetlang/0.2.23/jetlang-0.2.23.jar	25e9f5902d36429aa9945f802c454eaf1734c231fcbad7bb59c6295226e55cbe	New BSD License	local POM
+xmage	org/jsoup/jsoup/1.21.2/jsoup-1.21.2.jar	f05496e255734759f0d4b5632da7b24f81313147c78c69e90ad045d096191344	The MIT License	local POM
+xmage	org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar	1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab	The Apache License, Version 2.0	local POM
+xmage	org/junit/jupiter/junit-jupiter/5.8.1/junit-jupiter-5.8.1.jar	8f1049ee24b34a10b60cd810048099f781c2658cde2181e831496ab30a982985	Eclipse Public License v2.0	local POM
+xmage	org/junit/jupiter/junit-jupiter-api/5.8.1/junit-jupiter-api-5.8.1.jar	ce3374a7efba605e2d2b69a3fef90134032bab3ecc3ed8579a4871b1c2c4729c	Eclipse Public License v2.0	local POM
+xmage	org/junit/jupiter/junit-jupiter-engine/5.8.1/junit-jupiter-engine-5.8.1.jar	4689bc902255a19fe98277683ba3231c094d107c54c8d35f2b6f9c97d226418e	Eclipse Public License v2.0	local POM
+xmage	org/junit/jupiter/junit-jupiter-params/5.8.1/junit-jupiter-params-5.8.1.jar	389b8d13a8d8872fcbd4f0eba7b2c46afc628419f9a1b2a3a9f93241a06a7218	Eclipse Public License v2.0	local POM
+xmage	org/junit/platform/junit-platform-commons/1.8.1/junit-platform-commons-1.8.1.jar	fa4fa68c8bd54dd0cb49c3fcbe9b2e42f4da6bedbe7e7ccf2a05f1a1e609b593	Eclipse Public License v2.0	local POM
+xmage	org/junit/platform/junit-platform-engine/1.8.1/junit-platform-engine-1.8.1.jar	702868ed7e86b9b4672ede0f1e185e905baca9afab57746a7c650be3c7bca047	Eclipse Public License v2.0	local POM
+xmage	org/junit/vintage/junit-vintage-engine/5.8.1/junit-vintage-engine-5.8.1.jar	176b53cd1bdbf9233e96c8b0c7a9e5b864282fbbdeba43b5ceafdedb29a49156	Eclipse Public License v2.0	local POM
+xmage	org/jvnet/mimepull/mimepull/1.9.3/mimepull-1.9.3.jar	072eb5692f180ed0685705fb31c900eca0986b4523c23eefc0779e87d79eea35	CDDL 1.1; GPL2 w/ CPE	local POM
+xmage	org/mage/mage/1.4.61/mage-1.4.61.jar	9fd869639315fd8391444330c749df300b04f1a94768607d5b9f71b7559f4ab8	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-common/1.4.61/mage-common-1.4.61.jar	b2da3fe2d2ac4965364bc37c30da8f38669ff7c1cedbc2c0766ea429567c698e	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-counter-plugin/0.1/mage-counter-plugin-0.1.jar	f3566dccb9a6fbb9563c3d38e9e29355806e1883fc88893b639116cb6c1029bb	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-deck-constructed/1.4.61/mage-deck-constructed-1.4.61.jar	0c4c35661771298c6362caf91fb7eed6402ce74b3c3b572d870f561a3b4c09bb	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-deck-limited/1.4.61/mage-deck-limited-1.4.61.jar	27ac33ebfb2f4db428697464653823d7483a988674d0702db49fcb715496cf9a	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-brawlduel/1.4.61/mage-game-brawlduel-1.4.61.jar	e8aa113a1c265e69a8237b17fa6b4bb03f2d659de48b23607f870aa28d194a91	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-brawlfreeforall/1.4.61/mage-game-brawlfreeforall-1.4.61.jar	06a9dca5f40b1f81ee1b7c05f8fa91d650a5053651445fab4d820231072a2af0	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-canadianhighlanderduel/1.4.61/mage-game-canadianhighlanderduel-1.4.61.jar	425e2d387c5afdcf79d1156f64ee2f73cb8ee1f64b9bc74b8b281a003e5b9bd3	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-commanderduel/1.4.61/mage-game-commanderduel-1.4.61.jar	3f3596adf5642d58d9bf0245ca70f3c51ce33d1d093bd97e7a6ea12295df3fe4	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-commanderfreeforall/1.4.61/mage-game-commanderfreeforall-1.4.61.jar	b6696f7fd7da74ca9c6652a815e8fa37170f17848a8ba2caa0c718e2a4f4937c	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-custompillaroftheparunsduel/1.4.61/mage-game-custompillaroftheparunsduel-1.4.61.jar	772539e1c3c6765229aadfab63708d01f0f485327b5d98fa708c789951bf648a	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-freeforall/1.4.61/mage-game-freeforall-1.4.61.jar	dadb38c004ccff5da632dda0b6d2e7758092a14fdff16fb5d2d0e5a0ba37967b	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-freeformcommanderduel/1.4.61/mage-game-freeformcommanderduel-1.4.61.jar	8dbebc26c37f30d8c4c966d9cee7aaff4dad768f4fd2264fba589b574f92746c	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-freeformcommanderfreeforall/1.4.61/mage-game-freeformcommanderfreeforall-1.4.61.jar	c5de6e0099bef5c039c3b27428e86f6e0b71240fe3cbe4e8fc54a30d187f5dfb	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-freeformunlimitedcommander/1.4.61/mage-game-freeformunlimitedcommander-1.4.61.jar	9e6ab6eef5a7f3be7cc82f0a0ce2f4fb615ec558eba70b0a4fbbc8278130b81f	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-momirduel/1.4.61/mage-game-momirduel-1.4.61.jar	7ddd0e5ca3efd9b01322aeee61458eec528726c7503c5a1c34a5f25f7706dc31	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-momirfreeforall/1.4.61/mage-game-momirfreeforall-1.4.61.jar	562ffca1077f074b9fe317c07ebb0a94e9c9eeee37b1db47c325e2c9f2fb931b	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-oathbreakerduel/1.4.61/mage-game-oathbreakerduel-1.4.61.jar	48214ba57678f83759f868d7bdf0f68fc1e95bc65d6c989daa5619e86e0ec82b	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-oathbreakerfreeforall/1.4.61/mage-game-oathbreakerfreeforall-1.4.61.jar	1e431a837c83ab139e7ce82b99b9de8edecc34bb4656044217f01878aeb0e3f2	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-pennydreadfulcommanderfreeforall/1.4.61/mage-game-pennydreadfulcommanderfreeforall-1.4.61.jar	4e683480f313b8ce8b3d077481b03ffb4ecdf12af7686fe85df5a1159cf240ac	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-tinyleadersduel/1.4.61/mage-game-tinyleadersduel-1.4.61.jar	a052eb00dbd6768e16e6fd744b1120172a0299b321453c9313a2780b23d97019	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-game-twoplayerduel/1.4.61/mage-game-twoplayerduel-1.4.61.jar	9c14e76574514695f4c045e485ca1f1087a6f9ed3da9e364ae4035a662932f3e	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-player-ai/1.4.61/mage-player-ai-1.4.61.jar	3f4604cdbdbfa40b5e4c22f5c805195f706ead91e45f097b1b4a4d1c46bb57fc	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-player-ai-draftbot/1.4.61/mage-player-ai-draftbot-1.4.61.jar	a237db921489518c2774e67c07fc66a6fcf4c7f902d97371de63775b1cadd174	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-player-ai-mad/1.4.61/mage-player-ai-mad-1.4.61.jar	cf86ad777d6be7e22ef0b46700354ad944396e78512e95d1a72620bc65f7daf8	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-player-ai-mcts/1.4.61/mage-player-ai-mcts-1.4.61.jar	255857ad033910269a0a17c7bb7503f674cdbba6a53c6fa9e207f6d255974c91	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-player-human/1.4.61/mage-player-human-1.4.61.jar	669e74659e63ef93296bdc3567e5870d046485e3b0efd9481258d12362325255	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-sets/1.4.61/mage-sets-1.4.61.jar	2692e83f110985b00ea87ae259a78c1d3b264ee923e7cdc25ecfb94db13943ff	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-tournament-boosterdraft/1.4.61/mage-tournament-boosterdraft-1.4.61.jar	475b5ec8b65b8466b5e15635e0e2d6973bfdb9844f69067e73916bfc89e30d0d	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-tournament-constructed/1.4.61/mage-tournament-constructed-1.4.61.jar	3c9520667f2c5b691f5e9c78077611694285eb87cb15ef4124f0b98dea1a39c0	MIT	pinned XMage source LICENSE.txt
+xmage	org/mage/mage-tournament-sealed/1.4.61/mage-tournament-sealed-1.4.61.jar	6309ff859dbe8908f13b42b7b289032f90b4bc78264c974a0845bbde574a5d9c	MIT	pinned XMage source LICENSE.txt
+xmage	org/ocpsoft/prettytime/prettytime/4.0.6.Final/prettytime-4.0.6.Final.jar	c4a6ad3d38577f631cea7cef212e42691ed81d59cf25e5c3e93e00ef4506c000	Apache License	inherited local POM
+xmage	org/openjfx/javafx-base/17.0.20/javafx-base-17.0.20-linux.jar	e076cfeb5538da450d9621a0320c5f7ae94bbfbe221f66cd264c63d162a33e1b	GPLv2+CE	inherited local POM
+xmage	org/openjfx/javafx-base/17.0.20/javafx-base-17.0.20.jar	bf4a88baa7cb2ae0ab0f27cc937ec7640832909d276b50cb5df291216aa9b918	GPLv2+CE	inherited local POM
+xmage	org/openjfx/javafx-controls/17.0.20/javafx-controls-17.0.20-linux.jar	e754189ee6ce2dc1034951d984e8ae2c9a7c3f679387d17f642faf304aab5276	GPLv2+CE	inherited local POM
+xmage	org/openjfx/javafx-controls/17.0.20/javafx-controls-17.0.20.jar	100d3ff2ec9e05b89419f7623cad7dcf7c03aa512461db667dad497071dc69f4	GPLv2+CE	inherited local POM
+xmage	org/openjfx/javafx-graphics/17.0.20/javafx-graphics-17.0.20-linux.jar	8f0005603703f383f9e4091913d7a5d7e4a32a9d4fcc229699ffb3b2df82af03	GPLv2+CE	inherited local POM
+xmage	org/openjfx/javafx-graphics/17.0.20/javafx-graphics-17.0.20.jar	4e4d1922fc4f64bbcca5c13718c4dbca30a3135fd7f9eb931cdc8c05858b302e	GPLv2+CE	inherited local POM
+xmage	org/openjfx/javafx-media/17.0.20/javafx-media-17.0.20-linux.jar	eeb308b0de4db62d705ef90168625506282d8cfed4a62603d2bfc2f170ac3c69	GPLv2+CE	inherited local POM
+xmage	org/openjfx/javafx-media/17.0.20/javafx-media-17.0.20.jar	8dc10a825e42ff4879a020dec854146550b5e2b8cbc23ea83561b20256c20932	GPLv2+CE	inherited local POM
+xmage	org/openjfx/javafx-swing/17.0.20/javafx-swing-17.0.20-linux.jar	1a7d80cd2c3dacccb3b30aed5c3ea840c08b057382fee05bca927d3f9cf20486	GPLv2+CE	inherited local POM
+xmage	org/openjfx/javafx-swing/17.0.20/javafx-swing-17.0.20.jar	ec4620b5610ba0d79ef6515dd526511a87fa1c97e360cbdd172ddbf7b81ca012	GPLv2+CE	inherited local POM
+xmage	org/openjfx/javafx-web/17.0.20/javafx-web-17.0.20-linux.jar	dc6cb4a5260e2083552dc86419243206f6beaf2a844a5727d2f9804aa3977671	GPLv2+CE	inherited local POM
+xmage	org/openjfx/javafx-web/17.0.20/javafx-web-17.0.20.jar	507704f49733d00224270bcacde3caf31289a27f49842b87f6e356a6837f1896	GPLv2+CE	inherited local POM
+xmage	org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar	58812de60898d976fb81ef3b62da05c6604c18fd4a249f5044282479fc286af2	The Apache License, Version 2.0	local POM
+xmage	org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar	7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832	MIT	inherited local POM
+xmage	org/slf4j/slf4j-reload4j/2.0.17/slf4j-reload4j-2.0.17.jar	62dfd069563dbce91d276c9a38d557da49df7be15b03bb898b63b5390c6bb889	MIT	inherited local POM
+xmage	org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar	7b526ac5fabec1e9d1ec6c764e68188bdf4c7bd96c23d91d3450592fc4a6ba85	Lesser General Public License (LGPL)	local POM
+xmage	org/swinglabs/swing-worker/1.1/swing-worker-1.1.jar	8367bc401d38d96ec987ef72502a310599552210dd60cb9e494b58a7c23be1ca	Lesser General Public License (LGPL)	local POM
+xmage	org/swinglabs/swingx/1.6.1/swingx-1.6.1.jar	ad9e3577517e8b4d08ca58f637338ebed79ef8bd955b734600d95c8ad182840f	Lesser General Public License (LGPL)	local POM
+xmage	org/unbescape/unbescape/1.1.6.RELEASE/unbescape-1.1.6.RELEASE.jar	597cf87d5b1a4f385b9d1cec974b7b483abb3ee85fc5b3f8b62af8e4bec95c2c	The Apache Software License, Version 2.0	local POM
+xmage	org/xerial/sqlite-jdbc/3.53.2.0/sqlite-jdbc-3.53.2.0.jar	dc320e4102884c135ccc30c3c6fc3fb190b750e1586a100e3aba3be783cf33a9	The Apache Software License, Version 2.0	local POM
+xmage	trove/trove/1.0.2/trove-1.0.2.jar	ad68a86cfd0255a2bc0525ce11ec49640caea7e34ff91eb89c3193dcccd77f05	UNKNOWN	no local declaration resolved
+xmage	xml-apis/xml-apis/1.4.01/xml-apis-1.4.01.jar	a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad	The Apache Software License, Version 2.0; The SAX License; The W3C License	local POM
+xmage	xml-apis/xml-apis-ext/1.3.04/xml-apis-ext-1.3.04.jar	d0b4887dc34d57de49074a58affad439a013d0baffa1a8034f8ef2a5ea191646	The Apache Software License, Version 2.0	inherited local POM
+xmage	.cache/upstream/mage/Mage.Client/target/mage-client-1.4.61.jar	a9145dffb1a2d54b2dda0ea56611950a589d0af71124894fb0634f894da91d3b	MIT	pinned upstream source LICENSE files
+xmage	.cache/upstream/mage/Mage.Server/target/mage-server-1.4.61.jar	b90c29b6f894df027738424bec9303d9a794a260e6821797caabc4afba76db64	MIT	pinned upstream source LICENSE files
+xmage	.cache/upstream/mtgcard/fabric/build/libs/MtgCard-fabric-1.7.0-26.3.jar	c4185125cb8c4290a2d1a969827dfdd6077dd1c3cafab57642ab95a548a507c0	MIT; conflicting LICENSE.txt says all rights reserved	pinned upstream source LICENSE files
+fabric	at.yawk.lz4:lz4-java:1.10.1	a58a84c4271e50df4c96ed916ccb7e48a869f8ed9cdcda1ad5d3d4c33b0214a3	Apache License, Version 2.0	local POM
+fabric	com.azure:azure-json:1.4.0	c50bc998cd1a6c689f8644b51c206217bf2da09d5b949e777490a60290cc3a0d	The MIT License (MIT)	local POM
+fabric	com.electronwill.night-config:core:3.6.7	fa1272c026b500338dae2997f5ea4b02c632f54769de9649a6a390ca1cb234be	GNU Lesser General Public License v3.0	local POM
+fabric	com.electronwill.night-config:toml:3.6.7	c0a69bb6e3dadebb183184b57f92b865c9fd7c8191f37133a70e519ac09dad11	GNU Lesser General Public License v3.0	local POM
+fabric	com.github.oshi:oshi-core:6.9.0	b29ba9bce041e6ea822203d5b5a692660c87551241510ebc76eedffe684844c7	MIT	inherited local POM
+fabric	com.google.code.gson:gson:2.14.0	2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f	Apache-2.0	local POM
+fabric	com.google.guava:failureaccess:1.0.3	cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb	Apache License, Version 2.0	inherited local POM
+fabric	com.google.guava:guava:33.6.0-jre	dc573e1fca4fd5454f4a5fd3d7da2df03002876a4175bafc14a95980dd7713b3	Apache License, Version 2.0	inherited local POM
+fabric	com.ibm.icu:icu4j:78.3	e962c1758d9659ea1e1fbab99c58683f654d304e1126ace19aaabfe39e0edb25	Unicode-3.0	local POM
+fabric	com.microsoft.azure:msal4j:1.24.1	12e62f79d1a71d176a41c168c0587f8167f0add99b78f006f39595bd7242aebe	MIT License	local POM
+fabric	com.mojang:authlib:10.0.77	521672866582633a412c82171d3cfa416ecaccdf05a43baf809c16f9aec07068	UNKNOWN	no local declaration resolved
+fabric	com.mojang:blocklist:1.0.10	830bfd639c8db49236bbd8e45d3a2b8c96c56ff654a10118654958a6235d4c44	UNKNOWN	no local declaration resolved
+fabric	com.mojang:brigadier:1.3.11	9d09cf4819de83dfcd38bcb212d5f2227131791cef3abbfca3321d6fb2b9a64d	UNKNOWN	no local declaration resolved
+fabric	com.mojang:datafixerupper:10.0.21	3547cb1da8993fb7ebd42494d0e78997d2cfbe90c421f5efd022863e6909941e	UNKNOWN	no local declaration resolved
+fabric	com.mojang:jtracy:1.14.38	721bff502a9664d689d781ab7bfed19330606c2e1ef6b8e4d59fba67e7e765da	UNKNOWN	no local declaration resolved
+fabric	com.mojang:jtracy:1.14.38	6c64f455ebaa5f663136102b75fca635078d79efe284aa0aa3c60fa31ce48203	UNKNOWN	no local declaration resolved
+fabric	com.mojang:logging:1.7.12	3c7ac9742fa98c773275379eb1046c048b5d2ee989152a8c69e7ba696c3f8538	UNKNOWN	no local declaration resolved
+fabric	com.mojang:patchy:2.2.10	16d70e7968b45caffc81576268eb000f473fb60bf257182d3447dea8ec919d5a	UNKNOWN	no local declaration resolved
+fabric	com.mojang:text2speech:1.19.12	63769a6f662ad8943adf6be14a45e375d76a567d7ba50c2a7f1f95082c93b816	UNKNOWN	no local declaration resolved
+fabric	commons-codec:commons-codec:1.22.0	d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4	Apache-2.0	inherited local POM
+fabric	commons-io:commons-io:2.20.0	df90bba0fe3cb586b7f164e78fe8f8f4da3f2dd5c27fa645f888100ccc25dd72	Apache-2.0	inherited local POM
+fabric	io.github.llamalad7:mixinextras-fabric:0.5.5	5da883dc4bfb16e4ceca3f16d8c4ad937bdfb1ce337ed5ba15472d4d81dd6242	MIT License	local POM
+fabric	io.netty:netty-buffer:4.2.16.Final	cc36ae9fbd0b03fe755eb4eb4424ca53b59cfd297d7fd47d49e5b1059beded6c	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-codec-base:4.2.16.Final	feb410225938d9970de6b624a0c031d079804fa5cc5e1ec6e9298f16db5998a7	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-codec-compression:4.2.16.Final	13c8565414dd2115281303ef4ad1f7cc69bd7771d8d12c7d2fb31307dff26d11	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-codec-http:4.2.16.Final	0d16f981de8d0d304a2ab1a81f0a674892089fbaa8a583100aebb4a5b00456ec	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-common:4.2.16.Final	9825ee68a0dc4cd2b53e2f532502401b2211bad9b77e8b04882d9e64487283ff	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-handler:4.2.16.Final	a259ca496da05ac1981f95cd856211f894a328056a6129e9cd70dbbd5df401f7	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-resolver:4.2.16.Final	c9eca6a99036485cf1d186b4a6a595b0a54c53808319ee03924270eae04c32bb	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-transport-classes-epoll:4.2.16.Final	9f2b53210db9c8d24e787ed43f3896aaf30d686ed270c7afbb29ab6330c6aa23	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-transport-classes-kqueue:4.2.16.Final	6599b495f69420cb240ab0a1aa60a19a2df3bc72791729170e0993727637a689	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-transport-native-epoll:4.2.16.Final	212cc7d81390e31b580a1fb91b6c8d963b43e762ed072c555e2b09ad4476e928	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-transport-native-epoll:4.2.16.Final	2e00548e731948881d0c73ee79d2ead759254e750929406a1d595484758f0267	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-transport-native-kqueue:4.2.16.Final	05a09a4ab51f488f0c22f42ccce6c06935afbfac51173fae44170465aa072828	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-transport-native-kqueue:4.2.16.Final	796c503f7a80217177bd315f6448263134ee0f9042627d5fd698c760bcf99c8c	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-transport-native-unix-common:4.2.16.Final	41ca8fe192083d17917be7ddcecded4da4fc1db1d1656d03d0bcb14e2f431155	Apache License, Version 2.0	inherited local POM
+fabric	io.netty:netty-transport:4.2.16.Final	cfa3f654caff906653385f4b7ddaa539d795b78f5711a622482b17d2b73484c0	Apache License, Version 2.0	inherited local POM
+fabric	it.unimi.dsi:fastutil:8.5.18	9094ae67d01d0ad246f886f11ad557fc2e79c72cbf3feed83e1512a8ae90a74a	Apache License, Version 2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-api-base:2.0.6+fcdff87f02	75b7f29e4332bd9b3eedd56d6008281824de7de681dd4e313a99b43c8a677b5c	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-api-lookup-api-v1:2.0.24+3434d6d902	89c7e4ba7764d3f04b414748c6e6c7ce6fb2173097d121c91f0e7322e1531be1	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-api:0.160.5+26.3	5096e9774d629850338fc1c73b5571b527171374b11ac231691fb93731ee0ae6	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-biome-api-v1:20.0.9+74ed1ea502	2039a1bef64a0b92e63e74e877d43dea948668ba0c9b6f9042d8d51bd8451e8c	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-block-api-v1:3.1.0+0ae6f91102	f1ae6b6662e39bddc2d586017d0e3d578708ba97a940b355492017517c4c4423	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-block-getter-api-v2:2.0.9+3434d6d902	1a0aa00d7494cd8855c5edd0c8b6059e7e36dcb61395b305e6021564d7c8e030	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-client-gametest-api-v1:6.0.7+4be74c3f02	aca24f0e3d4caa49a29a4fcebdae9ccccdcce28ac26a88f2998b3a3699ab6942	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-command-api-v2:3.1.2+fcdff87f02	532138440ac063efd9ab537dea559bc7a2c2d5ccf62c945ff0bc68c9b3a8b31f	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-content-registries-v0:15.0.3+74ed1ea502	f50083bba056f33771cb65ed5149422eb952274d5296871ced664f792af67999	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-convention-tags-v2:4.10.2+5a4e5fc602	b0fc47360b8310fac0db7407edc05299c7fa4ac53c57f791fd0014e360ee0409	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-crash-report-info-v1:1.0.7+fcdff87f02	c9c06f45c4b772b1e575df94d490b8ec89f96fa17f0a7e3279a910f258546cec	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-creative-tab-api-v1:5.0.21+fcdff87f02	0688a04d05920b62506c3d912113720f48d577946dc3b1c65f7b16bff89c1d23	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-data-attachment-api-v1:2.2.30+3434d6d902	36fa8e1a3455522366b7c73ff7d1b92852c20abfa3c03f54d3f902eab57287c6	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-data-generation-api-v1:27.2.1+6317c5a702	1b1f6a04f8af2fea8c3698a58ed0841710c9678ca1448392a84acb9fb6bfea5d	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-debug-api-v1:1.0.4+3434d6d902	7425694615f0145649c4fd45e06e7128053e8474cffb998bce9554d8fbc7a981	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-dimensions-v1:5.1.19+47f74c9802	afca88618b372db13a096afd299d1c03627fc1ee99dc9f46a7e89d75e4bded0d	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-entity-events-v1:6.0.4+3434d6d902	7554f7e8138eabca11d257550e4624863d7dc754ffb06b54d48eb9728d3d3b03	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-events-interaction-v0:5.3.6+3434d6d902	cf4fef60ee837b0a4e68bcee533d1208df29db1776d56743c9b0769a6265f791	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-game-rule-api-v1:4.0.10+3434d6d902	e19363d341ef619518a917455ee3ea8edcf62b1d0ab13591b50b4c525f59fa6c	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-gametest-api-v1:4.0.32+3434d6d902	8ab2dd529a2f6c11e35e18261b65cb0db9da5394703e67ace031f1e503f4bb41	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-item-api-v1:14.6.2+fcdff87f02	0942fbde259f431854632f9635edcb3b50250ebd0a22322b3bc89516f983f019	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-key-mapping-api-v1:2.0.8+3434d6d902	6186de2e8256c4fb1bc0b7d2c135e1bb4c8431a7b11fb3a2f8f23fb84f99b533	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-lifecycle-events-v1:4.1.9+ffef5f6702	d1849e859cbe09c9164e1fb63cbce667d647896ac13e434689c305bb8091b021	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-loot-api-v3:4.0.7+b108b08b02	a60fc48e6a70584bd0f0ea1c2bc5f6322eeaea7bc8eccefd37c60040a6238672	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-menu-api-v1:2.0.26+3434d6d902	0cd882187818c835461bc9f701d0b74fdeac852a0e1919aa07efb1fc05f63273	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-message-api-v1:7.0.10+3434d6d902	b751ef4c6f004718030f620e0827a4613067686196aa6cd0edccd420a9254135	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-model-loading-api-v1:8.0.34+fcdff87f02	3e36c12c8e26591f65b1f93a40b0d59b2d60f190243af72235eda01433dca29d	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-networking-api-v1:6.3.8+fcdff87f02	64f066c44e340021024ef7b40d536ffbca06ae25b8f1fdbdae85a2639339a3bf	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-object-builder-api-v1:24.1.9+3434d6d902	5acd643a06cde830f8c93d5a3e5af71686217ff8cd49641386650e772eccdb59	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-particles-v1:5.0.24+3434d6d902	cb7328c1b23a4f94dbd00cb897deea0c098699bde1af66c6cf5284f5a9018a68	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-permission-api-v1:1.0.8+fcdff87f02	2b7b6dde4c3d50ae612f1d25426e8344fb1a7f2e785d4bd3c52baf49834d1d42	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-recipe-api-v1:10.0.8+fcdff87f02	df1deb5d962e10f18d42905fb027ed3130a7bcc2036c427fb0ba3dc0499d0016	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-registry-sync-v0:8.0.1+fcdff87f02	cdc4f4c10872ee8b636d7401ddb4c422b7ee3e780e7e5babfcb55ec7dfd8248a	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-renderer-api-v1:17.0.14+2ce735b802	c8f3f0b6a0ca10500250f42437c9d8a53e1bd73ab457214ca4a6dc36f4255ee6	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-renderer-indigo:9.1.22+b9d63e3302	e2afdc723d19173d4dd9b24f0b4776d0a1ddc26e79b2a21426d5a1e089775dbd	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-rendering-fluids-v1:6.0.6+3434d6d902	b32e1537a8203d0d87a8496dc4d7b8a285c0d6846b0c804e2a3ee772a3d5d730	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-rendering-v1:27.0.14+901a437c02	a74acc6ea47853c8e84d7dfc02ee02de1ca0b271b30de89483b1cb68814b8873	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-resource-conditions-api-v1:6.1.5+3434d6d902	a1a95496e6aa50dd2babac718fd1cfb617799998c65687a4522fcb5a89d10dbd	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-resource-loader-v0:3.3.26+4fc5413f02	12e370bb8c583a6dd2c64f023df2ec91b04863700a90828602b3d81d65882672	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-resource-loader-v1:3.0.4+fcdff87f02	5a60f5718a8048b93d818d6a59f27a093164c6efaef1a918feb063ae3a8f950a	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-screen-api-v1:5.2.3+1087e13e02	ebd69a4e977a255f6baf2b133a146d1b4256a813c96c67367d440189308b1422	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-serialization-api-v1:2.0.7+74ed1ea502	dc7ea721a1227c7cbc6b53f292e656bffe3c6e0cee35c689146b5c7c7a65818b	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-sound-api-v1:2.0.7+3434d6d902	45b574e4d0dd72ae433c8da585f5a24d0683c490b7455602ca343aee4d0c2611	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-tag-api-v1:2.1.10+fcdff87f02	0b6791ec08d5a8865b822ba60efdd62e09819d841769fdf4142896d5f179b298	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-transfer-api-v1:8.0.25+fcdff87f02	e8cb578aaccd9ae38de68083a6fd1ddcf33a18c8759249d1b1b1571d606c9fe5	Apache-2.0	local POM
+fabric	net.fabricmc.fabric-api:fabric-transitive-access-wideners-v1:8.1.16+52268a0e02	b304a7c5c99d4b505322612f6295e9a50f062da6e20da437704d8be031af8ff2	Apache-2.0	local POM
+fabric	net.fabricmc:dev-launch-injector:0.2.1+build.8	63bebba2a134d891ac9ac1fec6746ae055cbb19a187e2e2e05a0b9ea857952d8	UNKNOWN	no local declaration resolved
+fabric	net.fabricmc:fabric-loader:0.19.5	93044e4dd46de5d8136701292f05e868da096d2c9fddb4793e4fdbcc63efc695	Apache-2.0	cached artifact fabric.mod.json
+fabric	net.fabricmc:fabric-log4j-util:1.0.2	538e845a086d58301b7dfb2135db52213666374ee9a23f0d9dc776c6e37c25b2	UNKNOWN	no local declaration resolved
+fabric	net.fabricmc:sponge-mixin:0.17.4+mixin.0.8.7	1f0ae44db7295f8626f33b1dc0ad7f043d8954a8d6847247875fcc5dfcecc934	The MIT License	local POM
+fabric	net.java.dev.jna:jna-platform:5.17.0	b7e3d46c87bad2eb409b0e704916bcd81206168e357312dfddd0e253679cd9e0	LGPL-2.1-or-later; Apache-2.0	local POM
+fabric	net.java.dev.jna:jna:5.17.0	b3a9408e7c51e08ef0e3bfcc08f443f6ec0f6191ba8cd7c18d53d2b22e5bdbc0	LGPL-2.1-or-later; Apache-2.0	local POM
+fabric	net.minecraft:minecraft-common-6974b2190e:26.3	4ce455e1a1b3303050e017d7677fcb2414ce65e3bd1a91dbfc060173236a2b1a	UNKNOWN	no local declaration resolved
+fabric	net.sf.jopt-simple:jopt-simple:5.0.4	df26cc58f235f477db07f753ba5a3ab243ebe5789d9f89ecf68dd62ea9a66c28	The MIT License	local POM
+fabric	org.apache.commons:commons-compress:1.28.0	e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca	Apache-2.0	inherited local POM
+fabric	org.apache.commons:commons-lang3:3.20.0	69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4	Apache-2.0	inherited local POM
+fabric	org.apache.logging.log4j:log4j-api:2.26.0	820de7bbaf430eaf2e3e5ccb92f23e2085797c5ac4d4f7fc6c8b660fbefa1dbc	Apache-2.0	local POM
+fabric	org.apache.logging.log4j:log4j-core:2.26.0	406bb3132c47a5d322e5c571feb0787ca84496469f346eb51f1ef2ee45499902	Apache-2.0	local POM
+fabric	org.apache.logging.log4j:log4j-slf4j2-impl:2.26.0	cfc1bddbd39e684b698ae968291d8a3b3a55ee0ec2ef3d3ea5c2336a9e151598	Apache-2.0	local POM
+fabric	org.jcraft:jorbis:0.0.17	e067f29a3701426b67ed973036949c6e58ca5bb53eef7240b2e71e286d252a9e	GNU Lesser General Public License	local POM
+fabric	org.joml:joml:1.10.9	feca4db853371704338621c120acc5cc32300d8af635fa42414b6213301e216b	MIT License	local POM
+fabric	org.jspecify:jspecify:1.0.0	1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab	The Apache License, Version 2.0	local POM
+fabric	org.lwjgl:lwjgl-freetype:3.4.3	b331b9d2a29c1b330c3887d33c14dab9d7eed3f763bb8f5ca559eec02d73f075	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-freetype:3.4.3	cbc702aa1d9c8fece6fe46a4e606c7c164eb7f0f7ca79f668dd95544db53fb2c	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-jemalloc:3.4.3	f34062b6489454f7e2c3bf5979e37667e62c7c85cd00f73760f441557cb1978a	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-jemalloc:3.4.3	1c7fc271f132e3d606d3044b2520fcb663481e55e5783c6ef4272e3bae73a7d9	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-openal:3.4.3	4a0049c8554d6890718fee76507572f2f9f8f3f6144d25d7d2ea76bccc2d9605	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-openal:3.4.3	433cbf19b16b177dd12897ef24c37117d9ffff48736b6c81616efc72ad4691f9	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-opengl:3.4.3	a92cf30f25b6fb6066f3508511f83c5c4fe2a0cff14fc2e7373bc1f6c726374f	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-opengl:3.4.3	4056e81c1174201f63e980f76b9955746c0f13d712e4d30ee02c38ae6bccd4ce	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-sdl:3.4.3	dcb33abcbd946553176bb668be80d7adc60cb9d919ab5c71fb01fc51cacc4c8f	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-sdl:3.4.3	e1880683a4af33299e9a1b8d7ec1799bed8fb709064ea08dcc2a15cd1101c0b3	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-shaderc:3.4.3	82c7b5270d2c78458f5720c639459710c8f086ca050eea9ab0c44256fee7a626	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-shaderc:3.4.3	0dced6d3362cbcd68d8ac9a07f2ce045c604a9abce371e1f66c77cfb837f7fd7	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-spvc:3.4.3	d737eba8512caa2f53db7a8dbea4c08d9c3d94493bb0a244e6d64af95541f742	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-spvc:3.4.3	8898165a90911bfd6be0aa1168449d9092f1747f6b7a16c2270d8265981725b3	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-stb:3.4.3	544753f5e49c53580949b9f1fc341f0e434991303c93d5a428fbaafaacc2cd69	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-stb:3.4.3	5c66a2f11b18062b62ef9c6433f753720f7bdad44b18ab4078a0a6404a64a720	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-vma:3.4.3	254162ef94bd213663a417368902ea916d51e0e0fa3054d07ea0ce9a8b7ac9e6	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-vma:3.4.3	f8690711c842de5aa15759459b8294fd682e452441b063bd7f902710db801804	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl-vulkan:3.4.3	acdb40767775ed1223dc3b2a8c9d3ce740c9e3c4af074444ce2dfe2ea9ba62e0	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl:3.4.3	46eeca5471833c3cf5da3c1da015b41e3bb3eb16dd3da03f366886da10096751	BSD-3-Clause	local POM
+fabric	org.lwjgl:lwjgl:3.4.3	d719e545a6db4ea87eb64d55630ba628755572bb5b56d51a1548347b5354cadb	BSD-3-Clause	local POM
+fabric	org.ow2.asm:asm-analysis:9.10.1	dede75a21306b65974ecd8f87114ff6970f09fb794157a4ca09ab25c888c2bfc	BSD-3-Clause	local POM
+fabric	org.ow2.asm:asm-commons:9.10.1	6d0abefb7cbf972ea16edb37ec14835372505063a45f976ab7ea889ed9497895	BSD-3-Clause	local POM
+fabric	org.ow2.asm:asm-tree:9.10.1	3dfb0d5b6a106cd40b5b250e39935fbf2f927f4477546a5369a3ac609cf0506b	BSD-3-Clause	local POM
+fabric	org.ow2.asm:asm-util:9.10.1	1bb99d091fba2597dc6d51193e9bbcf0d8447e7ed96bd8f0198b18152f09655c	BSD-3-Clause	local POM
+fabric	org.ow2.asm:asm:9.10.1	ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb	BSD-3-Clause	local POM
+fabric	org.sejda.imageio:webp-imageio:0.1.6	3d30473ef5cadf126a25b2613cbe36218ba7d4184be873edc8f28a183a9fb29d	Apache License, Version 2.0	local POM
+fabric	org.slf4j:slf4j-api:2.0.17	7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832	MIT	inherited local POM

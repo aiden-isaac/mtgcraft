@@ -73,3 +73,27 @@ SSLContext; non-loopback client URLs require HTTPS with normal certificate and
 hostname verification. No credentials or private deck bodies appear in routine
 logs; seat-access responses are `no-store` and their Java string form is redacted.
 Run `bash scripts/check.sh` for a local socket test of the boundary.
+
+## Durable acceptance and retries
+
+Minecraft persists reservation and operation intent before the corresponding remote
+operation. Create retries reuse the complete MatchRequest; start/cancel reuse its
+request digest. An authenticated NOT_FOUND may recreate only a locally unacknowledged
+request with the same immutable identity. A missing previously acknowledged match
+is unknown and stays in custody; neither 404 nor changed health authorizes release.
+
+Status/result world, match, digest and ordered seats must match the immutable request.
+Incarnation remains bound to the first acknowledged status. ACTIVE/COMPLETED require
+a durable local start authorization; CANCELLED requires a pending cancellation.
+Revision increases monotonically. Exact terminal replay is idempotent; lower-revision
+nonterminal responses are ignored. Conflicting terminal IDs/bindings/revisions or
+incarnations quarantine without replacing the accepted result. Result IDs are unique
+across local matches. First terminal/result acceptance and RETURN_PENDING commit in
+one atomic world-journal write; item delivery has its own acknowledged tombstone.
+
+The service's exclusive persistent-state lock establishes restart fencing. It retains
+old match incarnations in interrupted terminal records with NONE seat outcomes.
+The addon accepts that authenticated bound history, rather than synthesizing a
+result from health or transport failure. Polling uses bounded 4/8/16/30-second failure
+backoff and at most sixteen asynchronous in-flight requests; no network work blocks
+the Minecraft tick thread. There is no public result-write or quarantine-override API.
