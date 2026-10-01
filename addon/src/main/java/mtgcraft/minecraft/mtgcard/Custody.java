@@ -25,8 +25,11 @@ import net.minecraft.world.level.storage.TagValueOutput;
 /** Server-thread custody journal. No remote match may be prepared until RESERVED. */
 public final class Custody {
     public enum Phase { INTENT, RESERVED, RETURN_PENDING, CLAIMING, RETURNED, QUARANTINED }
-    public record Reservation(MatchRequest request, UUID backingId, String sourceFingerprint, CompoundTag original, Phase phase) {
-        public Reservation { Objects.requireNonNull(request); Objects.requireNonNull(backingId); digest(sourceFingerprint); original = original.copy(); Objects.requireNonNull(phase); }
+    public record Reservation(MatchRequest request, UUID backingId, String sourceFingerprint, CompoundTag original, Phase phase, Status observed) {
+        public Reservation {
+            Objects.requireNonNull(request); Objects.requireNonNull(backingId); digest(sourceFingerprint); original = original.copy(); Objects.requireNonNull(phase);
+            if (observed != null) Matches.verify(request, observed);
+        }
         @Override public CompoundTag original() { return original.copy(); }
     }
     public static final String MARKER = "mtgcraft_escrow";
@@ -36,6 +39,7 @@ public final class Custody {
     private final UUID worldId;
     private final Map<UUID, Reservation> reservations = new HashMap<>();
     private final Set<UUID> reservedBacking = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private final Map<UUID, UUID> resultOwners = new HashMap<>();
     private final Set<DeckboxBlockEntity> loaded = Collections.newSetFromMap(new IdentityHashMap<>());
     private boolean admissionProven; // Never enabled by production startup before the live custody acceptance probe.
     private java.util.function.Consumer<String> fault = ignored -> {};
@@ -53,7 +57,9 @@ public final class Custody {
                 var request = Json.read(tag.getString("Request").orElseThrow().getBytes(java.nio.charset.StandardCharsets.UTF_8), MatchRequest.class);
                 if (!request.worldId().equals(worldId) || !file.getFileName().toString().equals("escrow-" + request.matchId() + ".dat")) throw new IOException("Custody journal binding mismatch");
                 var record = new Reservation(request, UUID.fromString(tag.getString("Backing").orElseThrow()), tag.getString("Fingerprint").orElseThrow(),
-                        tag.getCompound("Original").orElseThrow(), Phase.valueOf(tag.getString("Phase").orElseThrow()));
+                        tag.getCompound("Original").orElseThrow(), Phase.valueOf(tag.getString("Phase").orElseThrow()),
+                        tag.getString("Status").map(json -> Json.read(json.getBytes(java.nio.charset.StandardCharsets.UTF_8), Status.class)).orElse(null));
+                uniqueResult(record);
                 if (record.phase() != Phase.RETURNED && !reservedBacking.add(record.backingId())) throw new IOException("Repeated backing reservation");
                 reservations.put(request.matchId(), record);
                 if (record.phase() == Phase.INTENT || record.phase() == Phase.CLAIMING) put(phase(record, Phase.QUARANTINED));
@@ -90,7 +96,7 @@ public final class Custody {
                     || menu instanceof com.spider.mtgcard.deckcontrol.DeckControlScreenHandler) viewer.closeContainer();
         }
         var original = (CompoundTag) ItemStack.CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, player.registryAccess()), source.original()).getOrThrow(IllegalArgumentException::new);
-        var record = new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.INTENT);
+        var record = new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.INTENT, null);
         synchronized (DeckboxStorage.class) { // Reuse upstream's storage mutex: no async API write can slip between recheck and protection.
             MtgcardAdapter.recheck(player, source);
             fault.accept("before_intent");
@@ -105,16 +111,35 @@ public final class Custody {
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
             savePlayer(player); // Acknowledged atomic player write, rather than vanilla's swallowed save errors.
             fault.accept("after_removed");
-            record = new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.RESERVED);
+            record = new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.RESERVED, null);
             put(record); fault.accept("after_reserved"); return record;
         } catch (IOException | RuntimeException failure) {
             // Keep intent/guards even if the quarantine write itself fails. Never invent a replacement box.
-            put(new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.QUARANTINED)); throw failure;
+            put(new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.QUARANTINED, null)); throw failure;
         }
     }
     void proveAdmissionForProbe() { onThread(); admissionProven = true; }
     void enableVerifiedAdmission() { onThread(); admissionProven = true; }
     void injectCrashForProbe(java.util.function.Consumer<String> fault) { onThread(); this.fault = fault; }
+    Status persistStatus(UUID match, Status incoming) throws IOException {
+        onThread(); var record = require(match); Matches.verify(record.request(), incoming);
+        var previous = record.observed();
+        if (previous != null) {
+            if (!previous.serviceIncarnation().equals(incoming.serviceIncarnation())) throw new IllegalArgumentException("Conflicting service incarnation");
+            if (terminal(previous.state())) {
+                if (!previous.equals(incoming)) throw new IllegalArgumentException("Conflicting terminal status");
+                return previous;
+            }
+            if (incoming.revision() < previous.revision()) return previous;
+            if (incoming.revision() == previous.revision()) {
+                if (!incoming.equals(previous)) throw new IllegalArgumentException("Conflicting status revision");
+                return previous;
+            }
+            if (previous.state() == State.ACTIVE && incoming.state() == State.PREPARED) throw new IllegalArgumentException("Regressing match status");
+        }
+        put(new Reservation(record.request(), record.backingId(), record.sourceFingerprint(), record.original(), record.phase(), incoming));
+        return incoming;
+    }
     // Only the lifecycle coordinator may call this, after committing a verified terminal result.
     void returnPending(UUID match) throws IOException {
         onThread(); var record = require(match);
@@ -163,11 +188,19 @@ public final class Custody {
         if (record == null) throw new IllegalArgumentException("Unknown match");
         return record;
     }
-    private static Reservation phase(Reservation record, Phase phase) { return new Reservation(record.request(), record.backingId(), record.sourceFingerprint(), record.original(), phase); }
+    private static Reservation phase(Reservation record, Phase phase) { return new Reservation(record.request(), record.backingId(), record.sourceFingerprint(), record.original(), phase, record.observed()); }
+    private void uniqueResult(Reservation record) throws IOException {
+        if (record.observed() == null || record.observed().result() == null) return;
+        var result = record.observed().result().resultId(); var match = record.request().matchId();
+        var previous = resultOwners.putIfAbsent(result, match);
+        if (previous != null && !previous.equals(match)) throw new IOException("Result ID belongs to another match");
+    }
     private void onThread() { if (!server.isSameThread()) throw new IllegalStateException("Custody requires the Minecraft server thread"); }
     private void put(Reservation record) throws IOException {
         var tag = new CompoundTag(); tag.putInt("Version", 1); tag.putString("Request", new String(Json.bytes(record.request()), java.nio.charset.StandardCharsets.UTF_8));
         tag.putString("Backing", record.backingId().toString()); tag.putString("Fingerprint", record.sourceFingerprint()); tag.put("Original", record.original()); tag.putString("Phase", record.phase().name());
+        if (record.observed() != null) tag.putString("Status", new String(Json.bytes(record.observed()), java.nio.charset.StandardCharsets.UTF_8));
+        uniqueResult(record);
         reservations.put(record.request().matchId(), record);
         if (record.phase() != Phase.RETURNED) reservedBacking.add(record.backingId());
         write(directory.resolve("escrow-" + record.request().matchId() + ".dat"), tag);

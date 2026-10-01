@@ -104,6 +104,18 @@ public final class CustodyProbe implements ModInitializer {
                 assert java.util.Arrays.equals(backingBytes, Files.readAllBytes(DeckboxStorage.path(server, backing)));
                 var again = new Custody(server); Custody.install(again);
                 assert again.records().size() == 1 && again.records().iterator().next().request().equals(request) && Custody.locked(server, backing);
+                var incarnation = UUID.randomUUID();
+                var prepared = new Status(1, request.worldId(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.PREPARED, 1, null);
+                var active = new Status(1, request.worldId(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.ACTIVE, 2, null);
+                again.persistStatus(request.matchId(), prepared); again.persistStatus(request.matchId(), active);
+                assert again.persistStatus(request.matchId(), prepared).equals(active) : "Delayed prepared status regressed active state";
+                var resultRecord = new Result(UUID.randomUUID(), request.worldId(), request.matchId(), request.snapshot().digest(), incarnation, State.CANCELLED, 3, request.seats().stream().map(seat -> new SeatOutcome(seat, Outcome.NONE)).toList());
+                var terminal = new Status(1, request.worldId(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.CANCELLED, 3, resultRecord);
+                assert again.persistStatus(request.matchId(), terminal).equals(terminal) && again.persistStatus(request.matchId(), terminal).equals(terminal);
+                assert again.requireOwner(player.getUUID(), request.matchId()).phase() == Custody.Phase.RESERVED : "Terminal processing conflated physical return";
+                reject(() -> again.persistStatus(request.matchId(), prepared));
+                var wrongWorld = new Status(1, UUID.randomUUID(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.PREPARED, 1, null);
+                reject(() -> again.persistStatus(request.matchId(), wrongWorld));
                 var heldFile = Custody.read(server.getWorldPath(net.minecraft.world.level.storage.LevelResource.PLAYER_DATA_DIR).resolve(player.getUUID() + ".dat"));
                 assert heldFile.getList("Inventory").orElseThrow().isEmpty() : "Escrow removal was not persisted";
                 again.returnPending(request.matchId());
@@ -121,7 +133,20 @@ public final class CustodyProbe implements ModInitializer {
                 assert cached.getItem(0).getCount() == 40 : "Unlock reused stale alias cache instead of authoritative backing";
                 var afterReturn = new Custody(server); Custody.install(afterReturn);
                 assert afterReturn.requireOwner(player.getUUID(), request.matchId()).phase() == Custody.Phase.RETURNED;
+                assert afterReturn.requireOwner(player.getUUID(), request.matchId()).observed().equals(terminal);
                 assert afterReturn.claim(player, request.matchId()) == Custody.Phase.RETURNED && player.getInventory().countItem(returned.getItem()) == 1;
+                var collision = MatchRequest.create(request.worldId(), UUID.randomUUID(), request.seats(), request.snapshot(), request.aiProfile());
+                var collisionResult = new Result(resultRecord.resultId(), collision.worldId(), collision.matchId(), collision.snapshot().digest(), incarnation, State.CANCELLED, 3, collision.seats().stream().map(seat -> new SeatOutcome(seat, Outcome.NONE)).toList());
+                var collisionStatus = new Status(1, collision.worldId(), collision.matchId(), collision.requestDigest(), collision.snapshot().digest(), incarnation, collision.seats(), State.CANCELLED, 3, collisionResult);
+                var journalDirectory = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("mtgcraft");
+                var collisionFile = journalDirectory.resolve("escrow-" + collision.matchId() + ".dat");
+                var collisionTag = Custody.read(journalDirectory.resolve("escrow-" + request.matchId() + ".dat"));
+                collisionTag.putString("Request", new String(mtgcraft.protocol.Json.bytes(collision), java.nio.charset.StandardCharsets.UTF_8));
+                collisionTag.putString("Status", new String(mtgcraft.protocol.Json.bytes(collisionStatus), java.nio.charset.StandardCharsets.UTF_8));
+                Custody.write(collisionFile, collisionTag);
+                try { new Custody(server); throw new AssertionError("Duplicate result identity was accepted"); }
+                catch (java.io.IOException expected) { assert expected.getMessage().contains("Result ID"); }
+                Files.delete(collisionFile);
                 var placement = ((BlockItem) returned.getItem()).place(new DirectionalPlaceContext(level, pos.offset(4, 0, 0), Direction.DOWN, returned, Direction.UP));
                 assert placement != net.minecraft.world.InteractionResult.FAIL;
                 var restored = (DeckboxBlockEntity) level.getBlockEntity(pos.offset(4, 0, 0));
@@ -130,12 +155,14 @@ public final class CustodyProbe implements ModInitializer {
                 var uncertain = MatchRequest.create(request.worldId(), UUID.randomUUID(), request.seats(), request.snapshot(), request.aiProfile());
                 var root = Custody.read(server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("mtgcraft/escrow-" + request.matchId() + ".dat"));
                 root.putString("Request", new String(mtgcraft.protocol.Json.bytes(uncertain), java.nio.charset.StandardCharsets.UTF_8)); root.putString("Phase", "CLAIMING");
+                root.remove("Status");
                 Custody.write(server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("mtgcraft/escrow-" + uncertain.matchId() + ".dat"), root);
                 var recovered = new Custody(server); Custody.install(recovered);
                 assert recovered.requireOwner(player.getUUID(), uncertain.matchId()).phase() == Custody.Phase.QUARANTINED && Custody.locked(server, backing);
                 reject(() -> recovered.claim(player, uncertain.matchId()));
                 System.out.println("PASS live custody: survival breaking keeps one original box/UUID/tint, placed rejection, durable physical transfer, storage guards, cached alias guards, placement rejection and journal reload");
                 System.out.println("PASS return claims: offline/full pending, owner binding, one original item, durable tombstone, re-placement, fresh alias cache and crash quarantine");
+                System.out.println("PASS world journal: immutable request/result bindings, monotonic observations, terminal replay/reload and independent return phase");
                 CommandProbe.run(server, card);
             } catch (Throwable failure) { failure.printStackTrace(); server.halt(false); }
         });
