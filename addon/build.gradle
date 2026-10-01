@@ -12,6 +12,26 @@ dependencies {
     implementation files('../.cache/upstream/mtgcard/fabric/build/libs/MtgCard-fabric-1.7.0-26.3.jar')
 }
 sourceSets.main.java.srcDirs += ['../shared/src/main/java']
+sourceSets {
+    probe {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
+}
+loom {
+    mods {
+        mtgcraft { sourceSet sourceSets.main }
+        mtgcraft_probe { sourceSet sourceSets.probe }
+    }
+    runs {
+        custodyProbe {
+            server()
+            source sourceSets.probe
+            runDir System.getProperty('custody.runDir', '../.cache/custody-probe')
+            vmArg '-ea'
+        }
+    }
+}
 java { sourceCompatibility = JavaVersion.VERSION_25; targetCompatibility = JavaVersion.VERSION_25 }
 tasks.withType(JavaCompile).configureEach { options.release = 25 }
 tasks.test { failOnNoDiscoveredTests = false }

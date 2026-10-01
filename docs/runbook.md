@@ -85,3 +85,17 @@ The second native client showed roughly 18 seconds of callback delay and an upst
 closed-connection warning; its phase deadline is 45 seconds. This is fixture evidence,
 not a measured reconnect/turn-latency SLA. Swing UI and physical custody acceptance
 remain unverified.
+
+# Current physical integration gate
+
+Build the pinned addon with `bash scripts/check-addon.sh`. Run its real disposable
+server experiment with `bash scripts/check-custody.sh`; it reuses only the previously
+approved local test EULA and never connects players to a public server.
+
+The addon includes the explicitly approved normal-loot compatibility fix: it preserves
+the existing block UUID/tint on its existing drop, without another box or record.
+The live probe passes survival destruction, exact contents, placed-source rejection,
+durable physical transfer, storage/cache/world-access/placement guards and journal
+reload. Its probe mod and admission bypass are excluded from the production addon jar.
+Production admission remains disabled while return/crash and full lifecycle acceptance
+are incomplete. No background test server remains running after a successful probe.

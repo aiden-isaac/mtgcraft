@@ -143,3 +143,25 @@ wins-needed-one match. No full Minecraft-to-XMage-to-Minecraft lifecycle has pas
 7. What memory and latency do two concurrent human/AI matches produce? What process-start and shutdown behavior does the pinned build exhibit?
 
 Failure to establish exact deck enforcement, trusted outcome retrieval, or exclusive custody is a stop condition for claiming this milestone complete; the design must be amended with evidence rather than weakening acceptance silently.
+
+### Ordinary held-source compatibility (approved 2026-10-01)
+
+The real pinned Fabric server reproduced a missing UUID on the ordinary survival
+loot path: the block retained `DeckboxId`, but its existing loot box lacked
+`mtgcard_deckbox_id`. The user explicitly approved a scoped addon compatibility fix.
+`LootIdentity` preserves the existing block UUID and tint on existing deckbox loot;
+it creates no second drop or replacement record and copies no cached card contents.
+The pinned upstream source/artifact remains untouched.
+
+`bash scripts/check-custody.sh` now passes actual server-side survival block destruction:
+one dropped box retains its original UUID/tint and forty physical cards. It also
+passes placed-alias rejection, durable intent/removal/reservation, backing read/write
+guards, cached read/removal/insertion guards, world lookup and item/dispenser placement
+rejection, and journal reload. The world lookup guard covers the pinned store/database/
+control/menu/automation callers; admission closes retained MTGCard menus before the
+final recheck. Storage recheck/protection reuse the upstream storage mutex.
+
+Production admission remains disabled until return/crash tests and the full lifecycle
+are demonstrated. The fixture transfers the actual server-created item entity into
+a server-side player hand; networked player input and external-client acceptance
+remain section 6. The disposable probe mod is excluded from the production addon jar.

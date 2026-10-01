@@ -5,6 +5,8 @@
   "name": "MTGCraft integration",
   "environment": "server",
   "license": "MIT",
+  "entrypoints": { "main": ["mtgcraft.minecraft.mtgcard.Integration"] },
+  "mixins": ["mtgcraft.mixins.json"],
   "depends": {
     "fabricloader": "0.19.5",
     "minecraft": "26.3",

@@ -38,6 +38,7 @@ public final class MtgcardAdapter {
         if (!ModBlocks.isDeckbox(box) || box.getCount() != 1) throw new IllegalArgumentException("Hold one MTGCard deckbox in your main hand");
         var data = StackData.readCustom(box);
         var backing = uuid(data.getString(DeckboxStorage.ITEM_ID_KEY).orElseThrow(() -> new IllegalArgumentException("Deckbox has no backing ID")));
+        if (Custody.locked(server, backing)) throw new IllegalArgumentException("Deckbox is reserved or custody is unavailable");
         if (box.has(DataComponents.CONTAINER) || data.contains("BlockEntityTag")) throw new IllegalArgumentException("Legacy or embedded container data is unsupported");
         var path = DeckboxStorage.path(server, backing);
         if (!Files.isRegularFile(path) || Files.size(path) > 2 * 1024 * 1024) throw new IllegalArgumentException("Backing record is missing or too large");
