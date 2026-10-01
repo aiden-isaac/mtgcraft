@@ -97,17 +97,28 @@ admission disabled until a protection hook and ordinary item lifecycle are teste
 
 XMage's `ExtensionPackage` is a card/deck/cube extension API, not a server lifecycle
 plugin. Use a narrow bootstrap/server patch around the managers; do not assume a
-drop-in lifecycle plugin exists. Native authenticated session restoration passed for
-a prepared table, but stock Swing UI attachment and managed-deck guards remain open.
+drop-in lifecycle plugin exists. A bootstrap in `mage.server` reused the pinned
+package-private native transport without editing upstream. Create through
+`GamesRoom.createTable` to populate the lobby as well as the table manager.
+The stock session library in a separate JVM authenticated against a precreated,
+service-owned table and retained its human player UUID on reconnect. Swing UI and
+active-game reconnect remain unverified. A service-owned table alone does not enforce
+the deck: native leave/rejoin replaced the installed Plains deck with Islands.
+Non-owner `matchStart` also changed the table to STARTING before ownership validation.
+Managed policy must run before any transition, and cover creation, join/rejoin,
+leave, deck submission/save, start, seat swaps and removal (audit in `spikes/README.md`).
+Keep service ownership distinct from human seat access; credentials alone are insufficient.
 
-Structured concession state and upstream SQLite history survive controller cleanup
+Structured draw/concession state and upstream SQLite history survive controller cleanup
 and a probe JVM restart. Capture before `Table.closeTable` clears its validator.
 `result.proto` has no stable table/match/player UUIDs, and repository writes swallow
 SQL exceptions, so upstream history alone cannot satisfy project result identity and
 durable acknowledgement. The service must snapshot its stable bindings alongside the
 structured outcome and persist with an acknowledged commit before release/cleanup.
-Draw runtime handling is unresolved; an ended game must not automatically terminate
-a wins-needed-one match. No full Minecraft-to-XMage-to-Minecraft lifecycle has passed.
+The engine-driven zero-start-life fixture drew the first game and continued the match;
+concession in the next game produced an AI match win. This is a worker fixture, not
+the native controller callback. An ended game must not automatically terminate a
+wins-needed-one match. No full Minecraft-to-XMage-to-Minecraft lifecycle has passed.
 
 1. Which XMage API/extension seam can create a managed table programmatically without a normal lobby owner, and can it persist a unique project marker before any ambiguous failure?
 2. How does the stock external client authenticate and attach to the precreated human seat, and which native deck submission paths must be blocked to enforce the snapshot?

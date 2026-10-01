@@ -40,12 +40,24 @@ The service SHALL bind a project-owned seat ID to the Minecraft player and to a 
 - **WHEN** a user without the bound seat credentials attempts to join that managed match
 - **THEN** the join is denied even if the user knows the project match ID or visible table name
 
+#### Scenario: Bound client leaves and rejoins with a different deck
+- **WHEN** a native client attempts a pregame leave/rejoin sequence on its managed table
+- **THEN** the service preserves the bound seat and immutable submitted deck, or confirms cancellation through the lifecycle; the sequence SHALL NOT reopen a seat for replacement deck submission
+
+#### Scenario: Non-owner attempts to start a managed table
+- **WHEN** an unauthorized native start request addresses a prepared managed table
+- **THEN** it is rejected before any table-state transition, and the table remains available for authorized service start or cancellation
+
 ### Requirement: Authoritative terminal status
 The service SHALL derive outcomes from XMage's completed game/match state and persist a project-owned terminal record before exposing completion. The record SHALL include world ID, match ID, snapshot digest, stable result ID, terminal disposition, project seat outcomes, service incarnation, and monotonic revision. Completion, cancellation, interruption, and preparation failure SHALL be distinct. Minecraft-client assertions and free-text result messages SHALL NOT establish a winner.
 
 #### Scenario: Human completes a match against AI
 - **WHEN** XMage reaches the configured best-of-one match end
 - **THEN** authenticated status retrieval exposes the durable outcome mapped to project seat IDs
+
+#### Scenario: A game draws before the match has ended
+- **WHEN** XMage records a drawn game and keeps the configured match active
+- **THEN** the service retains active match status and SHALL NOT publish a terminal match result merely because a game completion callback ran
 
 #### Scenario: Cancellation races with completion
 - **WHEN** cancellation and natural completion occur concurrently

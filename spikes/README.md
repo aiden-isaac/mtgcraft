@@ -65,7 +65,9 @@ The probe initializes `RepositoryUtil` and `CardScanner`, registers `TwoPlayerMa
 `TwoPlayerDuelType`, `Freeform`, `HumanPlayer`, and `ComputerPlayerControllableProxy`
 in the upstream factories, then constructs `MainManagerFactory(ConfigWrapper)`.
 It creates an **in-memory, unauthenticated** `User`, obtains the main room ID, and calls
-`TableManager.createTable(room, user, options)` followed by `joinTable` for each seat.
+`GamesRoom.createTable(user, options)` followed by `TableManager.joinTable` for each seat.
+The room method also registers the table for lobby lookup; calling only
+`TableManager.createTable` creates a controller but leaves native room lookup empty.
 Both joins require an existing user ID, including the AI join. Both decks contain exactly
 60 M10/230 Plains; the table reaches `READY_TO_START`. Removing the table removes its
 controller. This proves prepared-table construction and AI instantiation, not AI play.
@@ -113,7 +115,7 @@ For record checks, invoke the existing Gradle init script with `-Dprobe.record=<
 spikes/mtgcard>`, and task `:fabric:boundaryProbe`; omit the card-fixture arguments.
 Raw world data stays in ignored `.cache/`, not version control.
 
-## Task 1.4 — native attachment: PARTIAL
+## Task 1.4 — native session attachment/audit: COMPLETE; exact-deck gate FAILS
 
 With `run-server.sh` running, `bash spikes/xmage/run-client-probe.sh` passed against
 the real loopback native transport with authentication enabled and test mode off.
@@ -124,12 +126,58 @@ session with a second `SessionImpl`. The authenticated account remains the table
 and sees both seats. The table and temporary account are removed afterward. Passwords
 exist only in process memory and are not printed.
 
-This exercises the stock client **session library**, not the Swing UI, a managed
-server-created seat, an active game, or a Minecraft binding. Task 1.4 remains open.
-Native entry points requiring a complete guard audit include `roomJoinTable`,
-`deckSubmit`, `deckSave`, `roomLeaveTableOrTournament`, `tableSwapSeats`, `tableRemove`,
-and `matchStart`; public table/option mutation and reconnect paths also need review.
-The READY_TO_START `submitDeck` rejection from task 1.3 alone is not deck enforcement.
+The stronger, self-contained probe now runs with one command (2026-10-01):
+
+```sh
+PROBE_NATIVE=true PROBE_CONFIG="$PWD/spikes/xmage/config.xml" bash spikes/xmage/run-probe.sh
+```
+
+Stop any other local XMage test server first; the probe uses ports 17171/17179.
+The server provisions a temporary authenticated account, creates a distinct service
+owner, and preinstalls that human seat and an AI with 60 Plains each. `NativeTransport`
+reuses XMage's package-private transport bootstrap without modifying upstream source.
+The child JVM uses stock `SessionImpl` and verifies the original human player UUID
+before and after authenticated reconnect, without becoming table owner or uploading
+a deck to attach. A mode-0600 local access file passes credentials without putting
+them on the command line; the server deletes it and the temporary account afterward.
+The child has a 60-second timeout and is reaped; the disposable server then exits.
+
+Two deliberately adversarial native requests reproduce missing integration policies:
+
+- `deckSubmit` rejects a replacement at `READY_TO_START`, but `leaveTable` followed
+  by `joinTable` succeeds. Server-side assertions confirm the human deck became
+  **60 Islands**, replacing the installed Plains deck.
+- A non-owner `matchStart` returns true and moves the table to `STARTING` before
+  ownership is checked. This does not prove that gameplay starts; it proves an
+  unauthorized table-state mutation that a managed service must reject first.
+
+The audited native surface at the pinned revision is below. Paths marked source-only
+have not been exhaustively attacked at runtime. This is a managed-table integration
+audit, not a security audit of JBoss deserialization or all XMage gameplay code.
+
+| Native entry/path | Source finding and required managed policy |
+| --- | --- |
+| `roomCreateTable`, `roomCreateTournament` | Client supplies options and player types. Deny new native tables/tournaments for managed seat accounts; only the control service creates their match. |
+| `roomJoinTable`, `roomJoinTournament` | Join loads a client deck. Bind the precreated seat; deny native replacement/rejoin and joining other tables. Leave/rejoin substitution reproduced. |
+| `deckSubmit`, `deckSave` | `TableController.submitDeck/updateDeck` can change decks in SIDEBOARDING/CONSTRUCTING. Reject on managed tables, including unexpected future phases. READY_TO_START rejection alone is insufficient. |
+| `roomLeaveTableOrTournament` | Removes a pregame player and opens a seat; reproduced. Route managed cancellation through the control lifecycle, never reopen the seat. |
+| `matchStart`, `tournamentStart` | State transition precedes the deferred user/owner check in `MageServerImpl`; guard before transition. Non-owner match mutation reproduced. |
+| `tableSwapSeats`, `tableRemove` | Manager checks owner (source-only). Keep owner separate from seat accounts and deny managed native mutation. |
+| `connectUser`, native callback removal, `User.onLostConnection`, expiration | Authenticated reconnect reuses the existing user/seat; full disconnect/expiry can remove tables or quit matches. Bind account to project seat and reconcile these terminal paths. Do not promise indefinite reconnect; source has a three-minute session-expiry threshold, not a measured reconnect SLA. |
+| `connectSetUserData` | Updates user preferences/ratings, not a deck or `MatchOptions` setter. It must not establish project identity, ownership, or result. |
+| `gameJoin`, `matchQuit`, `sendPlayer*`, `sendPlayerAction` | Native gameplay/response/concession paths remain XMage-owned. Bind user to the managed game; obtain outcome from engine state. Disable rollback in service-created options. No new Magic legality checks belong in the addon. |
+| `cheatShow`, admin commands | Test-mode gate for cheatShow; separate admin authentication for destructive admin commands. Keep test mode off and never issue admin credentials to seats. Operator removal must become cancellation/interruption, not a fabricated win. |
+
+Source anchors: `Mage.Common/.../interfaces/MageServer.java`,
+`Mage.Server/.../MageServerImpl.java`, `TableManagerImpl`, `TableController`,
+`game/GamesRoomImpl`, `Session.connectUserHandling`, `User.onLostConnection`,
+`UserManagerImpl.checkExpired`, and `game/GameController.sendPlayerAction`.
+No separate native setter for existing match options appears in this interface;
+options originate at table creation and remain mutable inside the engine process.
+
+This finishes the **session-protocol spike and source audit**, not Swing UI acceptance,
+active-game reconnect, a Minecraft binding, or deck-lock implementation. Those remain
+tasks 3.4/3.6/6.1. Both integration gaps require guards before physical decks are admitted.
 
 ## Task 1.5 — structured outcome/history experiment: PASS; production binding unresolved
 

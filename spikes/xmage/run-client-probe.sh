@@ -7,4 +7,4 @@ mkdir -p "$project_dir/.cache/xmage-server/probe-classes"
 javac -cp "$probe_cp" -d "$project_dir/.cache/xmage-server/probe-classes" "$project_dir/spikes/xmage/NativeClientProbe.java"
 cd "$project_dir/.cache/xmage-server"
 timeout 60s java -ea -Xmx512m --add-opens=java.base/java.io=ALL-UNNAMED \
-    -cp "probe-classes:$probe_cp" NativeClientProbe
+    -cp "probe-classes:$probe_cp" NativeClientProbe "$@"
