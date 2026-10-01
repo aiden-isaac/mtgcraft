@@ -31,7 +31,7 @@ and acknowledged native-controller result persistence (3.5); prove each before 6
 
 ## 3. Build and secure the XMage service extension
 
-- [ ] 3.1 Start the pinned XMage process with the project extension, explicit config, readiness/version endpoint, persistent service incarnation, and small configurable active-match limit.
+- [x] 3.1 Start the pinned XMage process with the project extension, explicit config, readiness/version endpoint, persistent service incarnation, and small configurable active-match limit. Evidence: `ServiceMain.java`, `ServiceState.java`, `scripts/run-service.sh`; `python3 tests/service-smoke.py` passes two real JVM starts, native listening and persisted incarnation changes. Admission readiness remains false until managed policy is implemented.
 - [ ] 3.2 Implement XMage deck resolution and gameplay-format validation from the project snapshot, verifying the installed engine deck matches its approved digest and quantities.
 - [ ] 3.3 Implement idempotent managed human/AI match preparation and start, with persistent project-to-XMage ID mapping and a reconciliation/fencing strategy for ambiguous creation.
 - [ ] 3.4 Provision and bind native-client seat access to the project seat and Minecraft player; privately deliver credentials and reject unrelated users, native deck replacement, changed options, and unauthorized managed-table actions. Guard before table-state changes and close the reproduced leave/rejoin substitution path; cover the native surface audited in `spikes/README.md`.

@@ -33,6 +33,7 @@ public final class Check {
         System.out.println("PASS immutable snapshots, quantities, canonical encoding and request binding");
         mapping();
         http();
+        state();
     }
     private static void mapping() throws Exception {
         var path = java.nio.file.Path.of("service/catalog/manifest.json");
@@ -155,5 +156,24 @@ public final class Check {
             return;
         }
         throw new AssertionError("expected HTTP rejection");
+    }
+    private static void state() throws Exception {
+        var directory = java.nio.file.Files.createTempDirectory(java.nio.file.Path.of(".cache"), "state-check-");
+        UUID first;
+        try (var state = new mtgcraft.service.ServiceState(directory)) {
+            first = state.incarnation(); assert state.previous() == null;
+            try {
+                new mtgcraft.service.ServiceState(directory);
+                throw new AssertionError("overlapping service was allowed");
+            } catch (java.io.IOException expected) { }
+            state.write("record.json", "durable".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            assert java.nio.file.Files.readString(directory.resolve("record.json")).equals("durable");
+        }
+        try (var replacement = new mtgcraft.service.ServiceState(directory)) {
+            assert replacement.previous().equals(first) && !replacement.incarnation().equals(first);
+        }
+        try (var paths = java.nio.file.Files.list(directory)) { for (var p : paths.toList()) java.nio.file.Files.delete(p); }
+        java.nio.file.Files.delete(directory);
+        System.out.println("PASS durable incarnation, exclusive process lock and atomic acknowledged writes");
     }
 }

@@ -1,0 +1,8 @@
+# Copy to an ignored local file, replace worldId, create a random mode-0600 token file.
+worldId=00000000-0000-0000-0000-000000000001
+tokenFile=../.cache/control-token
+mappingFile=catalog/manifest.json
+nativeConfig=../spikes/xmage/config.xml
+bind=127.0.0.1
+port=17180
+activeMatchLimit=2
