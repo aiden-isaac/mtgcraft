@@ -42,7 +42,10 @@ final class CrashProbe {
         custody.injectCrashForProbe(actual -> {
             if (actual.equals(point)) { System.out.println("CRASH_INJECTED=" + point); Runtime.getRuntime().halt(88); }
         });
-        custody.reserve(player, source, request); custody.returnPending(request.matchId()); custody.claim(player, request.matchId());
+        custody.reserve(player, source, request); custody.intend(player.getUUID(), request.matchId(), Custody.Pending.CANCEL);
+        var incarnation = UUID.randomUUID(); var result = new Result(UUID.randomUUID(), request.worldId(), request.matchId(), request.snapshot().digest(), incarnation, State.CANCELLED, 1, request.seats().stream().map(seat -> new SeatOutcome(seat, Outcome.NONE)).toList());
+        custody.persistStatus(request.matchId(), new Status(1, request.worldId(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.CANCELLED, 1, result));
+        custody.claim(player, request.matchId());
         throw new AssertionError("Requested fault point was never reached: " + point);
     }
     static void recover(MinecraftServer server) throws Exception {

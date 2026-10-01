@@ -133,33 +133,42 @@ public final class Custody {
     private static Pending acknowledged(Pending pending, State state) {
         return terminal(state) || pending == Pending.CREATE || pending == Pending.START && state == State.ACTIVE ? Pending.NONE : pending;
     }
+    void quarantine(UUID match) throws IOException { onThread(); put(phase(require(match), Phase.QUARANTINED)); }
     Status persistStatus(UUID match, Status incoming) throws IOException {
-        onThread(); var record = require(match); Matches.verify(record.request(), incoming);
-        var previous = record.observed();
-        if (previous != null) {
-            if (!previous.serviceIncarnation().equals(incoming.serviceIncarnation())) throw new IllegalArgumentException("Conflicting service incarnation");
-            if (terminal(previous.state())) {
-                if (!previous.equals(incoming)) throw new IllegalArgumentException("Conflicting terminal status");
-                return previous;
-            }
-            if (incoming.revision() < previous.revision()) return previous;
-            if (incoming.revision() == previous.revision()) {
-                if (!incoming.equals(previous)) throw new IllegalArgumentException("Conflicting status revision");
-                return previous;
-            }
-            if (previous.state() == State.ACTIVE && incoming.state() == State.PREPARED) throw new IllegalArgumentException("Regressing match status");
-        }
-        put(new Reservation(record.request(), record.backingId(), record.sourceFingerprint(), record.original(), record.phase(), incoming, acknowledged(record.pending(), incoming.state()), record.startRequested()));
-        return incoming;
-    }
-    // Only the lifecycle coordinator may call this, after committing a verified terminal result.
-    void returnPending(UUID match) throws IOException {
         onThread(); var record = require(match);
-        if (record.phase() == Phase.RETURN_PENDING || record.phase() == Phase.RETURNED) return;
-        if (record.phase() != Phase.RESERVED) throw new IllegalArgumentException("Escrow cannot be released in this phase");
-        fault.accept("before_return_pending");
-        put(phase(record, Phase.RETURN_PENDING));
-        fault.accept("after_return_pending");
+        try {
+            Matches.verify(record.request(), incoming);
+            if (record.phase() == Phase.QUARANTINED) throw new IllegalArgumentException("Match is quarantined");
+            var previous = record.observed();
+            if (previous != null) {
+                if (!previous.serviceIncarnation().equals(incoming.serviceIncarnation())) throw new IllegalArgumentException("Conflicting service incarnation");
+                if (incoming.revision() < previous.revision() && !terminal(incoming.state())) return previous;
+                if (terminal(previous.state())) {
+                    if (!previous.equals(incoming)) throw new IllegalArgumentException("Conflicting terminal status");
+                    return previous;
+                }
+                if (incoming.revision() <= previous.revision()) {
+                    if (!incoming.equals(previous)) throw new IllegalArgumentException("Conflicting status revision");
+                    return previous;
+                }
+                if (previous.state() == State.ACTIVE && incoming.state() == State.PREPARED) throw new IllegalArgumentException("Regressing match status");
+            }
+            if ((incoming.state() == State.ACTIVE || incoming.state() == State.COMPLETED) && !record.startRequested()) throw new IllegalArgumentException("Match was never authorized to start");
+            if (incoming.state() == State.CANCELLED && record.pending() != Pending.CANCEL) throw new IllegalArgumentException("Cancellation was never requested");
+            if (record.phase() != Phase.RESERVED) throw new IllegalArgumentException("Unexpected custody phase");
+            if (incoming.result() != null) {
+                var owner = resultOwners.get(incoming.result().resultId());
+                if (owner != null && !owner.equals(match)) throw new IllegalArgumentException("Result ID belongs to another match");
+            }
+            var phase = terminal(incoming.state()) ? Phase.RETURN_PENDING : record.phase();
+            if (phase == Phase.RETURN_PENDING) fault.accept("before_return_pending");
+            put(new Reservation(record.request(), record.backingId(), record.sourceFingerprint(), record.original(), phase, incoming, acknowledged(record.pending(), incoming.state()), record.startRequested()));
+            if (phase == Phase.RETURN_PENDING) fault.accept("after_return_pending");
+            return incoming;
+        } catch (IllegalArgumentException conflict) {
+            put(phase(record, Phase.QUARANTINED)); // Preserve the first accepted result; never release on a conflict.
+            throw conflict;
+        }
     }
     public Phase claim(UUID owner, UUID match) throws IOException {
         onThread(); var record = requireOwner(owner, match);
@@ -195,7 +204,7 @@ public final class Custody {
         if (record.request().seats().stream().noneMatch(s -> s.role() == Role.HUMAN && owner.equals(s.playerId()))) throw new IllegalArgumentException("This deckbox belongs to another player");
         return record;
     }
-    private Reservation require(UUID match) {
+    Reservation require(UUID match) {
         var record = reservations.get(match);
         if (record == null) throw new IllegalArgumentException("Unknown match");
         return record;

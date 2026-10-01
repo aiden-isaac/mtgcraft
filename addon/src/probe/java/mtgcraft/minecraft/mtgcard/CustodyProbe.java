@@ -107,18 +107,16 @@ public final class CustodyProbe implements ModInitializer {
                 var incarnation = UUID.randomUUID();
                 var prepared = new Status(1, request.worldId(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.PREPARED, 1, null);
                 var active = new Status(1, request.worldId(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.ACTIVE, 2, null);
-                again.persistStatus(request.matchId(), prepared); again.persistStatus(request.matchId(), active);
+                again.persistStatus(request.matchId(), prepared); again.intend(player.getUUID(), request.matchId(), Custody.Pending.START); again.persistStatus(request.matchId(), active);
                 assert again.persistStatus(request.matchId(), prepared).equals(active) : "Delayed prepared status regressed active state";
                 var resultRecord = new Result(UUID.randomUUID(), request.worldId(), request.matchId(), request.snapshot().digest(), incarnation, State.CANCELLED, 3, request.seats().stream().map(seat -> new SeatOutcome(seat, Outcome.NONE)).toList());
                 var terminal = new Status(1, request.worldId(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.CANCELLED, 3, resultRecord);
+                again.intend(player.getUUID(), request.matchId(), Custody.Pending.CANCEL);
                 assert again.persistStatus(request.matchId(), terminal).equals(terminal) && again.persistStatus(request.matchId(), terminal).equals(terminal);
-                assert again.requireOwner(player.getUUID(), request.matchId()).phase() == Custody.Phase.RESERVED : "Terminal processing conflated physical return";
-                reject(() -> again.persistStatus(request.matchId(), prepared));
-                var wrongWorld = new Status(1, UUID.randomUUID(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.PREPARED, 1, null);
-                reject(() -> again.persistStatus(request.matchId(), wrongWorld));
+                assert again.requireOwner(player.getUUID(), request.matchId()).phase() == Custody.Phase.RETURN_PENDING : "Terminal result did not atomically record its return intent";
+                assert again.persistStatus(request.matchId(), prepared).equals(terminal);
                 var heldFile = Custody.read(server.getWorldPath(net.minecraft.world.level.storage.LevelResource.PLAYER_DATA_DIR).resolve(player.getUUID() + ".dat"));
                 assert heldFile.getList("Inventory").orElseThrow().isEmpty() : "Escrow removal was not persisted";
-                again.returnPending(request.matchId());
                 assert again.claim(player.getUUID(), request.matchId()) == Custody.Phase.RETURN_PENDING : "Offline claim delivered an item";
                 var stranger = new ServerPlayer(server, level, new GameProfile(UUID.randomUUID(), "Stranger"), ClientInformation.createDefault());
                 reject(() -> again.claim(stranger, request.matchId()));
@@ -151,6 +149,12 @@ public final class CustodyProbe implements ModInitializer {
                 assert placement != net.minecraft.world.InteractionResult.FAIL;
                 var restored = (DeckboxBlockEntity) level.getBlockEntity(pos.offset(4, 0, 0));
                 assert restored.getStorageId().equals(backing) && restored.getItem(0).getCount() == 40;
+                var wrongWorld = new Status(1, UUID.randomUUID(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.PREPARED, 1, null);
+                reject(() -> afterReturn.persistStatus(request.matchId(), wrongWorld));
+                assert afterReturn.requireOwner(player.getUUID(), request.matchId()).phase() == Custody.Phase.QUARANTINED;
+                assert afterReturn.requireOwner(player.getUUID(), request.matchId()).observed().equals(terminal);
+                // This fixture now owns the returned physical record; restore its acknowledged tombstone before the independent delivery-crash case.
+                var restoredJournal = Custody.read(journalDirectory.resolve("escrow-" + request.matchId() + ".dat")); restoredJournal.putString("Phase", "RETURNED"); Custody.write(journalDirectory.resolve("escrow-" + request.matchId() + ".dat"), restoredJournal);
                 // Inject a crash at the persisted delivery intent, independently of whether an item reached player data.
                 var uncertain = MatchRequest.create(request.worldId(), UUID.randomUUID(), request.seats(), request.snapshot(), request.aiProfile());
                 var root = Custody.read(server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("mtgcraft/escrow-" + request.matchId() + ".dat"));

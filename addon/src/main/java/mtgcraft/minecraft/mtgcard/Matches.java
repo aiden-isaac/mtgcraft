@@ -110,7 +110,7 @@ public final class Matches implements AutoCloseable {
                 var request = MatchRequest.create(custody.worldId(), UUID.randomUUID(), List.of(new Seat(UUID.randomUUID(), Role.HUMAN, owner), new Seat(UUID.randomUUID(), Role.AI, null)), snapshot, "mad-plains-v1");
                 try { custody.reserve(heldOwner, source, request); } catch (Exception invalid) { throw new IllegalArgumentException(invalid.getMessage()); }
                 tell(owner, "Deckbox reserved for match " + request.matchId());
-                observe(owner, () -> client.prepareMatch(request), status -> { accept(request.matchId(), status); tell(owner, "Match " + request.matchId() + ": " + status.state() + ". Use /mtgcraft access " + request.matchId() + " for your XMage login."); });
+                observe(owner, () -> tracked(request.matchId(), client.prepareMatch(request)), status -> { tell(owner, "Match " + request.matchId() + ": " + status.state() + ". Use /mtgcraft access " + request.matchId() + " for your XMage login."); });
             });
         });
     }
@@ -123,15 +123,28 @@ public final class Matches implements AutoCloseable {
             }); return;
         }
         if (action.equals("start") || action.equals("cancel")) custody.intend(owner, match, action.equals("start") ? Custody.Pending.START : Custody.Pending.CANCEL);
-        observe(owner, () -> switch (action) {
+        observe(owner, () -> tracked(match, switch (action) {
             case "start" -> client.startMatch(match, record.request().requestDigest());
             case "cancel" -> client.cancelMatch(match, record.request().requestDigest());
             default -> client.getStatus(match);
-        }, status -> { accept(match, status); tell(owner, "Match " + match + ": " + status.state() + "; deckbox " + custody.requireOwner(owner, match).phase()); });
+        }), status -> { tell(owner, "Match " + match + ": " + status.state() + "; deckbox " + custody.requireOwner(owner, match).phase()); });
     }
-    private void accept(UUID match, Status status) {
-        try { custody.persistStatus(match, status); }
-        catch (java.io.IOException invalid) { throw new IllegalStateException("Match journal could not be acknowledged", invalid); }
+    private CompletableFuture<Status> tracked(UUID match, CompletableFuture<Status> request) {
+        var result = new CompletableFuture<Status>();
+        request.whenComplete((status, failure) -> server.execute(() -> {
+            if (current != this) { result.cancel(false); return; }
+            try {
+                if (failure != null) {
+                    var cause = failure; while (cause.getCause() != null) cause = cause.getCause();
+                    if (cause instanceof IllegalArgumentException) custody.quarantine(match);
+                    result.completeExceptionally(failure);
+                } else result.complete(custody.persistStatus(match, status));
+            } catch (Exception invalid) {
+                tell(custody.require(match).request().seats().getFirst().playerId(), "Match response could not be applied; custody retained: " + invalid.getMessage());
+                result.completeExceptionally(invalid);
+            }
+        }));
+        return result;
     }
     private void poll() {
         long now = System.nanoTime(); if (now < nextPoll) return;
@@ -140,22 +153,20 @@ public final class Matches implements AutoCloseable {
             var match = record.request().matchId();
             if (record.phase() != Custody.Phase.RESERVED || record.observed() != null && terminal(record.observed().state()) || reconciling.size() >= 16 || !reconciling.add(match)) continue;
             var request = record.request();
-            client.getStatus(match).exceptionallyCompose(failure -> {
+            tracked(match, client.getStatus(match).exceptionallyCompose(failure -> {
                 var cause = failure; while (cause.getCause() != null) cause = cause.getCause();
                 if (record.observed() == null && cause instanceof ControlClient.Rejected rejected && rejected.status == 404 && rejected.failure.error().code().equals("NOT_FOUND")) return client.prepareMatch(request);
                 return CompletableFuture.failedFuture(failure);
-            }).thenCompose(status -> {
-                verify(request, status);
+            })).thenCompose(status -> {
                 if (terminal(status.state())) return CompletableFuture.completedFuture(status);
                 return switch (record.pending()) {
-                    case START -> status.state() == State.PREPARED ? client.startMatch(match, request.requestDigest()) : CompletableFuture.completedFuture(status);
-                    case CANCEL -> client.cancelMatch(match, request.requestDigest());
+                    case START -> status.state() == State.PREPARED ? tracked(match, client.startMatch(match, request.requestDigest())) : CompletableFuture.completedFuture(status);
+                    case CANCEL -> tracked(match, client.cancelMatch(match, request.requestDigest()));
                     default -> CompletableFuture.completedFuture(status);
                 };
             }).whenComplete((status, failure) -> server.execute(() -> {
                 reconciling.remove(match);
                 if (current != this || failure != null) return; // Unknown: keep the intent and physical reservation.
-                try { accept(match, status); } catch (RuntimeException invalid) { /* Kept in custody for investigation. */ }
             }));
         }
     }

@@ -92,7 +92,7 @@ final class CommandProbe {
                         }
                         case 7 -> {
                             if (!said("CANCELLED")) return;
-                            assert Custody.locked(server, backing) : "Command accepted a terminal release before lifecycle verification";
+                            assert Custody.locked(server, backing) && Custody.current().requireOwner(owner.getUUID(), match).phase() == Custody.Phase.RETURN_PENDING;
                             assert Custody.current().requireOwner(owner.getUUID(), match).observed().state() == State.CANCELLED;
                             held(server, owner, card); engine.lose = "create"; baseline = owner.messages.size(); command(server, owner, "submit"); step++;
                         }
@@ -118,10 +118,10 @@ final class CommandProbe {
                         case 11 -> {
                             var record = Custody.current().requireOwner(owner.getUUID(), match);
                             if (record.observed().state() != State.CANCELLED) return;
-                            assert record.pending() == Custody.Pending.NONE && record.phase() == Custody.Phase.RESERVED;
+                            assert record.pending() == Custody.Pending.NONE && record.phase() == Custody.Phase.RETURN_PENDING;
                             assert engine.requests.size() == 2;
                             System.out.println("PASS stable retries: lost create/start/cancel acknowledgements and reloaded Minecraft tracking reuse the same IDs/digests");
-                            System.out.println("PASS commands/async HTTP: server-only snapshots, bounded duplicate submission, private owner credentials, unsupported/stale rejection and offline validation abort; terminal release awaits lifecycle binding");
+                            System.out.println("PASS commands/async HTTP: server-only snapshots, bounded duplicate submission, private owner credentials, unsupported/stale rejection and offline validation abort; verified terminal return intent is durable");
                             http.close(); server.getPlayerList().getPlayersByUUID().clear(); server.halt(false); step++;
                         }
                     }
