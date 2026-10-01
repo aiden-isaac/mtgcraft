@@ -64,7 +64,7 @@ public final class NativeCheck implements MageClient {
             System.out.println("PASS guarded native attachment/reconnect and audited table/deck mutation rejection");
             if (access.getProperty("play", "false").equals("true")) {
                 Files.writeString(Path.of(path + ".ready"), "ready");
-                long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(45);
+                long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(Long.parseLong(access.getProperty("deadlineSeconds", "45")));
                 java.util.List<UUID> games;
                 do {
                     games = second.getTable(room, table).orElseThrow().getGames();
@@ -75,6 +75,11 @@ public final class NativeCheck implements MageClient {
                 assert second.joinGame(game);
                 while (!secondClient.prompt) {
                     if (System.nanoTime() > deadline) throw new AssertionError("native human prompt did not arrive");
+                    Thread.sleep(20);
+                }
+                Files.writeString(Path.of(path + ".playing"), "ready");
+                while (access.getProperty("hold", "false").equals("true") && !Files.exists(Path.of(path + ".release"))) {
+                    if (System.nanoTime() > deadline) throw new AssertionError("Fixture hold was not released");
                     Thread.sleep(20);
                 }
                 Files.writeString(Path.of(path + ".conceding"), "ready");

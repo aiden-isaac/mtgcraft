@@ -100,8 +100,8 @@ reload. Its probe mod and admission bypass are excluded from the production addo
 Return claims pass offline/full-inventory retention, owner checks, repeated/reloaded
 one-time delivery, original-box re-placement and ambiguous-delivery quarantine.
 The return keeps original item components plus a project custody marker; no card
-ownership or prize changes occur. Production admission remains disabled while the
-complete crash matrix and authenticated lifecycle integration are incomplete.
+ownership or prize changes occur. Production admission defaults off until complete interactive acceptance. The crash
+matrix and authenticated lifecycle checks now pass.
 No background test server remains running after a successful probe.
 
 Copy `addon/config.properties.example` to Minecraft `config/mtgcraft.properties`.
@@ -115,8 +115,8 @@ own snapshot asynchronously and rechecks the source before transfer. Use
 `/mtgcraft access <match UUID>` for private native credentials, attach in XMage,
 then `/mtgcraft start <match UUID>`. Status/cancel use the same owner-scoped ID.
 `/mtgcraft claim <match UUID>` delivers only a durable return-ready claim.
-Terminal-result verification/reconciliation is still being implemented; a status
-display alone does not release custody. The live command probe uses an authenticated
+Verified terminal acceptance atomically records the first result and a return intent;
+physical delivery remains a separate acknowledged, one-time owner claim. The live command probe uses an authenticated
 HTTP engine fixture and captured private player messages, without an engine game.
 
 `bash scripts/check-custody-crashes.sh` abruptly halts the test JVM at twelve
@@ -136,3 +136,16 @@ deployment the service's exclusive state-directory lock proves the former proces
 has exited; restart persists `INTERRUPTED` under the match's original incarnation,
 with all seat outcomes `NONE`, before serving it. Losing or replacing that history
 requires operator investigation, never an automatic box replacement or winner.
+
+`python3 tests/lifecycle.py` runs three independent Minecraft JVMs, a real pinned
+XMage service and two external stock-session JVMs. It reserves two physical
+forty-Plains boxes before creation, starts both games, abruptly stops Minecraft,
+reattaches tracking while both games survive, concedes through the native protocol,
+and claims the original first box once after offline completion. It then keeps
+Minecraft alive through service unreachability, restarts the exclusively locked
+service and verifies old-incarnation interruption/NONE outcomes before returning
+the second original box. The private disposable directory under `.cache/lifecycle-*`
+contains logs, acknowledged statuses and raw memory/latency samples. It contains
+private test credentials: do not publish the directory. All owned processes stop
+on success or failure. This is a headless native-session experiment; it does not
+verify Swing interaction or a networked Minecraft player's full experience.

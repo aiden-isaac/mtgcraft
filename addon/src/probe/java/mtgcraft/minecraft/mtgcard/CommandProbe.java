@@ -146,6 +146,14 @@ final class CommandProbe {
                             assert record.phase() == Custody.Phase.RETURN_PENDING && record.observed().result().outcomes().stream().allMatch(o -> o.outcome() == Outcome.NONE);
                             assert record.observed().serviceIncarnation().equals(engine.incarnation) && !engine.healthIncarnation.equals(engine.incarnation);
                             assert owner.getInventory().countItem(BuiltInRegistries.ITEM.getValue(Identifier.parse("mtgcard:oak_deckbox"))) == 0;
+                            assert Custody.current().persistStatus(match, record.observed()).equals(record.observed());
+                            var delayed = new Status(1, record.request().worldId(), match, record.request().requestDigest(), record.request().snapshot().digest(), engine.incarnation, record.request().seats(), State.ACTIVE, 2, null);
+                            assert Custody.current().persistStatus(match, delayed).equals(record.observed());
+                            var lateResult = new Result(UUID.randomUUID(), engine.world, match, record.request().snapshot().digest(), engine.incarnation, State.COMPLETED, 4, List.of(new SeatOutcome(record.request().seats().getFirst(), Outcome.WIN), new SeatOutcome(record.request().seats().getLast(), Outcome.LOSS)));
+                            var late = new Status(1, engine.world, match, record.request().requestDigest(), record.request().snapshot().digest(), engine.incarnation, record.request().seats(), State.COMPLETED, 4, lateResult);
+                            try { Custody.current().persistStatus(match, late); throw new AssertionError("Fenced result overwrote interruption"); } catch (IllegalArgumentException expected) { }
+                            assert Custody.current().require(match).phase() == Custody.Phase.QUARANTINED && Custody.current().require(match).observed().equals(record.observed());
+                            System.out.println("PASS delayed results: identical interruption replay and older active message have no effect; conflicting fenced completion quarantines without overwriting NONE outcomes");
                             System.out.println("PASS unknown/fenced lifecycle: unavailable service and changed health retain active custody with bounded backoff; authenticated old-incarnation interruption commits no winner and keeps offline return pending");
                             System.out.println("PASS commands/async HTTP: server-only snapshots, bounded duplicate submission, private owner credentials, unsupported/stale rejection and offline validation abort; verified terminal return intent is durable");
                             http.close(); server.getPlayerList().getPlayersByUUID().clear(); server.halt(false); step++;

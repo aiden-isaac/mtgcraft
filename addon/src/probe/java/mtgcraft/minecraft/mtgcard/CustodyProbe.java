@@ -10,6 +10,7 @@ import java.util.UUID;
 import static mtgcraft.protocol.Protocol.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -31,6 +32,7 @@ public final class CustodyProbe implements ModInitializer {
     @Override public void onInitialize() {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             try {
+                if (System.getProperty("mtgcraft.lifecycle") != null) { LifecycleProbe.run(server); return; }
                 if (System.getProperty("mtgcraft.fault") != null) { CrashProbe.exercise(server); return; }
                 if (Boolean.getBoolean("mtgcraft.recover")) { CrashProbe.recover(server); server.halt(false); return; }
                 var level = server.overworld(); var player = new ServerPlayer(server, level, new GameProfile(UUID.randomUUID(), "CustodyProbe"), ClientInformation.createDefault());
@@ -167,11 +169,32 @@ public final class CustodyProbe implements ModInitializer {
                 System.out.println("PASS live custody: survival breaking keeps one original box/UUID/tint, placed rejection, durable physical transfer, storage guards, cached alias guards, placement rejection and journal reload");
                 System.out.println("PASS return claims: offline/full pending, owner binding, one original item, durable tombstone, re-placement, fresh alias cache and crash quarantine");
                 System.out.println("PASS world journal: immutable request/result bindings, monotonic observations, terminal replay/reload and independent return phase");
+                checkBindings(server, card);
                 CommandProbe.run(server, card);
             } catch (Throwable failure) { failure.printStackTrace(); server.halt(false); }
         });
     }
     @FunctionalInterface private interface Checked { void run() throws Exception; }
+    private static void checkBindings(net.minecraft.server.MinecraftServer server, ItemStack card) throws Exception {
+        var custody = Custody.current(); custody.proveAdmissionForProbe();
+        Compatibility compatibility; try (var input = Matches.class.getResourceAsStream("/mtgcraft-compatibility.json")) { compatibility = mtgcraft.protocol.Json.read(input.readAllBytes(), Compatibility.class); }
+        for (var violation : List.of("world", "snapshot", "seat", "incarnation", "unauthorized-start")) {
+            var owner = new ServerPlayer(server, server.overworld(), new GameProfile(UUID.randomUUID(), "BindingOwner"), ClientInformation.createDefault());
+            var backing = UUID.randomUUID(); var items = net.minecraft.core.NonNullList.withSize(102, ItemStack.EMPTY); items.set(0, card.copy());
+            DeckboxStorage.save(server, owner.registryAccess(), backing, "mtgcard:oak_deckbox", "fixture", items);
+            var box = new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse("mtgcard:oak_deckbox"))); var data = new CompoundTag(); data.putString(DeckboxStorage.ITEM_ID_KEY, backing.toString()); box.set(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(data));
+            owner.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, box); var source = MtgcardAdapter.readHeld(owner);
+            var request = MatchRequest.create(custody.worldId(), UUID.randomUUID(), List.of(new Seat(UUID.randomUUID(), Role.HUMAN, owner.getUUID()), new Seat(UUID.randomUUID(), Role.AI, null)), DeckSnapshot.create(compatibility, source.entries()), "mad-plains-v1");
+            custody.reserve(owner, source, request); var incarnation = UUID.randomUUID();
+            var prepared = new Status(1, request.worldId(), request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), State.PREPARED, 1, null); custody.persistStatus(request.matchId(), prepared);
+            var seats = violation.equals("seat") ? List.of(new Seat(UUID.randomUUID(), Role.HUMAN, UUID.randomUUID()), request.seats().getLast()) : request.seats();
+            var invalid = new Status(1, violation.equals("world") ? UUID.randomUUID() : request.worldId(), request.matchId(), request.requestDigest(), violation.equals("snapshot") ? "0".repeat(64) : request.snapshot().digest(), violation.equals("incarnation") ? UUID.randomUUID() : incarnation, seats, violation.equals("unauthorized-start") ? State.ACTIVE : State.PREPARED, 2, null);
+            reject(() -> custody.persistStatus(request.matchId(), invalid));
+            assert custody.require(request.matchId()).phase() == Custody.Phase.QUARANTINED && custody.require(request.matchId()).observed().equals(prepared) && Custody.locked(server, backing);
+            reject(() -> custody.claim(owner, request.matchId()));
+        }
+        System.out.println("PASS result boundary conflicts: wrong world/snapshot/seat/incarnation and unauthorized start quarantine while preserving custody and first observation");
+    }
     private static void reject(Checked action) throws Exception {
         try { action.run(); } catch (IllegalArgumentException expected) { return; }
         throw new AssertionError("expected rejection");
