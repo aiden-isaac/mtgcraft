@@ -48,6 +48,7 @@ final class LifecycleProbe {
             }
             System.out.println("PASS real lifecycle seed: two authoritative physical snapshots reserved before any remote creation"); server.halt(false); return;
         }
+        if (mode.equals("unsupported")) { unsupported(server); return; }
         var requests = List.of(Json.read(Files.readAllBytes(directory.resolve("request-0.json")), MatchRequest.class), Json.read(Files.readAllBytes(directory.resolve("request-1.json")), MatchRequest.class));
         var deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(180);
         ServerTickEvents.END_SERVER_TICK.register(new ServerTickEvents.EndTick() {
@@ -105,8 +106,33 @@ final class LifecycleProbe {
         assert storage.items().get(0).getCount() == 40 && StackData.readCustom(storage.items().get(0)).getString("mtg_uid").orElseThrow().equals(manifest.getString("CardUID").orElseThrow());
         server.getPlayerList().getPlayersByUUID().remove(owner.getUUID());
     }
+    private static void unsupported(MinecraftServer server) throws Exception {
+        var owner = new Player(server, UUID.randomUUID(), "Unsupported"); var backing = UUID.randomUUID();
+        var card = new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse("mtgcard:card")), 40);
+        var metadata = new CompoundTag(); metadata.putString("set", "unh"); metadata.putString("collector_number", "30"); metadata.putString("name", "Cheatyface"); metadata.putString("layout", "normal"); metadata.putString("id", "ab857e73-ac20-4013-bc34-ed675de84c7c"); metadata.putString("oracle_id", "d6202ce1-8dbc-4aa5-8d62-5fe4005fa3d9");
+        var custom = new CompoundTag(); custom.put("mtg_meta", metadata); custom.putString("mtg_uid", UUID.randomUUID().toString()); card.set(DataComponents.CUSTOM_DATA, CustomData.of(custom));
+        var items = NonNullList.withSize(102, ItemStack.EMPTY); items.set(0, card);
+        DeckboxStorage.save(server, owner.registryAccess(), backing, "mtgcard:oak_deckbox", "fixture", items);
+        var box = new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse("mtgcard:oak_deckbox"))); var data = new CompoundTag(); data.putString(DeckboxStorage.ITEM_ID_KEY, backing.toString()); box.set(DataComponents.CUSTOM_DATA, CustomData.of(data)); owner.setItemInHand(InteractionHand.MAIN_HAND, box);
+        var fingerprint = MtgcardAdapter.readHeld(owner).fingerprint(); var count = Custody.current().records().size();
+        server.getPlayerList().getPlayersByUUID().put(owner.getUUID(), owner);
+        server.getCommands().performPrefixedCommand(owner.createCommandSourceStack(), "mtgcraft submit");
+        var deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
+        ServerTickEvents.END_SERVER_TICK.register(running -> {
+            try {
+                if (owner.messages.stream().noneMatch(m -> m.contains("No approved engine implementation") && m.contains("Cheatyface"))) {
+                    if (System.nanoTime() > deadline) throw new AssertionError("Unsupported-card validation deadline: " + owner.messages); return;
+                }
+                assert Custody.current().records().size() == count && !Custody.locked(server, backing);
+                assert owner.getMainHandItem().getCount() == 1 && MtgcardAdapter.readHeld(owner).fingerprint().equals(fingerprint);
+                System.out.println("PASS real unsupported command: No approved engine implementation — Cheatyface; original held box unchanged, no match or reservation");
+                server.getPlayerList().getPlayersByUUID().clear(); server.halt(false);
+            } catch (Throwable failure) { failure.printStackTrace(); server.getPlayerList().getPlayersByUUID().clear(); server.halt(false); }
+        });
+    }
     private static final class Player extends ServerPlayer {
+        final List<String> messages = new ArrayList<>();
         Player(MinecraftServer server, UUID id, String name) { super(server, server.overworld(), new GameProfile(id, name), ClientInformation.createDefault()); }
-        @Override public void sendSystemMessage(net.minecraft.network.chat.Component message) { assert level().getServer().isSameThread(); }
+        @Override public void sendSystemMessage(net.minecraft.network.chat.Component message) { assert level().getServer().isSameThread(); messages.add(message.getString()); }
     }
 }

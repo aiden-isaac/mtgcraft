@@ -161,6 +161,12 @@ try:
     assert interrupted_status["serviceIncarnation"] == incarnation and interrupted_status["state"] == "INTERRUPTED"
     assert all(outcome["outcome"] == "NONE" for outcome in interrupted_status["result"]["outcomes"])
     assert len(list((directory / "state").glob("match-*.json"))) == 2
+    (mc / "config/mtgcraft.properties").write_text(f"endpoint={endpoint}\ntokenFile={token_file}\nadmissionEnabled=true\n")
+    unsupported = minecraft("unsupported")
+    assert unsupported.wait(timeout=90) == 0
+    assert "PASS real unsupported command" in (directory / "minecraft-unsupported.log").read_text()
+    assert len(list((directory / "state").glob("match-*.json"))) == 2
+    print("PASS unsupported real MTGCard submission over authenticated control with no reservation or engine match", flush=True)
     measurements["workload"] = "Two 40-Plains human decks vs pinned 60-Plains MAD AI; native concession, then process-fenced interruption"
     (directory / "measurements.json").write_text(json.dumps(measurements, indent=2))
     print(f"PASS actual lifecycle/restart/fencing/one-time physical returns; diagnostics: {directory}", flush=True)

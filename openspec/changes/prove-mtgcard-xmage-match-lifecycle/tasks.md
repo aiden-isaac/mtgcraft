@@ -57,7 +57,7 @@ and acknowledged native-controller result persistence (3.5); prove each before 6
 ## 6. Demonstrate and document the milestone
 
 - [ ] 6.1 Run a complete human-versus-AI match using a real MTGCard deckbox and external XMage client; verify exact deck contents, authoritative result, one-time processing, and return of the original box.
-- [ ] 6.2 Run an unsupported-card submission and show clear validation errors with no match or lingering reservation.
+- [x] 6.2 Run an unsupported-card submission and show clear validation errors with no match or lingering reservation. Evidence: `python3 tests/lifecycle.py`; a real held MTGCard Cheatyface box submitted through the player command to the actual pinned service reports “No approved engine implementation — Cheatyface”, preserves the source fingerprint/item and creates neither a journal reservation nor an engine match.
 - [ ] 6.3 Run a two-match concurrency and cleanup probe; collect startup-to-ready time, RSS/heap, per-match memory growth, AI decision/turn latency, adapter round-trip latency, and cleanup observations with sample counts.
 - [ ] 6.4 Write a reproducible local runbook, version/dependency/license inventory, protocol contract, diagnostic report, and observed limitations, including exact reconnect and interruption behavior.
 - [ ] 6.5 Audit dependencies so MTGCard layouts stay inside the Minecraft integration package, XMage types stay inside the service extension, and no Minecraft rule, target, mana, combat, or priority implementation was introduced.

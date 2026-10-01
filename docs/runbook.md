@@ -149,3 +149,8 @@ contains logs, acknowledged statuses and raw memory/latency samples. It contains
 private test credentials: do not publish the directory. All owned processes stop
 on success or failure. This is a headless native-session experiment; it does not
 verify Swing interaction or a networked Minecraft player's full experience.
+
+The real lifecycle script also submits an unsupported MTGCard Cheatyface box through
+`/mtgcraft submit` to the actual service. The private player response is
+`No approved engine implementation — Cheatyface`; the original source fingerprint
+and held item stay unchanged, with no reservation or additional engine match.
