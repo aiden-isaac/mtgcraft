@@ -19,16 +19,7 @@ import mtgcraft.service.*;
 import static mtgcraft.protocol.Protocol.*;
 
 /** Pinned service bootstrap; source package gives access to the verified transport seam. */
-public final class ServiceMain implements MagicEngine {
-    private final ServiceState state;
-    private final UUID world;
-    private final int limit;
-    private final Catalog catalog;
-    private final EngineDecks decks;
-    private ServiceMain(ServiceState state, UUID world, int limit, Catalog catalog) {
-        this.state = state; this.world = world; this.limit = limit; this.catalog = catalog;
-        decks = new EngineDecks(catalog);
-    }
+public final class ServiceMain {
     public static void main(String[] args) {
         try { run(Path.of(args[0]).toAbsolutePath()); }
         catch (Exception failure) { System.err.println("Service startup failed: " + failure.getClass().getSimpleName()); System.exit(1); }
@@ -64,7 +55,7 @@ public final class ServiceMain implements MagicEngine {
         var managers = new MainManagerFactory(new ConfigWrapper(ConfigFactory.loadFromFile(path(config, properties, "nativeConfig").toString())));
         if (!managers.configSettings().isAuthenticationActivated() || !managers.configSettings().getServerAddress().equals("127.0.0.1") || Main.isTestMode())
             throw new IllegalArgumentException("native service requires authenticated loopback, test mode off");
-        var service = new ServiceMain(state, world, limit, catalog);
+        var service = new ManagedMatches(state, world, limit, catalog, managers);
         ManagedTransport.start(managers);
         var http = new ControlServer(java.net.InetAddress.getByName(properties.getProperty("bind", "127.0.0.1")),
                 Integer.parseInt(properties.getProperty("port", "17180")), world, token, null, service);
@@ -76,12 +67,4 @@ public final class ServiceMain implements MagicEngine {
                 + " incarnation=" + state.incarnation() + " active_match_limit=" + limit);
         Thread.currentThread().join();
     }
-    public Health health() { return new Health(VERSION, world, state.incarnation(), catalog.compatibility(), false, limit); }
-    public Validation validateDeck(ValidationRequest request) { return decks.prepare(request.snapshot()).validation(); }
-    private static ControlServer.Fault pending() { return new ControlServer.Fault(503, "NOT_READY", "Managed orchestration is not ready", true); }
-    public Status prepareMatch(MatchRequest request) { throw pending(); }
-    public Status startMatch(UUID match, Operation request) { throw pending(); }
-    public Status getStatus(UUID match) { throw pending(); }
-    public Status cancelMatch(UUID match, Operation request) { throw pending(); }
-    public SeatAccess getSeatAccess(UUID match, OwnerRequest request) { throw pending(); }
 }

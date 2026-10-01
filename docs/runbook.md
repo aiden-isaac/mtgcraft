@@ -19,7 +19,8 @@ The lock stays held until process exit, after engine workers stop.
 
 HTTP health authenticates the world/token and reports pinned compatibility,
 incarnation, admission readiness and configured capacity. Current managed orchestration
-is still under implementation: `ready=false`, and match operations fail NOT_READY.
+is still under implementation: `ready=false`. Preparation/status/start are implemented;
+seat access and cancellation fail NOT_READY until their native policy/result hooks land.
 Native XMage listening alone is not admission readiness. Keep physical admission off.
 
 `python3 tests/service-smoke.py` starts and terminates two real pinned XMage JVMs,
@@ -36,3 +37,13 @@ Freeform validation and exact installed quantities/face relationships. The manif
 is deliberately limited to the probed printings plus M10/230 Plains; other cards
 fail closed. It supports normal, split and transform layouts. These are integration
 fixtures, not an AI deck-quality or complete catalog claim.
+
+`bash scripts/check.sh managed` additionally exercises durable human/AI preparation,
+identical/conflicting retries, capacity, seat readiness and crash-intent fencing.
+The sole pinned AI profile is `mad-plains-v1` (60 M10/230 Plains). This isolates
+orchestration from AI quality. Creation commits intent and table association before
+seat installation; an ambiguous retry fences the marker and returns a stable failed
+tombstone. Restart acquires the exclusive process lock and records nonterminal old
+matches as interrupted, with no winner. A world stamp prevents state-directory reuse
+by another world. Health stays unavailable for physical admission until native policy
+and authoritative terminal persistence are verified.

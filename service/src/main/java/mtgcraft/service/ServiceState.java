@@ -32,6 +32,20 @@ public final class ServiceState implements AutoCloseable {
     }
     public UUID incarnation() { return incarnation; }
     public UUID previous() { return previous; }
+    public void bindWorld(UUID world) throws IOException {
+        var path = directory.resolve("world");
+        if (Files.exists(path)) {
+            if (!Files.readString(path).strip().equals(world.toString())) throw new IOException("state belongs to another world");
+        } else write("world", (world + "\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    }
+    public java.util.List<byte[]> matches() throws IOException {
+        var records = new java.util.ArrayList<byte[]>();
+        try (var paths = Files.list(directory)) {
+            for (var path : paths.filter(p -> p.getFileName().toString().matches("match-[0-9a-f-]{36}\\.json")).toList())
+                records.add(Files.readAllBytes(path));
+        }
+        return records;
+    }
     public void write(String name, byte[] bytes) throws IOException {
         if (!name.matches("[a-zA-Z0-9._-]+")) throw new IllegalArgumentException("invalid record name");
         var pending = Files.createTempFile(directory, "pending-", ".tmp");
