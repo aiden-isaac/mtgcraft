@@ -24,7 +24,7 @@ and acknowledged native-controller result persistence (3.5); prove each before 6
 ## 2. Define the project boundary and catalog
 
 - [x] 2.1 Define versioned project DTOs for card/printing identity, canonical main-deck entries, immutable snapshot, player/seat binding, match request/status/result, and structured errors without MTGCard or XMage runtime types. Evidence: `shared/src/main/java/mtgcraft/protocol/Protocol.java`; `bash scripts/check.sh`.
-- [ ] 2.2 Define deterministic snapshot encoding and digest, world/match/seat/result identifiers, request idempotency rules, and service/catalog compatibility checks. Evidence: `Canonical.java`, `docs/protocol.md`; canonical grouping/order and request binding checks pass.
+- [x] 2.2 Define deterministic snapshot encoding and digest, world/match/seat/result identifiers, request idempotency rules, and service/catalog compatibility checks. Evidence: `Canonical.java`, `docs/protocol.md`; canonical grouping/order and request binding checks pass.
 - [ ] 2.3 Build a pinned mapping manifest and resolver for exact printings and explicitly approved equivalent printings; report all unsupported, inconsistent, and ambiguous entries in one validation response.
 - [ ] 2.4 Add resolver tests for normal cards, reprints, foil/nonfoil copies, split/multiface layouts, conflicting IDs, missing engine cards, and unchanged immutable snapshots.
 - [ ] 2.5 Specify and implement the minimal authenticated, versioned HTTP/JSON control protocol with schema limits, timeouts, world scoping, structured errors, loopback default, and TLS requirement for non-loopback use.
