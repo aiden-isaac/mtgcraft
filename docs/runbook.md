@@ -97,5 +97,9 @@ the existing block UUID/tint on its existing drop, without another box or record
 The live probe passes survival destruction, exact contents, placed-source rejection,
 durable physical transfer, storage/cache/world-access/placement guards and journal
 reload. Its probe mod and admission bypass are excluded from the production addon jar.
-Production admission remains disabled while return/crash and full lifecycle acceptance
-are incomplete. No background test server remains running after a successful probe.
+Return claims pass offline/full-inventory retention, owner checks, repeated/reloaded
+one-time delivery, original-box re-placement and ambiguous-delivery quarantine.
+The return keeps original item components plus a project custody marker; no card
+ownership or prize changes occur. Production admission remains disabled while the
+complete crash matrix and authenticated lifecycle integration are incomplete.
+No background test server remains running after a successful probe.

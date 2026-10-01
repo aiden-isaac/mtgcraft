@@ -77,7 +77,7 @@ public final class CustodyProbe implements ModInitializer {
                 assert result == net.minecraft.world.InteractionResult.FAIL && alias.getCount() == 1 && level.getBlockState(target).isAir();
                 // An operator/unloaded-chunk alias can still appear; its cached contents must also be inaccessible.
                 level.setBlock(target, block.defaultBlockState(), 3);
-                var cached = (DeckboxBlockEntity) level.getBlockEntity(target); cached.setItem(0, card.copy()); cached.loadStorageId(backing); custody.track(cached, true);
+                var cached = (DeckboxBlockEntity) level.getBlockEntity(target); cached.setItem(0, card.copyWithCount(1)); cached.loadStorageId(backing); custody.track(cached, true);
                 assert level.getBlockEntity(target) == null : "Reserved alias remained available to store/database/control/hopper lookups";
                 assert cached.getItem(0).isEmpty() && cached.removeStack(0).isEmpty();
                 assert !cached.canPlaceItem(0, card) && !cached.canTakeItem(cached, 0, card) && !cached.stillValid(player);
@@ -87,7 +87,36 @@ public final class CustodyProbe implements ModInitializer {
                 assert again.records().size() == 1 && again.records().iterator().next().request().equals(request) && Custody.locked(server, backing);
                 var heldFile = Custody.read(server.getWorldPath(net.minecraft.world.level.storage.LevelResource.PLAYER_DATA_DIR).resolve(player.getUUID() + ".dat"));
                 assert heldFile.getList("Inventory").orElseThrow().isEmpty() : "Escrow removal was not persisted";
+                again.returnPending(request.matchId());
+                assert again.claim(player.getUUID(), request.matchId()) == Custody.Phase.RETURN_PENDING : "Offline claim delivered an item";
+                var stranger = new ServerPlayer(server, level, new GameProfile(UUID.randomUUID(), "Stranger"), ClientInformation.createDefault());
+                reject(() -> again.claim(stranger, request.matchId()));
+                for (int i = 0; i < 36; i++) player.getInventory().setItem(i, new ItemStack(Items.STONE, 64));
+                assert again.claim(player, request.matchId()) == Custody.Phase.RETURN_PENDING && Custody.locked(server, backing);
+                player.getInventory().setItem(0, ItemStack.EMPTY);
+                assert again.claim(player, request.matchId()) == Custody.Phase.RETURNED && !Custody.locked(server, backing);
+                var returned = player.getInventory().getItem(0);
+                assert returned.getCount() == 1 && StackData.readCustom(returned).getString(DeckboxStorage.ITEM_ID_KEY).orElseThrow().equals(backing.toString());
+                assert StackData.readCustom(returned).getInt("mtgcard_deckbox_tint").orElseThrow() == 0x123456;
+                assert again.claim(player, request.matchId()) == Custody.Phase.RETURNED && player.getInventory().countItem(returned.getItem()) == 1;
+                assert cached.getItem(0).getCount() == 40 : "Unlock reused stale alias cache instead of authoritative backing";
+                var afterReturn = new Custody(server); Custody.install(afterReturn);
+                assert afterReturn.requireOwner(player.getUUID(), request.matchId()).phase() == Custody.Phase.RETURNED;
+                assert afterReturn.claim(player, request.matchId()) == Custody.Phase.RETURNED && player.getInventory().countItem(returned.getItem()) == 1;
+                var placement = ((BlockItem) returned.getItem()).place(new DirectionalPlaceContext(level, pos.offset(4, 0, 0), Direction.DOWN, returned, Direction.UP));
+                assert placement != net.minecraft.world.InteractionResult.FAIL;
+                var restored = (DeckboxBlockEntity) level.getBlockEntity(pos.offset(4, 0, 0));
+                assert restored.getStorageId().equals(backing) && restored.getItem(0).getCount() == 40;
+                // Inject a crash at the persisted delivery intent, independently of whether an item reached player data.
+                var uncertain = MatchRequest.create(request.worldId(), UUID.randomUUID(), request.seats(), request.snapshot(), request.aiProfile());
+                var root = Custody.read(server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("mtgcraft/escrow-" + request.matchId() + ".dat"));
+                root.putString("Request", new String(mtgcraft.protocol.Json.bytes(uncertain), java.nio.charset.StandardCharsets.UTF_8)); root.putString("Phase", "CLAIMING");
+                Custody.write(server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("mtgcraft/escrow-" + uncertain.matchId() + ".dat"), root);
+                var recovered = new Custody(server); Custody.install(recovered);
+                assert recovered.requireOwner(player.getUUID(), uncertain.matchId()).phase() == Custody.Phase.QUARANTINED && Custody.locked(server, backing);
+                reject(() -> recovered.claim(player, uncertain.matchId()));
                 System.out.println("PASS live custody: survival breaking keeps one original box/UUID/tint, placed rejection, durable physical transfer, storage guards, cached alias guards, placement rejection and journal reload");
+                System.out.println("PASS return claims: offline/full pending, owner binding, one original item, durable tombstone, re-placement, fresh alias cache and crash quarantine");
                 server.halt(false);
             } catch (Throwable failure) { failure.printStackTrace(); server.halt(false); }
         });

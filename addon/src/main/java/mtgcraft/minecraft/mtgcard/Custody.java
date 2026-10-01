@@ -24,7 +24,7 @@ import net.minecraft.world.level.storage.TagValueOutput;
 
 /** Server-thread custody journal. No remote match may be prepared until RESERVED. */
 public final class Custody {
-    public enum Phase { INTENT, RESERVED, QUARANTINED }
+    public enum Phase { INTENT, RESERVED, RETURN_PENDING, CLAIMING, RETURNED, QUARANTINED }
     public record Reservation(MatchRequest request, UUID backingId, String sourceFingerprint, CompoundTag original, Phase phase) {
         public Reservation { Objects.requireNonNull(request); Objects.requireNonNull(backingId); digest(sourceFingerprint); original = original.copy(); Objects.requireNonNull(phase); }
         @Override public CompoundTag original() { return original.copy(); }
@@ -53,9 +53,9 @@ public final class Custody {
                 if (!request.worldId().equals(worldId) || !file.getFileName().toString().equals("escrow-" + request.matchId() + ".dat")) throw new IOException("Custody journal binding mismatch");
                 var record = new Reservation(request, UUID.fromString(tag.getString("Backing").orElseThrow()), tag.getString("Fingerprint").orElseThrow(),
                         tag.getCompound("Original").orElseThrow(), Phase.valueOf(tag.getString("Phase").orElseThrow()));
-                if (!reservedBacking.add(record.backingId())) throw new IOException("Repeated backing reservation");
+                if (record.phase() != Phase.RETURNED && !reservedBacking.add(record.backingId())) throw new IOException("Repeated backing reservation");
                 reservations.put(request.matchId(), record);
-                if (record.phase() == Phase.INTENT) put(new Reservation(request, record.backingId(), record.sourceFingerprint(), record.original(), Phase.QUARANTINED));
+                if (record.phase() == Phase.INTENT || record.phase() == Phase.CLAIMING) put(phase(record, Phase.QUARANTINED));
             }
         }
     }
@@ -108,13 +108,56 @@ public final class Custody {
         }
     }
     void proveAdmissionForProbe() { onThread(); admissionProven = true; }
+    // Only the lifecycle coordinator may call this, after committing a verified terminal result.
+    void returnPending(UUID match) throws IOException {
+        onThread(); var record = require(match);
+        if (record.phase() == Phase.RETURN_PENDING || record.phase() == Phase.RETURNED) return;
+        if (record.phase() != Phase.RESERVED) throw new IllegalArgumentException("Escrow cannot be released in this phase");
+        put(phase(record, Phase.RETURN_PENDING));
+    }
+    public Phase claim(UUID owner, UUID match) throws IOException {
+        onThread(); var record = requireOwner(owner, match);
+        var player = server.getPlayerList().getPlayer(owner);
+        if (player == null) return record.phase(); // Keep the durable claim; never drop an offline owner's box.
+        return claim(player, match);
+    }
+    Phase claim(ServerPlayer player, UUID match) throws IOException {
+        onThread(); var record = requireOwner(player.getUUID(), match);
+        if (record.phase() == Phase.RETURNED) return Phase.RETURNED;
+        if (record.phase() != Phase.RETURN_PENDING) throw new IllegalArgumentException("Deckbox is not ready to claim");
+        int slot = player.getInventory().getFreeSlot();
+        if (slot < 0) return Phase.RETURN_PENDING;
+        var box = ItemStack.CODEC.parse(RegistryOps.create(NbtOps.INSTANCE, player.registryAccess()), record.original()).getOrThrow(IllegalArgumentException::new);
+        var custom = StackData.readCustom(box); custom.putString(MARKER, match.toString()); box.set(DataComponents.CUSTOM_DATA, CustomData.of(custom));
+        put(phase(record, Phase.CLAIMING)); // Crash anywhere in delivery quarantines; no automatic second item.
+        try {
+            player.getInventory().setItem(slot, box);
+            savePlayer(player);
+            put(phase(record, Phase.RETURNED)); // Acknowledged delivery and durable tombstone precede unlock.
+            return Phase.RETURNED;
+        } catch (IOException | RuntimeException failure) {
+            put(phase(record, Phase.QUARANTINED)); throw failure;
+        }
+    }
+    public Reservation requireOwner(UUID owner, UUID match) {
+        onThread(); var record = require(match);
+        if (record.request().seats().stream().noneMatch(s -> s.role() == Role.HUMAN && owner.equals(s.playerId()))) throw new IllegalArgumentException("This deckbox belongs to another player");
+        return record;
+    }
+    private Reservation require(UUID match) {
+        var record = reservations.get(match);
+        if (record == null) throw new IllegalArgumentException("Unknown match");
+        return record;
+    }
+    private static Reservation phase(Reservation record, Phase phase) { return new Reservation(record.request(), record.backingId(), record.sourceFingerprint(), record.original(), phase); }
     private void onThread() { if (!server.isSameThread()) throw new IllegalStateException("Custody requires the Minecraft server thread"); }
     private void put(Reservation record) throws IOException {
         var tag = new CompoundTag(); tag.putInt("Version", 1); tag.putString("Request", new String(Json.bytes(record.request()), java.nio.charset.StandardCharsets.UTF_8));
         tag.putString("Backing", record.backingId().toString()); tag.putString("Fingerprint", record.sourceFingerprint()); tag.put("Original", record.original()); tag.putString("Phase", record.phase().name());
         reservations.put(record.request().matchId(), record);
-        reservedBacking.add(record.backingId());
+        if (record.phase() != Phase.RETURNED) reservedBacking.add(record.backingId());
         write(directory.resolve("escrow-" + record.request().matchId() + ".dat"), tag);
+        if (record.phase() == Phase.RETURNED) reservedBacking.remove(record.backingId());
     }
     static void savePlayer(ServerPlayer player) throws IOException {
         var problems = new ProblemReporter.Collector(); var output = TagValueOutput.createWithContext(problems, player.registryAccess());
