@@ -27,6 +27,8 @@ public final class Matches implements AutoCloseable {
     private final Compatibility expected;
     private final boolean admissions;
     private final Set<UUID> busy = new HashSet<>();
+    private final Set<UUID> reconciling = new HashSet<>();
+    private long nextPoll;
     public Matches(MinecraftServer server, Custody custody, ControlClient client, Compatibility expected, boolean admissions) {
         this.server = server; this.custody = custody; this.client = client; this.expected = expected; this.admissions = admissions;
     }
@@ -46,6 +48,7 @@ public final class Matches implements AutoCloseable {
         if (current.admissions) custody.enableVerifiedAdmission();
     }
     public static void register() {
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> { if (current != null) current.poll(); });
         CommandRegistrationCallback.EVENT.register((dispatcher, registries, environment) -> {
             var root = literal("mtgcraft").requires(source -> source.getPlayer() != null)
                     .executes(context -> { tell(context.getSource().getPlayerOrException(), "/mtgcraft world | submit | status/access/start/cancel/claim <match UUID>"); return 1; });
@@ -76,6 +79,7 @@ public final class Matches implements AutoCloseable {
         try { future = request.get(); } catch (RuntimeException failure) { busy.remove(owner); throw failure; }
         future.whenComplete((value, failure) -> server.execute(() -> {
             busy.remove(owner);
+            if (current != this) return;
             try {
                 if (failure == null) success.accept(value);
                 else {
@@ -106,11 +110,11 @@ public final class Matches implements AutoCloseable {
                 var request = MatchRequest.create(custody.worldId(), UUID.randomUUID(), List.of(new Seat(UUID.randomUUID(), Role.HUMAN, owner), new Seat(UUID.randomUUID(), Role.AI, null)), snapshot, "mad-plains-v1");
                 try { custody.reserve(heldOwner, source, request); } catch (Exception invalid) { throw new IllegalArgumentException(invalid.getMessage()); }
                 tell(owner, "Deckbox reserved for match " + request.matchId());
-                observe(owner, () -> client.prepareMatch(request), status -> { verify(request, status); tell(owner, "Match " + request.matchId() + ": " + status.state() + ". Use /mtgcraft access " + request.matchId() + " for your XMage login."); });
+                observe(owner, () -> client.prepareMatch(request), status -> { accept(request.matchId(), status); tell(owner, "Match " + request.matchId() + ": " + status.state() + ". Use /mtgcraft access " + request.matchId() + " for your XMage login."); });
             });
         });
     }
-    public void action(ServerPlayer player, UUID match, String action) {
+    public void action(ServerPlayer player, UUID match, String action) throws java.io.IOException {
         var record = custody.requireOwner(player.getUUID(), match); var owner = player.getUUID();
         if (action.equals("access")) {
             observe(owner, () -> client.getSeatAccess(match, owner), access -> {
@@ -118,11 +122,42 @@ public final class Matches implements AutoCloseable {
                 tell(owner, "XMage " + access.host() + ":" + access.port() + " — username " + access.username() + " — password " + access.password() + ". Join your table, then /mtgcraft start " + match);
             }); return;
         }
+        if (action.equals("start") || action.equals("cancel")) custody.intend(owner, match, action.equals("start") ? Custody.Pending.START : Custody.Pending.CANCEL);
         observe(owner, () -> switch (action) {
             case "start" -> client.startMatch(match, record.request().requestDigest());
             case "cancel" -> client.cancelMatch(match, record.request().requestDigest());
             default -> client.getStatus(match);
-        }, status -> { verify(record.request(), status); tell(owner, "Match " + match + ": " + status.state() + "; deckbox " + record.phase()); });
+        }, status -> { accept(match, status); tell(owner, "Match " + match + ": " + status.state() + "; deckbox " + custody.requireOwner(owner, match).phase()); });
+    }
+    private void accept(UUID match, Status status) {
+        try { custody.persistStatus(match, status); }
+        catch (java.io.IOException invalid) { throw new IllegalStateException("Match journal could not be acknowledged", invalid); }
+    }
+    private void poll() {
+        long now = System.nanoTime(); if (now < nextPoll) return;
+        nextPoll = now + Duration.ofSeconds(2).toNanos();
+        for (var record : custody.records()) {
+            var match = record.request().matchId();
+            if (record.phase() != Custody.Phase.RESERVED || record.observed() != null && terminal(record.observed().state()) || reconciling.size() >= 16 || !reconciling.add(match)) continue;
+            var request = record.request();
+            client.getStatus(match).exceptionallyCompose(failure -> {
+                var cause = failure; while (cause.getCause() != null) cause = cause.getCause();
+                if (record.observed() == null && cause instanceof ControlClient.Rejected rejected && rejected.status == 404 && rejected.failure.error().code().equals("NOT_FOUND")) return client.prepareMatch(request);
+                return CompletableFuture.failedFuture(failure);
+            }).thenCompose(status -> {
+                verify(request, status);
+                if (terminal(status.state())) return CompletableFuture.completedFuture(status);
+                return switch (record.pending()) {
+                    case START -> status.state() == State.PREPARED ? client.startMatch(match, request.requestDigest()) : CompletableFuture.completedFuture(status);
+                    case CANCEL -> client.cancelMatch(match, request.requestDigest());
+                    default -> CompletableFuture.completedFuture(status);
+                };
+            }).whenComplete((status, failure) -> server.execute(() -> {
+                reconciling.remove(match);
+                if (current != this || failure != null) return; // Unknown: keep the intent and physical reservation.
+                try { accept(match, status); } catch (RuntimeException invalid) { /* Kept in custody for investigation. */ }
+            }));
+        }
     }
     static void verify(MatchRequest request, Status status) {
         if (!request.worldId().equals(status.worldId()) || !request.matchId().equals(status.matchId()) || !request.requestDigest().equals(status.requestDigest())

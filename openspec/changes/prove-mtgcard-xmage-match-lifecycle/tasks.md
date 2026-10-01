@@ -49,7 +49,7 @@ and acknowledged native-controller result persistence (3.5); prove each before 6
 ## 5. Persist and reconcile the lifecycle
 
 - [x] 5.1 Implement a durable world-local match journal with unique constraints for world/match/result and separate terminal and custody-return phases. Evidence: `Custody.java`, `bash scripts/check-custody.sh`; immutable bindings, monotonic status revisions, exact terminal replay, duplicate-result rejection and fresh journal reload pass while physical return phases remain independent.
-- [ ] 5.2 Commit reservation before remote creation; retry create/start/cancel with stable IDs and digests, and reconcile nonterminal records after Minecraft restart.
+- [x] 5.2 Commit reservation before remote creation; retry create/start/cancel with stable IDs and digests, and reconcile nonterminal records after Minecraft restart. Evidence: durable `Pending` intents and asynchronous `Matches` reconciliation; `bash scripts/check-custody.sh` passes lost create/start/cancel acknowledgement recovery and journal reload while the HTTP fixture survives, preserving both request IDs/digests. A fresh Minecraft JVM case remains 5.5.
 - [ ] 5.3 Verify authenticated terminal results against world, player/seat mapping, snapshot, service incarnation, and expected state; commit first result and release intent once, quarantine conflicts.
 - [ ] 5.4 Treat network timeout as unknown and retain custody; implement confirmed-incarnation-loss/verified-fencing interruption policy with no winner or prize.
 - [ ] 5.5 Test duplicate status/results, lost acknowledgements, Minecraft client disconnect, Minecraft restart while XMage survives, service unreachability, confirmed engine loss, and delayed stale messages.

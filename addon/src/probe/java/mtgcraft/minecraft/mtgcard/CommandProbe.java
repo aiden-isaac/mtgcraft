@@ -40,7 +40,7 @@ final class CommandProbe {
         server.getPlayerList().getPlayersByUUID().put(owner.getUUID(), owner); server.getPlayerList().getPlayersByUUID().put(stranger.getUUID(), stranger);
         held(server, owner, card); command(server, owner, "submit"); command(server, owner, "submit");
         assert owner.messages.stream().anyMatch(m -> m.contains("already pending"));
-        var deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
+        var deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(35);
         ServerTickEvents.END_SERVER_TICK.register(new ServerTickEvents.EndTick() {
             int step; int baseline; UUID match; UUID backing;
             private boolean said(String text) { return owner.messages.stream().skip(baseline).anyMatch(m -> m.contains(text)); }
@@ -93,6 +93,34 @@ final class CommandProbe {
                         case 7 -> {
                             if (!said("CANCELLED")) return;
                             assert Custody.locked(server, backing) : "Command accepted a terminal release before lifecycle verification";
+                            assert Custody.current().requireOwner(owner.getUUID(), match).observed().state() == State.CANCELLED;
+                            held(server, owner, card); engine.lose = "create"; baseline = owner.messages.size(); command(server, owner, "submit"); step++;
+                        }
+                        case 8 -> {
+                            if (engine.requests.size() != 2 || Matches.hasPending(owner.getUUID())) return;
+                            var recovered = new Custody(server); Custody.install(recovered); Matches.stop(); Matches.configure(server, recovered);
+                            match = engine.requests.keySet().stream().filter(id -> !id.equals(engine.firstMatch)).findFirst().orElseThrow();
+                            assert recovered.requireOwner(owner.getUUID(), match).pending() == Custody.Pending.CREATE;
+                            step++;
+                        }
+                        case 9 -> {
+                            var record = Custody.current().requireOwner(owner.getUUID(), match);
+                            if (record.observed() == null) return;
+                            assert engine.requests.size() == 2 && record.pending() == Custody.Pending.NONE;
+                            engine.lose = "start"; command(server, owner, "start " + match); step++;
+                        }
+                        case 10 -> {
+                            var record = Custody.current().requireOwner(owner.getUUID(), match);
+                            if (record.observed().state() != State.ACTIVE) return;
+                            assert record.startRequested() && record.pending() == Custody.Pending.NONE;
+                            engine.lose = "cancel"; command(server, owner, "cancel " + match); step++;
+                        }
+                        case 11 -> {
+                            var record = Custody.current().requireOwner(owner.getUUID(), match);
+                            if (record.observed().state() != State.CANCELLED) return;
+                            assert record.pending() == Custody.Pending.NONE && record.phase() == Custody.Phase.RESERVED;
+                            assert engine.requests.size() == 2;
+                            System.out.println("PASS stable retries: lost create/start/cancel acknowledgements and reloaded Minecraft tracking reuse the same IDs/digests");
                             System.out.println("PASS commands/async HTTP: server-only snapshots, bounded duplicate submission, private owner credentials, unsupported/stale rejection and offline validation abort; terminal release awaits lifecycle binding");
                             http.close(); server.getPlayerList().getPlayersByUUID().clear(); server.halt(false); step++;
                         }
@@ -116,6 +144,8 @@ final class CommandProbe {
     private static final class Fixture implements MagicEngine {
         final UUID world; final UUID incarnation = UUID.randomUUID(); Compatibility compatibility;
         final Map<UUID, MatchRequest> requests = new ConcurrentHashMap<>(); final Map<UUID, Status> statuses = new ConcurrentHashMap<>();
+        UUID firstMatch; volatile String lose;
+        private void lost(String operation) { if (operation.equals(lose)) { lose = null; throw new ControlServer.Fault(503, "ACK_LOST", "Fixture acknowledgement lost", true); } }
         volatile CountDownLatch gate; volatile boolean entered; volatile int validationFinished;
         Fixture(UUID world) { this.world = world; }
         @Override public Health health() { return new Health(1, world, incarnation, compatibility, true, 2); }
@@ -126,13 +156,13 @@ final class CommandProbe {
             var bad = request.snapshot().entries().stream().anyMatch(e -> e.card().label().equals("Cheatyface"));
             return new Validation(1, !bad, request.snapshot().digest(), bad ? List.of(new Error("UNSUPPORTED", "Unsupported fixture card", false, List.of(0))) : List.of());
         }
-        @Override public Status prepareMatch(MatchRequest request) { requests.putIfAbsent(request.matchId(), request); return statuses.computeIfAbsent(request.matchId(), id -> status(request, State.PREPARED, null)); }
-        private Status status(MatchRequest request, State state, Result result) { return new Status(1, world, request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), state, result == null ? 1 : result.revision(), result); }
-        @Override public Status startMatch(UUID match, Operation operation) { return statuses.compute(match, (id, old) -> status(requests.get(id), State.ACTIVE, null)); }
-        @Override public Status getStatus(UUID match) { return statuses.get(match); }
+        @Override public Status prepareMatch(MatchRequest request) { if (firstMatch == null) firstMatch = request.matchId(); requests.putIfAbsent(request.matchId(), request); var value = statuses.computeIfAbsent(request.matchId(), id -> status(request, State.PREPARED, null)); lost("create"); return value; }
+        private Status status(MatchRequest request, State state, Result result) { return new Status(1, world, request.matchId(), request.requestDigest(), request.snapshot().digest(), incarnation, request.seats(), state, result == null ? (state == State.ACTIVE ? 2 : 1) : result.revision(), result); }
+        @Override public Status startMatch(UUID match, Operation operation) { assert operation.requestDigest().equals(requests.get(match).requestDigest()); var value = statuses.compute(match, (id, old) -> status(requests.get(id), State.ACTIVE, null)); lost("start"); return value; }
+        @Override public Status getStatus(UUID match) { var value = statuses.get(match); if (value == null) throw new ControlServer.Fault(404, "NOT_FOUND", "Match does not exist", false); return value; }
         @Override public Status cancelMatch(UUID match, Operation operation) {
-            var request = requests.get(match); var result = new Result(UUID.randomUUID(), world, match, request.snapshot().digest(), incarnation, State.CANCELLED, 2, request.seats().stream().map(s -> new SeatOutcome(s, Outcome.NONE)).toList());
-            return statuses.compute(match, (id, old) -> status(request, State.CANCELLED, result));
+            var request = requests.get(match); var result = new Result(UUID.randomUUID(), world, match, request.snapshot().digest(), incarnation, State.CANCELLED, 3, request.seats().stream().map(s -> new SeatOutcome(s, Outcome.NONE)).toList());
+            var value = statuses.compute(match, (id, old) -> terminal(old.state()) ? old : status(request, State.CANCELLED, result)); lost("cancel"); return value;
         }
         @Override public SeatAccess getSeatAccess(UUID match, OwnerRequest owner) {
             var seat = requests.get(match).seats().stream().filter(s -> s.role() == Role.HUMAN).findFirst().orElseThrow();

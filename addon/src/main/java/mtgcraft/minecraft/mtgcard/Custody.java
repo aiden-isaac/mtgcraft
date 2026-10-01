@@ -24,10 +24,11 @@ import net.minecraft.world.level.storage.TagValueOutput;
 
 /** Server-thread custody journal. No remote match may be prepared until RESERVED. */
 public final class Custody {
+    public enum Pending { NONE, CREATE, START, CANCEL }
     public enum Phase { INTENT, RESERVED, RETURN_PENDING, CLAIMING, RETURNED, QUARANTINED }
-    public record Reservation(MatchRequest request, UUID backingId, String sourceFingerprint, CompoundTag original, Phase phase, Status observed) {
+    public record Reservation(MatchRequest request, UUID backingId, String sourceFingerprint, CompoundTag original, Phase phase, Status observed, Pending pending, boolean startRequested) {
         public Reservation {
-            Objects.requireNonNull(request); Objects.requireNonNull(backingId); digest(sourceFingerprint); original = original.copy(); Objects.requireNonNull(phase);
+            Objects.requireNonNull(request); Objects.requireNonNull(backingId); digest(sourceFingerprint); original = original.copy(); Objects.requireNonNull(phase); Objects.requireNonNull(pending);
             if (observed != null) Matches.verify(request, observed);
         }
         @Override public CompoundTag original() { return original.copy(); }
@@ -58,7 +59,8 @@ public final class Custody {
                 if (!request.worldId().equals(worldId) || !file.getFileName().toString().equals("escrow-" + request.matchId() + ".dat")) throw new IOException("Custody journal binding mismatch");
                 var record = new Reservation(request, UUID.fromString(tag.getString("Backing").orElseThrow()), tag.getString("Fingerprint").orElseThrow(),
                         tag.getCompound("Original").orElseThrow(), Phase.valueOf(tag.getString("Phase").orElseThrow()),
-                        tag.getString("Status").map(json -> Json.read(json.getBytes(java.nio.charset.StandardCharsets.UTF_8), Status.class)).orElse(null));
+                        tag.getString("Status").map(json -> Json.read(json.getBytes(java.nio.charset.StandardCharsets.UTF_8), Status.class)).orElse(null),
+                        Pending.valueOf(tag.getString("Pending").orElse("CREATE")), tag.getBoolean("StartRequested").orElse(false));
                 uniqueResult(record);
                 if (record.phase() != Phase.RETURNED && !reservedBacking.add(record.backingId())) throw new IOException("Repeated backing reservation");
                 reservations.put(request.matchId(), record);
@@ -96,7 +98,7 @@ public final class Custody {
                     || menu instanceof com.spider.mtgcard.deckcontrol.DeckControlScreenHandler) viewer.closeContainer();
         }
         var original = (CompoundTag) ItemStack.CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, player.registryAccess()), source.original()).getOrThrow(IllegalArgumentException::new);
-        var record = new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.INTENT, null);
+        var record = new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.INTENT, null, Pending.CREATE, false);
         synchronized (DeckboxStorage.class) { // Reuse upstream's storage mutex: no async API write can slip between recheck and protection.
             MtgcardAdapter.recheck(player, source);
             fault.accept("before_intent");
@@ -111,16 +113,26 @@ public final class Custody {
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
             savePlayer(player); // Acknowledged atomic player write, rather than vanilla's swallowed save errors.
             fault.accept("after_removed");
-            record = new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.RESERVED, null);
+            record = new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.RESERVED, null, Pending.CREATE, false);
             put(record); fault.accept("after_reserved"); return record;
         } catch (IOException | RuntimeException failure) {
             // Keep intent/guards even if the quarantine write itself fails. Never invent a replacement box.
-            put(new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.QUARANTINED, null)); throw failure;
+            put(new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.QUARANTINED, null, Pending.CREATE, false)); throw failure;
         }
     }
     void proveAdmissionForProbe() { onThread(); admissionProven = true; }
     void enableVerifiedAdmission() { onThread(); admissionProven = true; }
     void injectCrashForProbe(java.util.function.Consumer<String> fault) { onThread(); this.fault = fault; }
+    void intend(UUID owner, UUID match, Pending pending) throws IOException {
+        onThread(); var record = requireOwner(owner, match);
+        if (record.phase() != Phase.RESERVED || record.observed() != null && terminal(record.observed().state())) throw new IllegalArgumentException("Match cannot accept this operation");
+        if (pending != Pending.START && pending != Pending.CANCEL) throw new IllegalArgumentException("Invalid operation");
+        if (record.pending() == Pending.CANCEL && pending == Pending.START) throw new IllegalArgumentException("Cancellation is already pending");
+        put(new Reservation(record.request(), record.backingId(), record.sourceFingerprint(), record.original(), record.phase(), record.observed(), pending, record.startRequested() || pending == Pending.START));
+    }
+    private static Pending acknowledged(Pending pending, State state) {
+        return terminal(state) || pending == Pending.CREATE || pending == Pending.START && state == State.ACTIVE ? Pending.NONE : pending;
+    }
     Status persistStatus(UUID match, Status incoming) throws IOException {
         onThread(); var record = require(match); Matches.verify(record.request(), incoming);
         var previous = record.observed();
@@ -137,7 +149,7 @@ public final class Custody {
             }
             if (previous.state() == State.ACTIVE && incoming.state() == State.PREPARED) throw new IllegalArgumentException("Regressing match status");
         }
-        put(new Reservation(record.request(), record.backingId(), record.sourceFingerprint(), record.original(), record.phase(), incoming));
+        put(new Reservation(record.request(), record.backingId(), record.sourceFingerprint(), record.original(), record.phase(), incoming, acknowledged(record.pending(), incoming.state()), record.startRequested()));
         return incoming;
     }
     // Only the lifecycle coordinator may call this, after committing a verified terminal result.
@@ -188,7 +200,7 @@ public final class Custody {
         if (record == null) throw new IllegalArgumentException("Unknown match");
         return record;
     }
-    private static Reservation phase(Reservation record, Phase phase) { return new Reservation(record.request(), record.backingId(), record.sourceFingerprint(), record.original(), phase, record.observed()); }
+    private static Reservation phase(Reservation record, Phase phase) { return new Reservation(record.request(), record.backingId(), record.sourceFingerprint(), record.original(), phase, record.observed(), record.pending(), record.startRequested()); }
     private void uniqueResult(Reservation record) throws IOException {
         if (record.observed() == null || record.observed().result() == null) return;
         var result = record.observed().result().resultId(); var match = record.request().matchId();
@@ -199,11 +211,12 @@ public final class Custody {
     private void put(Reservation record) throws IOException {
         var tag = new CompoundTag(); tag.putInt("Version", 1); tag.putString("Request", new String(Json.bytes(record.request()), java.nio.charset.StandardCharsets.UTF_8));
         tag.putString("Backing", record.backingId().toString()); tag.putString("Fingerprint", record.sourceFingerprint()); tag.put("Original", record.original()); tag.putString("Phase", record.phase().name());
+        tag.putString("Pending", record.pending().name()); tag.putBoolean("StartRequested", record.startRequested());
         if (record.observed() != null) tag.putString("Status", new String(Json.bytes(record.observed()), java.nio.charset.StandardCharsets.UTF_8));
         uniqueResult(record);
-        reservations.put(record.request().matchId(), record);
         if (record.phase() != Phase.RETURNED) reservedBacking.add(record.backingId());
         write(directory.resolve("escrow-" + record.request().matchId() + ".dat"), tag);
+        reservations.put(record.request().matchId(), record);
         if (record.phase() == Phase.RETURNED) reservedBacking.remove(record.backingId());
     }
     static void savePlayer(ServerPlayer player) throws IOException {
