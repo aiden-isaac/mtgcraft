@@ -56,7 +56,7 @@ public final class ServiceMain {
         if (!managers.configSettings().isAuthenticationActivated() || !managers.configSettings().getServerAddress().equals("127.0.0.1") || Main.isTestMode())
             throw new IllegalArgumentException("native service requires authenticated loopback, test mode off");
         var service = new ManagedMatches(state, world, limit, catalog, managers);
-        ManagedTransport.start(managers);
+        ManagedTransport.start(managers, service);
         var http = new ControlServer(java.net.InetAddress.getByName(properties.getProperty("bind", "127.0.0.1")),
                 Integer.parseInt(properties.getProperty("port", "17180")), world, token, null, service);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

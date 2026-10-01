@@ -172,5 +172,22 @@ public final class ManagedMatches implements MagicEngine {
         return records.get(matchId).status();
     }
     public Status cancelMatch(UUID match, Operation request) { throw fault(503, "NOT_READY", "Terminal lifecycle is not ready", true); }
-    public SeatAccess getSeatAccess(UUID match, OwnerRequest request) { throw fault(503, "NOT_READY", "Managed native policy is not ready", true); }
+    public synchronized SeatAccess getSeatAccess(UUID match, OwnerRequest request) {
+        checkWorld(request.worldId());
+        var record = record(match);
+        var human = record.request().seats().getFirst();
+        if (!human.playerId().equals(request.playerId())) throw fault(403, "NOT_OWNER", "Only the Minecraft seat owner may retrieve access", false);
+        if (record.creating() || terminal(record.status().state())) throw fault(409, "SEAT_UNAVAILABLE", "Seat access is unavailable", false);
+        return new SeatAccess(VERSION, world, match, human, managers.configSettings().getServerAddress(), managers.configSettings().getPort(), record.username(), record.password());
+    }
+    public synchronized boolean seatAccountAllowed(String username) {
+        return records.values().stream().anyMatch(record -> !record.creating() && !terminal(record.status().state())
+                && record.username().equals(username) && managers.userManager().getUserByName(username)
+                    .map(user -> user.getId().equals(record.humanUserId())).orElse(false));
+    }
+    public synchronized boolean gameAllowed(UUID user, UUID game) {
+        return records.values().stream().anyMatch(record -> !record.creating() && record.status().state() == State.ACTIVE
+                && user.equals(record.humanUserId()) && managers.tableManager().getMatch(record.tableId())
+                    .map(match -> match.getGame() != null && game.equals(match.getGame().getId())).orElse(false));
+    }
 }

@@ -69,6 +69,7 @@ public final class EngineCheck {
             expectFault(() -> service.startMatch(request.matchId(), new Operation(VERSION, world, request.requestDigest())), "SEAT_NOT_READY");
             var second = MatchRequest.create(world, java.util.UUID.randomUUID(), List.of(new Seat(java.util.UUID.randomUUID(), Role.HUMAN, java.util.UUID.randomUUID()), new Seat(java.util.UUID.randomUUID(), Role.AI, null)), snapshot, request.aiProfile());
             service.prepareMatch(second);
+            nativeGuard(service, managers, request, second, directory);
             var third = MatchRequest.create(world, java.util.UUID.randomUUID(), seats, snapshot, request.aiProfile());
             expectFault(() -> service.prepareMatch(third), "CAPACITY");
             assert managers.tableManager().getTables().size() == 2;
@@ -93,5 +94,33 @@ public final class EngineCheck {
     private static void expectFault(Runnable call, String code) {
         try { call.run(); } catch (mtgcraft.service.ControlServer.Fault fault) { assert fault.error.code().equals(code); return; }
         throw new AssertionError("expected " + code);
+    }
+    private static void nativeGuard(mtgcraft.service.ManagedMatches service, mage.server.MainManagerFactory managers,
+                                    MatchRequest request, MatchRequest other, Path directory) throws Exception {
+        var access = service.getSeatAccess(request.matchId(), new OwnerRequest(VERSION, request.worldId(), request.seats().getFirst().playerId()));
+        expectFault(() -> service.getSeatAccess(request.matchId(), new OwnerRequest(VERSION, request.worldId(), java.util.UUID.randomUUID())), "NOT_OWNER");
+        assert !service.seatAccountAllowed("unrelated");
+        var table = managers.tableManager().getTables().stream().filter(t -> t.getName().endsWith(request.matchId().toString())).findFirst().orElseThrow();
+        var otherTable = managers.tableManager().getTables().stream().filter(t -> t.getName().endsWith(other.matchId().toString())).findFirst().orElseThrow();
+        var human = table.getMatch().getPlayers().stream().filter(p -> p.getPlayer().isHuman()).findFirst().orElseThrow();
+        var properties = new java.util.Properties(); properties.setProperty("username", access.username()); properties.setProperty("password", access.password());
+        properties.setProperty("room", table.getRoomId().toString()); properties.setProperty("table", table.getId().toString());
+        properties.setProperty("player", human.getPlayer().getId().toString()); properties.setProperty("otherTable", otherTable.getId().toString());
+        var path = directory.resolve("native-access.properties");
+        java.nio.file.Files.createFile(path, java.nio.file.attribute.PosixFilePermissions.asFileAttribute(java.nio.file.attribute.PosixFilePermissions.fromString("rw-------")));
+        try (var output = java.nio.file.Files.newOutputStream(path)) { properties.store(output, "Private disposable fixture"); }
+        mage.server.ManagedTransport.start(managers, service);
+        var process = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "java").toString(), "-ea", "-Xmx512m",
+                "--add-opens=java.base/java.io=ALL-UNNAMED", "-cp", System.getProperty("java.class.path"), "mtgcraft.NativeCheck", path.toString()).inheritIO().start();
+        try {
+            if (!process.waitFor(45, java.util.concurrent.TimeUnit.SECONDS)) throw new AssertionError("native client timed out");
+            assert process.exitValue() == 0 : "native client rejected expected behavior";
+            assert table.getState() == mage.constants.TableState.READY_TO_START;
+            assert table.getMatch().getPlayers().size() == 2;
+            assert human.getDeck().getCards().size() == 60 && human.getDeck().getCards().stream().allMatch(c -> c.getName().equals("Plains"));
+        } finally {
+            if (process.isAlive()) process.destroyForcibly().waitFor();
+            java.nio.file.Files.deleteIfExists(path);
+        }
     }
 }

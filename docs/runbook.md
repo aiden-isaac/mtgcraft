@@ -20,7 +20,7 @@ The lock stays held until process exit, after engine workers stop.
 HTTP health authenticates the world/token and reports pinned compatibility,
 incarnation, admission readiness and configured capacity. Current managed orchestration
 is still under implementation: `ready=false`. Preparation/status/start are implemented;
-seat access and cancellation fail NOT_READY until their native policy/result hooks land.
+owner-scoped seat access is implemented; cancellation fails NOT_READY until the result hook lands.
 Native XMage listening alone is not admission readiness. Keep physical admission off.
 
 `python3 tests/service-smoke.py` starts and terminates two real pinned XMage JVMs,
@@ -47,3 +47,13 @@ tombstone. Restart acquires the exclusive process lock and records nonterminal o
 matches as interrupted, with no winner. A world stamp prevents state-directory reuse
 by another world. Health stays unavailable for physical admission until native policy
 and authoritative terminal persistence are verified.
+
+The native deployment is dedicated to managed matches: registration/reset/admin
+login, client table/tournament creation/join/leave, deck submit/save, native start,
+seat swaps/removal and cheats are rejected before engine mutation. Authenticated
+managed accounts reconnect to their existing seat; they cannot create an alternative
+table. Gameplay dispatch checks the bound human and current game; rollback is off.
+The native session test uses a separate stock session-library JVM and verifies the
+original human UUID and 60 Plains survive all tested mutations. It is not Swing UI
+or active-game reconnect acceptance. Seat access checks the persisted Minecraft
+owner and uses private control responses, never a public table name as authorization.
