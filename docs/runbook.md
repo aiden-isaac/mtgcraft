@@ -77,3 +77,11 @@ wins. Account access is revoked and persisted terminal records discard passwords
 The native fixture waits for an actual choice prompt before using XMage's concede
 action, then stays attached until the service acknowledges terminal persistence and
 cleanup. An immediate quit/disconnect fixture did not establish native completion.
+
+The managed check also races active native concession against control cancellation,
+tests deck/start guards in six table phases, and reads the exact result in a fresh
+JVM whose classpath contains no XMage runtime. These checks passed on 2026-10-01.
+The second native client showed roughly 18 seconds of callback delay and an upstream
+closed-connection warning; its phase deadline is 45 seconds. This is fixture evidence,
+not a measured reconnect/turn-latency SLA. Swing UI and physical custody acceptance
+remain unverified.

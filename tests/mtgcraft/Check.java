@@ -17,6 +17,14 @@ public final class Check {
     public static void main(String[] args) throws Exception {
         boolean assertions = false; assert assertions = true;
         if (!assertions) throw new IllegalStateException("enable assertions");
+        if (args.length == 1 && args[0].equals("history")) {
+            var directory = java.nio.file.Path.of(java.nio.file.Files.readString(java.nio.file.Path.of(".cache/engine-check/history-location")).strip());
+            var expected = Json.read(java.nio.file.Files.readAllBytes(directory.resolve("expected-result.json")), Status.class);
+            var record = Json.read(java.nio.file.Files.readAllBytes(directory.resolve("match-" + expected.matchId() + ".json")), mtgcraft.service.ManagedMatches.Record.class);
+            assert expected.equals(record.status()) && record.password() == null;
+            System.out.println("PASS exact structured result read from a fresh JVM without XMage runtime classes");
+            return;
+        }
         var card = new CardIdentity("m10/146", null, null, "m10", "146", Finish.NONFOIL, "normal", List.of(), "Lightning Bolt");
         var compatibility = new Compatibility(VERSION, "freeform", "1", "0".repeat(64), "fixture", "1".repeat(64));
         var input = new ArrayList<>(List.of(new Entry(card, 2, Section.MAIN), new Entry(card, 1, Section.MAIN)));

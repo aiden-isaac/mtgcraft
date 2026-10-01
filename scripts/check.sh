@@ -17,4 +17,8 @@ if [[ "${1:-}" == engine || "${1:-}" == managed ]]; then
     java -ea -Xmx2g --add-opens=java.base/java.io=ALL-UNNAMED \
         -cp "$project_dir/.cache/project/shared:$project_dir/.cache/project/service:$project_dir/.cache/project/tests:$engine_cp" \
         mtgcraft.EngineCheck "$project_dir/service/catalog/manifest.json" "${extra_args[@]}"
+    if [[ "${1:-}" == managed ]]; then
+        cd "$project_dir"
+        java -ea -cp ".cache/project/shared:.cache/project/service:.cache/project/tests:$gson_jar" mtgcraft.Check history
+    fi
 fi

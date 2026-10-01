@@ -64,7 +64,7 @@ public final class NativeCheck implements MageClient {
             System.out.println("PASS guarded native attachment/reconnect and audited table/deck mutation rejection");
             if (access.getProperty("play", "false").equals("true")) {
                 Files.writeString(Path.of(path + ".ready"), "ready");
-                long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(20);
+                long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(45);
                 java.util.List<UUID> games;
                 do {
                     games = second.getTable(room, table).orElseThrow().getGames();
@@ -77,8 +77,11 @@ public final class NativeCheck implements MageClient {
                     if (System.nanoTime() > deadline) throw new AssertionError("native human prompt did not arrive");
                     Thread.sleep(20);
                 }
-                assert second.sendPlayerAction(mage.constants.PlayerAction.CONCEDE, game, null);
-                while (!secondClient.gameOver || !Files.exists(Path.of(path + ".done"))) {
+                Files.writeString(Path.of(path + ".conceding"), "ready");
+                boolean race = access.getProperty("race", "false").equals("true");
+                boolean submitted = second.sendPlayerAction(mage.constants.PlayerAction.CONCEDE, game, null);
+                assert race || submitted;
+                while ((!race && !secondClient.gameOver) || !Files.exists(Path.of(path + ".done"))) {
                     if (System.nanoTime() > deadline) throw new AssertionError("native completion was not acknowledged");
                     Thread.sleep(20);
                 }
