@@ -118,3 +118,11 @@ then `/mtgcraft start <match UUID>`. Status/cancel use the same owner-scoped ID.
 Terminal-result verification/reconciliation is still being implemented; a status
 display alone does not release custody. The live command probe uses an authenticated
 HTTP engine fixture and captured private player messages, without an engine game.
+
+`bash scripts/check-custody-crashes.sh` abruptly halts the test JVM at twelve
+admission/return boundaries, then starts a fresh server for each recovery. It verifies
+player data, unchanged physical card UID/count, durable phase/tombstone and no
+replacement issuance. Ambiguous intents/deliveries remain quarantined and protected;
+the addon provides no automatic quarantine override. Retain their journal and backing
+files for an operator audit. The regular live probe also blocks hopper, sleeve and
+sulfur-cube fallback access, including embedded container data.

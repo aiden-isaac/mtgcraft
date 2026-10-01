@@ -31,6 +31,8 @@ loom {
             source sourceSets.probe
             runDir System.getProperty('custody.runDir', '../.cache/custody-probe')
             vmArg '-ea'
+            if (System.getProperty('custody.fault') != null) vmArg '-Dmtgcraft.fault=' + System.getProperty('custody.fault')
+            if (System.getProperty('custody.recover') != null) vmArg '-Dmtgcraft.recover=true'
         }
     }
 }

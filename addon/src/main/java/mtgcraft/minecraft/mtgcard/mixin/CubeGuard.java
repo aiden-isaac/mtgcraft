@@ -13,6 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class CubeGuard {
     @Inject(method = "dropRandomCard", at = @At("HEAD"), cancellable = true)
     private static void eject(SulfurCube cube, ServerLevel level, CallbackInfo result) {
-        if (Custody.locked(level.getServer(), cube.getItemBySlot(EquipmentSlot.BODY))) result.cancel();
+        if (cube != null && Custody.locked(level.getServer(), cube.getItemBySlot(EquipmentSlot.BODY))) result.cancel();
     }
 }

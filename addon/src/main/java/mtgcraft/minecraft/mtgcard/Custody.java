@@ -38,6 +38,7 @@ public final class Custody {
     private final Set<UUID> reservedBacking = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private final Set<DeckboxBlockEntity> loaded = Collections.newSetFromMap(new IdentityHashMap<>());
     private boolean admissionProven; // Never enabled by production startup before the live custody acceptance probe.
+    private java.util.function.Consumer<String> fault = ignored -> {};
 
     public Custody(MinecraftServer server) throws IOException {
         this.server = server;
@@ -92,16 +93,20 @@ public final class Custody {
         var record = new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.INTENT);
         synchronized (DeckboxStorage.class) { // Reuse upstream's storage mutex: no async API write can slip between recheck and protection.
             MtgcardAdapter.recheck(player, source);
+            fault.accept("before_intent");
             put(record); // Durable intent also activates every backing and alias guard.
+            fault.accept("after_intent");
         }
         try {
             var held = player.getMainHandItem(); var custom = StackData.readCustom(held);
             custom.putString(MARKER, request.matchId().toString()); held.set(DataComponents.CUSTOM_DATA, CustomData.of(custom));
             savePlayer(player);
+            fault.accept("after_marked");
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
             savePlayer(player); // Acknowledged atomic player write, rather than vanilla's swallowed save errors.
+            fault.accept("after_removed");
             record = new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.RESERVED);
-            put(record); return record;
+            put(record); fault.accept("after_reserved"); return record;
         } catch (IOException | RuntimeException failure) {
             // Keep intent/guards even if the quarantine write itself fails. Never invent a replacement box.
             put(new Reservation(request, source.backingId(), source.fingerprint(), original, Phase.QUARANTINED)); throw failure;
@@ -109,12 +114,15 @@ public final class Custody {
     }
     void proveAdmissionForProbe() { onThread(); admissionProven = true; }
     void enableVerifiedAdmission() { onThread(); admissionProven = true; }
+    void injectCrashForProbe(java.util.function.Consumer<String> fault) { onThread(); this.fault = fault; }
     // Only the lifecycle coordinator may call this, after committing a verified terminal result.
     void returnPending(UUID match) throws IOException {
         onThread(); var record = require(match);
         if (record.phase() == Phase.RETURN_PENDING || record.phase() == Phase.RETURNED) return;
         if (record.phase() != Phase.RESERVED) throw new IllegalArgumentException("Escrow cannot be released in this phase");
+        fault.accept("before_return_pending");
         put(phase(record, Phase.RETURN_PENDING));
+        fault.accept("after_return_pending");
     }
     public Phase claim(UUID owner, UUID match) throws IOException {
         onThread(); var record = requireOwner(owner, match);
@@ -130,11 +138,16 @@ public final class Custody {
         if (slot < 0) return Phase.RETURN_PENDING;
         var box = ItemStack.CODEC.parse(RegistryOps.create(NbtOps.INSTANCE, player.registryAccess()), record.original()).getOrThrow(IllegalArgumentException::new);
         var custom = StackData.readCustom(box); custom.putString(MARKER, match.toString()); box.set(DataComponents.CUSTOM_DATA, CustomData.of(custom));
+        fault.accept("before_claim");
         put(phase(record, Phase.CLAIMING)); // Crash anywhere in delivery quarantines; no automatic second item.
+        fault.accept("after_claim_intent");
         try {
             player.getInventory().setItem(slot, box);
+            fault.accept("after_claim_insert");
             savePlayer(player);
+            fault.accept("after_claim_saved");
             put(phase(record, Phase.RETURNED)); // Acknowledged delivery and durable tombstone precede unlock.
+            fault.accept("after_returned");
             return Phase.RETURNED;
         } catch (IOException | RuntimeException failure) {
             put(phase(record, Phase.QUARANTINED)); throw failure;

@@ -31,6 +31,8 @@ public final class CustodyProbe implements ModInitializer {
     @Override public void onInitialize() {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             try {
+                if (System.getProperty("mtgcraft.fault") != null) { CrashProbe.exercise(server); return; }
+                if (Boolean.getBoolean("mtgcraft.recover")) { CrashProbe.recover(server); server.halt(false); return; }
                 var level = server.overworld(); var player = new ServerPlayer(server, level, new GameProfile(UUID.randomUUID(), "CustodyProbe"), ClientInformation.createDefault());
                 var pos = new BlockPos(0, 100, 0); var block = BuiltInRegistries.BLOCK.getValue(Identifier.parse("mtgcard:oak_deckbox"));
                 level.setBlock(pos, block.defaultBlockState(), 3);
@@ -53,6 +55,13 @@ public final class CustodyProbe implements ModInitializer {
                 var source = MtgcardAdapter.readHeld(player);
                 var compatibility = new Compatibility(1, "freeform", "1", "0".repeat(64), "fixture", "0".repeat(64));
                 var request = MatchRequest.create(custody.worldId(), UUID.randomUUID(), List.of(new Seat(UUID.randomUUID(), Role.HUMAN, player.getUUID()), new Seat(UUID.randomUUID(), Role.AI, null)), DeckSnapshot.create(compatibility, source.entries()), "mad-plains-v1");
+                var foreign = new ServerPlayer(server, level, new GameProfile(UUID.randomUUID(), "ForeignSource"), ClientInformation.createDefault());
+                foreign.setItemInHand(InteractionHand.MAIN_HAND, box.copy());
+                var foreignRequest = MatchRequest.create(custody.worldId(), UUID.randomUUID(), List.of(new Seat(UUID.randomUUID(), Role.HUMAN, foreign.getUUID()), new Seat(UUID.randomUUID(), Role.AI, null)), request.snapshot(), request.aiProfile());
+                reject(() -> custody.reserve(foreign, source, foreignRequest));
+                assert !foreign.getMainHandItem().isEmpty() && custody.records().isEmpty();
+                box.set(DataComponents.CONTAINER, net.minecraft.world.item.component.ItemContainerContents.EMPTY);
+                reject(() -> MtgcardAdapter.readHeld(player)); box.remove(DataComponents.CONTAINER);
                 custody.track(placed, true);
                 reject(() -> custody.reserve(player, source, request)); // A held clone is not a safe source while the original is placed.
                 player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.DIAMOND_PICKAXE));
@@ -79,9 +88,19 @@ public final class CustodyProbe implements ModInitializer {
                 level.setBlock(target, block.defaultBlockState(), 3);
                 var cached = (DeckboxBlockEntity) level.getBlockEntity(target); cached.setItem(0, card.copyWithCount(1)); cached.loadStorageId(backing); custody.track(cached, true);
                 assert level.getBlockEntity(target) == null : "Reserved alias remained available to store/database/control/hopper lookups";
+                assert net.minecraft.world.level.block.entity.HopperBlockEntity.getContainerAt(level, target) == null;
                 assert cached.getItem(0).isEmpty() && cached.removeStack(0).isEmpty();
                 assert !cached.canPlaceItem(0, card) && !cached.canTakeItem(cached, 0, card) && !cached.stillValid(player);
                 cached.setItem(0, card.copyWithCount(1)); cached.persistExternalRecord();
+                assert java.util.Arrays.equals(backingBytes, Files.readAllBytes(DeckboxStorage.path(server, backing)));
+                var cube = (net.minecraft.world.entity.monster.cubemob.SulfurCube) BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.parse("minecraft:sulfur_cube")).create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+                var swallowed = alias.copy(); var embedded = net.minecraft.world.item.component.ItemContainerContents.fromItems(List.of(card.copy())); swallowed.set(DataComponents.CONTAINER, embedded);
+                cube.setItemSlot(net.minecraft.world.entity.EquipmentSlot.BODY, swallowed);
+                int beforeDrops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(target).inflate(10)).size();
+                com.spider.mtgcard.deckbox.SulfurCubeDeckboxCards.dropRandomCard(cube, level);
+                assert cube.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.BODY).get(DataComponents.CONTAINER).equals(embedded);
+                assert level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(target).inflate(10)).size() == beforeDrops;
+                assert com.spider.mtgcard.api.SleeveApplication.apply(server, level.registryAccess(), alias, null) == 0;
                 assert java.util.Arrays.equals(backingBytes, Files.readAllBytes(DeckboxStorage.path(server, backing)));
                 var again = new Custody(server); Custody.install(again);
                 assert again.records().size() == 1 && again.records().iterator().next().request().equals(request) && Custody.locked(server, backing);
