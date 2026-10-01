@@ -24,8 +24,10 @@ public final class ServiceMain implements MagicEngine {
     private final UUID world;
     private final int limit;
     private final Catalog catalog;
+    private final EngineDecks decks;
     private ServiceMain(ServiceState state, UUID world, int limit, Catalog catalog) {
         this.state = state; this.world = world; this.limit = limit; this.catalog = catalog;
+        decks = new EngineDecks(catalog);
     }
     public static void main(String[] args) {
         try { run(Path.of(args[0]).toAbsolutePath()); }
@@ -52,10 +54,7 @@ public final class ServiceMain implements MagicEngine {
         RepositoryUtil.bootstrapLocalDb(); CardScanner.scan();
         // Pin the actual sets artifact, not only upstream's version counters.
         var setsJar = Path.of(System.getProperty("mtgcraft.setsJar"));
-        var catalog = new Catalog(path(config, properties, "mappingFile"), printing -> {
-            var card = CardRepository.instance.findCard(printing.set(), printing.collectorNumber());
-            return card != null && card.getName().equals(printing.name()) && card.createCard() != null;
-        });
+        var catalog = EngineDecks.catalog(path(config, properties, "mappingFile"));
         if (!catalog.compatibility().catalogDigest().equals(Canonical.sha256(Files.readAllBytes(setsJar))))
             throw new IllegalArgumentException("installed catalog artifact mismatch");
         GameFactory.instance.addGameType("Two Player Duel", new TwoPlayerDuelType(), TwoPlayerMatch.class);
@@ -78,7 +77,7 @@ public final class ServiceMain implements MagicEngine {
         Thread.currentThread().join();
     }
     public Health health() { return new Health(VERSION, world, state.incarnation(), catalog.compatibility(), false, limit); }
-    public Validation validateDeck(ValidationRequest request) { return catalog.resolve(request.snapshot()).validation(); }
+    public Validation validateDeck(ValidationRequest request) { return decks.prepare(request.snapshot()).validation(); }
     private static ControlServer.Fault pending() { return new ControlServer.Fault(503, "NOT_READY", "Managed orchestration is not ready", true); }
     public Status prepareMatch(MatchRequest request) { throw pending(); }
     public Status startMatch(UUID match, Operation request) { throw pending(); }

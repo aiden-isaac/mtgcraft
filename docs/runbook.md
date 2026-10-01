@@ -30,3 +30,9 @@ custody. Stop other local native servers on ports 17171/17179 first.
 The deployment still uses the dependency/license inventory and measured limitations
 in `spikes/README.md`, `spikes/artifacts.lock.json` and the Fabric dependency manifest.
 Full lifecycle acceptance and resource measurements remain pending.
+
+`bash scripts/check.sh engine` additionally exercises real XMage deck construction,
+Freeform validation and exact installed quantities/face relationships. The manifest
+is deliberately limited to the probed printings plus M10/230 Plains; other cards
+fail closed. It supports normal, split and transform layouts. These are integration
+fixtures, not an AI deck-quality or complete catalog claim.
