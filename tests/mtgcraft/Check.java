@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import mtgcraft.protocol.*;
 import mtgcraft.service.Catalog;
+import mtgcraft.service.ControlServer;
 import static mtgcraft.protocol.Protocol.*;
 
 /** Run with bash scripts/check.sh; assertions must be enabled. */
@@ -31,6 +32,7 @@ public final class Check {
         rejected(() -> new Entry(card, 0, Section.MAIN));
         System.out.println("PASS immutable snapshots, quantities, canonical encoding and request binding");
         mapping();
+        http();
     }
     private static void mapping() throws Exception {
         var path = java.nio.file.Path.of("service/catalog/manifest.json");
@@ -74,5 +76,84 @@ public final class Check {
     private static DeckSnapshot snapshotWithWrongCompatibility(Compatibility c, CardIdentity card) {
         return DeckSnapshot.create(new Compatibility(VERSION, c.format(), c.formatVersion(), "f".repeat(64), c.engineBuild(), c.catalogDigest()),
                 List.of(new Entry(card, 1, Section.MAIN)));
+    }
+    private static void http() throws Exception {
+        var catalog = new Catalog(java.nio.file.Path.of("service/catalog/manifest.json"), p -> true);
+        var snapshot = DeckSnapshot.create(catalog.compatibility(), List.of(new Entry(catalog.manifest().printings().get(0).card(Finish.NONFOIL), 1, Section.MAIN)));
+        var request = MatchRequest.create(UUID.randomUUID(), UUID.randomUUID(), List.of(
+                new Seat(UUID.randomUUID(), Role.HUMAN, UUID.randomUUID()), new Seat(UUID.randomUUID(), Role.AI, null)), snapshot, "mad-v1");
+        assert Json.read(Json.bytes(request), MatchRequest.class).equals(request);
+        var wire = new String(Json.bytes(request), java.nio.charset.StandardCharsets.UTF_8);
+        for (var invalid : List.of(wire.replace("\"protocolVersion\":1", "\"protocolVersion\":1,\"protocolVersion\":1"),
+                wire.replace("\"protocolVersion\":1", "\"protocolVersion\":\"1\""),
+                wire.replace("\"protocolVersion\":1", "\"protocolVersion\":1.5"),
+                wire.replace("\"protocolVersion\":1", "\"protocolVersion\":2"),
+                wire.replace("\"protocolVersion\":1", "\"unknown\":1"), "null", wire + " {}")) {
+            rejected(() -> Json.read(invalid.getBytes(java.nio.charset.StandardCharsets.UTF_8), MatchRequest.class));
+        }
+        rejected(() -> Json.read(new byte[]{(byte) 0xc0, (byte) 0xaf}, MatchRequest.class));
+        rejected(() -> Json.read(new byte[Json.MAX_BYTES + 1], MatchRequest.class));
+        var incarnation = UUID.randomUUID();
+        var status = new Status(VERSION, request.worldId(), request.matchId(), request.requestDigest(), snapshot.digest(), incarnation,
+                request.seats(), State.PREPARED, 1, null);
+        var engine = new MagicEngine() {
+            public Health health() { return new Health(VERSION, request.worldId(), incarnation, catalog.compatibility(), true, 2); }
+            public Validation validateDeck(ValidationRequest r) { return catalog.resolve(r.snapshot()).validation(); }
+            public Status prepareMatch(MatchRequest r) { assert r.equals(request); return status; }
+            public Status getStatus(UUID id) { assert id.equals(request.matchId()); return status; }
+            public Status startMatch(UUID id, Operation r) { assert r.requestDigest().equals(request.requestDigest()); return status; }
+            public Status cancelMatch(UUID id, Operation r) { assert r.requestDigest().equals(request.requestDigest()); return status; }
+            public SeatAccess getSeatAccess(UUID id, OwnerRequest r) {
+                if (!r.playerId().equals(request.seats().getFirst().playerId())) throw new ControlServer.Fault(403, "NOT_OWNER", "Seat owner mismatch", false);
+                return new SeatAccess(VERSION, request.worldId(), id, request.seats().getFirst(), "127.0.0.1", 17171, "fixture", "private-fixture-only");
+            }
+        };
+        var loopback = java.net.InetAddress.getByName("127.0.0.1");
+        var token = "fixture_" + "0".repeat(32);
+        try (var server = new ControlServer(loopback, 0, request.worldId(), token, null, engine)) {
+            var base = java.net.URI.create("http://127.0.0.1:" + server.port());
+            try (var client = new ControlClient(base, request.worldId(), token, java.time.Duration.ofSeconds(3))) {
+                assert client.health().join().ready();
+                assert client.validateDeck(snapshot).join().valid();
+                assert client.prepareMatch(request).join().equals(status);
+                assert client.getStatus(request.matchId()).join().equals(status);
+                assert client.startMatch(request.matchId(), request.requestDigest()).join().equals(status);
+                assert client.cancelMatch(request.matchId(), request.requestDigest()).join().equals(status);
+                var access = client.getSeatAccess(request.matchId(), request.seats().getFirst().playerId()).join();
+                assert !access.toString().contains(access.password());
+                assertRejectedFuture(client.getSeatAccess(request.matchId(), UUID.randomUUID()), 403);
+                assertRejectedFuture(client.prepareMatch(MatchRequest.create(UUID.randomUUID(), request.matchId(), request.seats(), snapshot, "mad-v1")), 403);
+            }
+            try (var wrongWorld = new ControlClient(base, UUID.randomUUID(), token, java.time.Duration.ofSeconds(3));
+                 var wrongToken = new ControlClient(base, request.worldId(), "x".repeat(32), java.time.Duration.ofSeconds(3));
+                 var raw = java.net.http.HttpClient.newHttpClient()) {
+                assertRejectedFuture(wrongWorld.health(), 403); assertRejectedFuture(wrongToken.health(), 401);
+                var noAuth = raw.send(java.net.http.HttpRequest.newBuilder(base.resolve("/v1/health")).GET().build(), java.net.http.HttpResponse.BodyHandlers.ofByteArray());
+                assert noAuth.statusCode() == 401;
+                var oversized = raw.send(java.net.http.HttpRequest.newBuilder(base.resolve("/v1/decks/validate"))
+                        .header("Authorization", "Bearer " + token).header("X-Mtgcraft-World", request.worldId().toString())
+                        .header("X-Mtgcraft-Version", "1").header("Content-Type", "application/json")
+                        .POST(java.net.http.HttpRequest.BodyPublishers.ofByteArray(new byte[Json.MAX_BYTES + 1])).build(), java.net.http.HttpResponse.BodyHandlers.ofByteArray());
+                assert oversized.statusCode() == 413;
+            }
+        }
+        rejected(() -> {
+            try { new ControlServer(java.net.InetAddress.getByName("0.0.0.0"), 0, request.worldId(), token, null, engine); }
+            catch (java.io.IOException unexpected) { throw new AssertionError(unexpected); }
+        });
+        rejected(() -> {
+            try { new ControlClient(java.net.URI.create("http://192.0.2.1"), request.worldId(), token, java.time.Duration.ofSeconds(3)); }
+            catch (java.io.IOException unexpected) { throw new AssertionError(unexpected); }
+        });
+        System.out.println("PASS strict JSON, all HTTP operations, credentials/world/owner checks, payload bounds and TLS requirement");
+    }
+    private static void assertRejectedFuture(java.util.concurrent.CompletableFuture<?> future, int code) {
+        try { future.join(); }
+        catch (java.util.concurrent.CompletionException e) {
+            assert e.getCause() instanceof ControlClient.Rejected;
+            assert ((ControlClient.Rejected) e.getCause()).status == code;
+            return;
+        }
+        throw new AssertionError("expected HTTP rejection");
     }
 }

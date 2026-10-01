@@ -31,3 +31,45 @@ match ID and request digest; a different request for the same ID conflicts.
 Compatibility is exact equality of protocol, format/policy version, immutable
 mapping digest, engine commit and catalog artifact digest. A mismatch disables
 creation. No live catalog fetch or name-based fallback occurs during admission.
+
+## HTTP boundary
+
+All operations require `Authorization: Bearer <world service token>`,
+`X-Mtgcraft-World: <world UUID>` and `X-Mtgcraft-Version: 1`, including health.
+Tokens contain 32–256 ASCII letters, digits, underscores or hyphens. Generate a
+random token; keep it on the server and deliver native seat credentials privately.
+Bodies use `Content-Type: application/json`. Every record field is required; use
+explicit null for optional UUID/result fields. Unknown/duplicate fields, coercion,
+malformed UTF-8, fractional integers and noncanonical UUIDs are rejected.
+
+| Method/path | Request | Response |
+| --- | --- | --- |
+| GET `/v1/health` | empty | Health/compatibility |
+| POST `/v1/decks/validate` | ValidationRequest | Validation with all entry errors |
+| PUT `/v1/matches/{UUID}` | MatchRequest | Status |
+| GET `/v1/matches/{UUID}` | empty | Status, including durable terminal Result |
+| POST `/v1/matches/{UUID}/start` | Operation/world/request digest | Status |
+| POST `/v1/matches/{UUID}/cancel` | Operation/world/request digest | Status |
+| POST `/v1/matches/{UUID}/seat-access` | OwnerRequest/world/player | SeatAccess |
+
+Seat access must verify the persisted human owner; no public result-write endpoint
+exists. Path, body and authenticated world/match IDs must agree. The service owns
+request digest conflict checks and terminal durability. Successful calls return 200.
+Errors return a versioned Failure with code, diagnostic message, retryable flag and
+entry indexes. Boundary codes include UNAUTHORIZED (401), WRONG_WORLD (403),
+BAD_SCHEMA (400), PAYLOAD_TOO_LARGE (413), CONTENT_TYPE (415), VERSION_MISMATCH (426),
+NOT_FOUND (404), METHOD_NOT_ALLOWED (405), CAPACITY/SERVICE_FAILURE (503).
+
+Requests/responses are capped at 256 KiB, JSON depth at 16, object fields at 32,
+arrays at 1,024 elements, text at 256 characters, canonical deck entries at 512 and
+total deck quantity at 1,000. The server admits at most 16 concurrent control
+requests. JDK transport deadlines are 10 seconds; client deadlines are configurable
+up to 30 seconds. Client responses are bounded while streaming. Redirects are
+disabled. A timeout or SERVICE_FAILURE is an unknown outcome: retain custody,
+reconcile and retry with the original IDs/digests. Never infer a terminal result.
+
+The default deployment binds loopback. Non-loopback HTTP server binding requires an
+SSLContext; non-loopback client URLs require HTTPS with normal certificate and
+hostname verification. No credentials or private deck bodies appear in routine
+logs; seat-access responses are `no-store` and their Java string form is redacted.
+Run `bash scripts/check.sh` for a local socket test of the boundary.
