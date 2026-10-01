@@ -6,7 +6,7 @@
 - [x] 1.4 Spike stock XMage client attachment to a precreated managed seat, including authenticated reconnect; identify every native path that can change the submitted deck or match settings. Evidence: `PROBE_NATIVE=true` probe and native-surface audit in `spikes/README.md`; stock session-library attachment/reconnect verified, leave/rejoin deck substitution and non-owner start-state mutation reproduced. Swing UI/active-game acceptance and production guards remain 3.4/3.6/6.1.
 - [x] 1.5 Spike structured match completion, draw/concession handling, and durable result retrieval after controller cleanup; reject a free-text-only winner source. Evidence: `spikes/xmage/ResultProbe.java` and `spikes/README.md`; draw/concession and fresh-process history reads pass, project result binding/acknowledged journal still required in 3.5.
 - [x] 1.6 Spike one known normal card, reprint, foil pair, split/multiface card, and unsupported card through MTGCard identity → XMage catalog resolution; record unmapped and ambiguous cases. Evidence: `spikes/cards/run-probe.sh` and `spikes/README.md` (ten metadata projections; eight mapped, two unsupported).
-- [ ] 1.7 STOP GATE: Review evidence for exclusive custody, exact-deck enforcement, and trustworthy structured result retrieval. Do not proceed to section 2 without explicit user approval. If any gate fails, update design.md, specs, and tasks before further implementation.
+- [x] 1.7 STOP GATE: Review evidence for exclusive custody, exact-deck enforcement, and trustworthy structured result retrieval. Do not proceed to section 2 without explicit user approval. If any gate fails, update design.md, specs, and tasks before further implementation.
 
 Progress evidence (2026-09-30): `spikes/README.md`. The user authorized the local
 Minecraft EULA; live alias divergence was reproduced and the custody gate fails with
@@ -16,10 +16,15 @@ mutation. Swing UI and active-game behavior remain unverified.
 Task 1.5 passed draw, concession and cross-process history reads; the native callback
 and durable project result binding remain implementation work. Evidence updated 2026-10-01.
 
+Gate review (2026-10-01): task 1.7 was checked in the user's working tree before
+apply. Continue implementation with admission disabled. Required fixes remain addon
+interception of loaded/backing aliases (4.2/4.5), pre-dispatch native guards (3.4/3.6),
+and acknowledged native-controller result persistence (3.5); prove each before 6.1.
+
 ## 2. Define the project boundary and catalog
 
-- [ ] 2.1 Define versioned project DTOs for card/printing identity, canonical main-deck entries, immutable snapshot, player/seat binding, match request/status/result, and structured errors without MTGCard or XMage runtime types.
-- [ ] 2.2 Define deterministic snapshot encoding and digest, world/match/seat/result identifiers, request idempotency rules, and service/catalog compatibility checks.
+- [ ] 2.1 Define versioned project DTOs for card/printing identity, canonical main-deck entries, immutable snapshot, player/seat binding, match request/status/result, and structured errors without MTGCard or XMage runtime types. Evidence: `shared/src/main/java/mtgcraft/protocol/Protocol.java`; `bash scripts/check.sh`.
+- [ ] 2.2 Define deterministic snapshot encoding and digest, world/match/seat/result identifiers, request idempotency rules, and service/catalog compatibility checks. Evidence: `Canonical.java`, `docs/protocol.md`; canonical grouping/order and request binding checks pass.
 - [ ] 2.3 Build a pinned mapping manifest and resolver for exact printings and explicitly approved equivalent printings; report all unsupported, inconsistent, and ambiguous entries in one validation response.
 - [ ] 2.4 Add resolver tests for normal cards, reprints, foil/nonfoil copies, split/multiface layouts, conflicting IDs, missing engine cards, and unchanged immutable snapshots.
 - [ ] 2.5 Specify and implement the minimal authenticated, versioned HTTP/JSON control protocol with schema limits, timeouts, world scoping, structured errors, loopback default, and TLS requirement for non-loopback use.

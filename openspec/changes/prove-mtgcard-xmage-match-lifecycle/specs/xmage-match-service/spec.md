@@ -26,6 +26,10 @@ Match preparation SHALL create exactly one managed two-seat best-of-one match fo
 - **THEN** the service returns a retryable capacity error without creating a partial match
 
 ### Requirement: External client seat binding and exact-deck enforcement
+Managed native requests SHALL be guarded before dispatch and before any table-state
+mutation; service-owned manager operations SHALL retain responsibility for deck
+installation and start. The completed planning gate SHALL NOT imply guard coverage.
+
 The service SHALL bind a project-owned seat ID to the Minecraft player and to a service-provisioned XMage account/session internally. Access material SHALL be delivered privately to that player, redacted from logs, and revoked at termination. The external client SHALL NOT replace the admitted deck, occupy another managed seat, change match options, enable cheats, or initiate an alternate managed match. The service SHALL enforce this through native-client entry points as well as the project control API. Start SHALL require authenticated seat readiness and the validated immutable deck.
 
 #### Scenario: Player joins from the external XMage client

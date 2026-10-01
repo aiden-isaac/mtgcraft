@@ -253,6 +253,8 @@ The generated graph, copied source corpus, tools, and builds are local ignored a
 
 ## Stop gate
 
-Section 2 remains blocked by task 1.7's explicit approval gate. Completing an experiment
-does not mean the full integration milestone is complete. Failed custody/result/client
-experiments must be documented and the design amended before implementation expands.
+Task 1.7 was checked in the user's working tree before the 2026-10-01 apply invocation.
+The design/specs/tasks now record the required addon interception, native guards and
+acknowledged result journal. Implementation may proceed; admission remains disabled
+until the failed technical gates pass. Completing experiments is not acceptance of
+the full integration milestone.

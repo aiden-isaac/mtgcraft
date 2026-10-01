@@ -85,6 +85,20 @@ There is no existing project data to migrate. Implement the project DTOs and pro
 
 ### Evidence from initial implementation probes (2026-09-30)
 
+### Gate review and implementation path (2026-10-01)
+
+Task 1.7 was marked complete in the user working tree before applying this change.
+Proceed with the project boundary and service implementation; this authorizes work,
+not a claim that the failed technical gates passed. Admission stays disabled until
+an addon interception experiment protects loaded inventories, future aliases and
+backing-record access. Use addon Mixins rather than silently changing MTGCard.
+Guard the native XMage transport before dispatch, while service-owned manager calls
+install decks and start matches. Prove coverage against the audited native surface.
+Capture completion through the native controller path into an acknowledged project
+journal before cleanup; stock history remains diagnostic evidence only. If these
+seams cannot satisfy the guarantees, pause for an artifact change. Acceptance remains
+the original full human-versus-AI lifecycle, including physical return.
+
 See `spikes/README.md` and the runnable probes. Fabric/Minecraft 26.3 and the pinned
 XMage server/client build successfully. Programmatic table construction and fixture
 card mapping passed. MTGCard's removal callback cannot veto access; exclusive custody

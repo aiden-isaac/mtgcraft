@@ -23,6 +23,10 @@ The integration layer SHALL convert physical card entries into project-owned car
 - **THEN** the server explains the unsupported section or layout instead of silently ignoring contents
 
 ### Requirement: Exclusive reservation of physical custody
+Admission SHALL remain disabled until addon interception protects both loaded
+inventories and future backing-record/alias access on the pinned release. The
+completed planning gate SHALL NOT be treated as successful custody verification.
+
 Before asking the engine to create a match, Minecraft SHALL durably reserve the deckbox and all submitted physical cards and enforce exclusive custody. The initial mechanism SHALL escrow the held deckbox and protect its authoritative backing contents and aliases. A boolean flag keyed only by deckbox ID is insufficient. Extraction, mutation, alternate access, and resubmission of reserved cards MUST be prevented across the documented supported MTGCard paths. Sources for which this cannot be enforced SHALL be rejected.
 
 #### Scenario: Second admission overlaps an active reservation
