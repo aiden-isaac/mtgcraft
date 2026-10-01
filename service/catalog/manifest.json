@@ -1,0 +1,120 @@
+{
+  "protocolVersion": 1,
+  "sourceCatalog": "fixture Scryfall responses 2026-09-30 plus pinned Plains tuple",
+  "engineBuild": "7f42784132e054d0c5b6c581fa63fed5893327ab",
+  "catalogDigest": "2692e83f110985b00ea87ae259a78c1d3b264ee923e7cdc25ecfb94db13943ff",
+  "format": "freeform",
+  "formatVersion": "1",
+  "printings": [
+    {
+      "set": "m10",
+      "layout": "normal",
+      "faces": [],
+      "source": "https://api.scryfall.com/cards/m10/146",
+      "cardKey": "435589bb-27c6-4a6d-9d63-394d5092b9d8",
+      "scryfallId": "435589bb-27c6-4a6d-9d63-394d5092b9d8",
+      "oracleId": "4457ed35-7c10-48c8-9776-456485fdf070",
+      "collectorNumber": "146",
+      "label": "Lightning Bolt",
+      "engine": {
+        "set": "M10",
+        "collectorNumber": "146",
+        "name": "Lightning Bolt"
+      },
+      "equivalents": []
+    },
+    {
+      "set": "m11",
+      "layout": "normal",
+      "faces": [],
+      "source": "https://api.scryfall.com/cards/m11/149",
+      "cardKey": "e768c957-3a1f-42f5-853a-96942f645df5",
+      "scryfallId": "e768c957-3a1f-42f5-853a-96942f645df5",
+      "oracleId": "4457ed35-7c10-48c8-9776-456485fdf070",
+      "collectorNumber": "149",
+      "label": "Lightning Bolt",
+      "engine": {
+        "set": "M11",
+        "collectorNumber": "149",
+        "name": "Lightning Bolt"
+      },
+      "equivalents": [
+        {
+          "set": "M10",
+          "collectorNumber": "146",
+          "name": "Lightning Bolt"
+        }
+      ]
+    },
+    {
+      "set": "apc",
+      "layout": "split",
+      "faces": [
+        "Fire",
+        "Ice"
+      ],
+      "source": "https://api.scryfall.com/cards/apc/128",
+      "cardKey": "f98f4538-5b5b-475d-b98f-49d01dae6f04",
+      "scryfallId": "f98f4538-5b5b-475d-b98f-49d01dae6f04",
+      "oracleId": "ae92942b-919c-4ea9-b693-85fcef765d5a",
+      "collectorNumber": "128",
+      "label": "Fire // Ice",
+      "engine": {
+        "set": "APC",
+        "collectorNumber": "128",
+        "name": "Fire // Ice"
+      },
+      "equivalents": []
+    },
+    {
+      "set": "isd",
+      "layout": "transform",
+      "faces": [
+        "Delver of Secrets",
+        "Insectile Aberration"
+      ],
+      "source": "https://api.scryfall.com/cards/isd/51",
+      "cardKey": "11bf83bb-c95b-4b4f-9a56-ce7a1816307a",
+      "scryfallId": "11bf83bb-c95b-4b4f-9a56-ce7a1816307a",
+      "oracleId": "edd531b9-f615-4399-8c8c-1c5e18c4acbf",
+      "collectorNumber": "51",
+      "label": "Delver of Secrets // Insectile Aberration",
+      "engine": {
+        "set": "ISD",
+        "collectorNumber": "51",
+        "name": "Delver of Secrets"
+      },
+      "equivalents": []
+    },
+    {
+      "set": "unh",
+      "layout": "normal",
+      "faces": [],
+      "source": "https://api.scryfall.com/cards/unh/30",
+      "cardKey": "ab857e73-ac20-4013-bc34-ed675de84c7c",
+      "scryfallId": "ab857e73-ac20-4013-bc34-ed675de84c7c",
+      "oracleId": "d6202ce1-8dbc-4aa5-8d62-5fe4005fa3d9",
+      "collectorNumber": "30",
+      "label": "Cheatyface",
+      "engine": null,
+      "equivalents": []
+    },
+    {
+      "cardKey": "m10/230",
+      "scryfallId": null,
+      "oracleId": null,
+      "set": "m10",
+      "collectorNumber": "230",
+      "label": "Plains",
+      "layout": "normal",
+      "faces": [],
+      "source": "pinned XMage catalog; no Scryfall/Oracle identity asserted",
+      "engine": {
+        "set": "M10",
+        "collectorNumber": "230",
+        "name": "Plains"
+      },
+      "equivalents": []
+    }
+  ]
+}
