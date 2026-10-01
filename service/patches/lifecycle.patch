@@ -1,0 +1,28 @@
+--- a/mage/server/TableController.java
++++ b/mage/server/TableController.java
+@@ -816,6 +816,7 @@
+         }
+         UUID choosingPlayerId = match.getChooser();
+         match.endGame();
++        ManagedHooks.beforeCleanup(table, false);
+         if (managerFactory.configSettings().isSaveGameActivated() && !game.isSimulation()) {
+             if (managerFactory.gameManager().saveGame(game.getId())) {
+                 match.setReplayAvailable(true);
+@@ -879,6 +880,7 @@
+ 
+     private void matchEnd() {
+         if (match != null) {
++            ManagedHooks.beforeCleanup(table, false);
+             for (Entry<UUID, UUID> entry : userPlayerMap.entrySet()) {
+                 MatchPlayer matchPlayer = match.getPlayer(entry.getValue());
+                 // opponent(s) left during sideboarding
+--- a/mage/server/TableManagerImpl.java
++++ b/mage/server/TableManagerImpl.java
+@@ -349,6 +349,7 @@
+     public void removeTable(UUID tableId) {
+         TableController tableController = controllers.get(tableId);
+         if (tableController != null) {
++            ManagedHooks.beforeCleanup(tables.get(tableId), true);
+             Lock w = controllersLock.writeLock();
+             w.lock();
+             try {

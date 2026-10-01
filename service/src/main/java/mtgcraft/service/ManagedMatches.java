@@ -49,6 +49,7 @@ public final class ManagedMatches implements MagicEngine {
                 save(terminalRecord(record, State.INTERRUPTED));
             revokeAccount(record);
         }
+        ManagedHooks.install(this::beforeCleanup);
     }
     private static ControlServer.Fault fault(int status, String code, String message, boolean retryable) {
         return new ControlServer.Fault(status, code, message, retryable);
@@ -72,7 +73,7 @@ public final class ManagedMatches implements MagicEngine {
     }
     private Record withStatus(Record record, Status status) {
         return new Record(record.request(), record.incarnation(), false, status, record.roomId(), record.tableId(),
-                record.humanUserId(), record.humanPlayerId(), record.aiPlayerId(), record.username(), record.password());
+                record.humanUserId(), record.humanPlayerId(), record.aiPlayerId(), record.username(), terminal(status.state()) ? null : record.password());
     }
     private Record terminalRecord(Record record, State disposition) {
         long revision = record.status() == null ? 1 : record.status().revision() + 1;
@@ -88,7 +89,7 @@ public final class ManagedMatches implements MagicEngine {
         var printing = catalog.manifest().printings().stream().filter(p -> p.cardKey().equals("m10/230")).findFirst().orElseThrow();
         return DeckSnapshot.create(catalog.compatibility(), List.of(new Entry(printing.card(Finish.NONFOIL), 60, Section.MAIN)));
     }
-    public Health health() { return new Health(VERSION, world, state.incarnation(), catalog.compatibility(), false, limit); }
+    public Health health() { return new Health(VERSION, world, state.incarnation(), catalog.compatibility(), true, limit); }
     public Validation validateDeck(ValidationRequest request) { checkWorld(request.worldId()); return decks.prepare(request.snapshot()).validation(); }
     // ponytail: one service lock at <=16 matches; per-match locks if measured contention matters.
     public synchronized Status prepareMatch(MatchRequest request) {
@@ -148,6 +149,10 @@ public final class ManagedMatches implements MagicEngine {
             for (var table : managers.tableManager().getTables()) if (table.getName().equals(marker(record.request()))) managers.tableManager().removeTable(table.getId());
             revokeAccount(record); return terminal.status();
         }
+        if (!terminal(record.status().state())) {
+            var table = managers.tableManager().getTable(record.tableId());
+            if (table == null) throw fault(503, "MATCH_UNKNOWN", "Engine association is missing; retain custody", true);
+        }
         return record.status();
     }
     public synchronized Status startMatch(UUID matchId, Operation operation) {
@@ -171,7 +176,45 @@ public final class ManagedMatches implements MagicEngine {
         managers.tableManager().startMatch(owner.getId(), record.roomId(), record.tableId());
         return records.get(matchId).status();
     }
-    public Status cancelMatch(UUID match, Operation request) { throw fault(503, "NOT_READY", "Terminal lifecycle is not ready", true); }
+    public synchronized Status cancelMatch(UUID match, Operation request) {
+        checkWorld(request.worldId());
+        var record = record(match);
+        if (!record.request().requestDigest().equals(request.requestDigest())) throw fault(409, "REQUEST_CONFLICT", "Request digest mismatch", false);
+        var status = getStatus(match);
+        if (terminal(status.state())) return status;
+        var table = managers.tableManager().getTable(record.tableId());
+        var game = table.getMatch().getGame();
+        if (game != null && !game.hasEnded()) game.end(); // Abort native prompts before committing cancellation.
+        var cancelled = terminalRecord(record, State.CANCELLED);
+        save(cancelled);
+        managers.tableManager().removeTable(table.getId());
+        revokeAccount(record);
+        return cancelled.status();
+    }
+    private synchronized void beforeCleanup(mage.game.Table table, boolean removing) {
+        var record = records.values().stream().filter(r -> table.getId().equals(r.tableId())).findFirst().orElse(null);
+        if (record == null || record.creating() || terminal(record.status().state())) return;
+        var match = table.getMatch();
+        Record ended;
+        if (record.status().state() == State.ACTIVE && match.hasEnded()) {
+            var human = match.getPlayer(record.humanPlayerId()); var ai = match.getPlayer(record.aiPlayerId());
+            if (human != null && ai != null && human.isMatchWinner() != ai.isMatchWinner()) {
+                long revision = record.status().revision() + 1;
+                var outcomes = List.of(new SeatOutcome(record.request().seats().getFirst(), human.isMatchWinner() ? Outcome.WIN : Outcome.LOSS),
+                        new SeatOutcome(record.request().seats().getLast(), ai.isMatchWinner() ? Outcome.WIN : Outcome.LOSS));
+                var result = new Result(UUID.randomUUID(), world, record.request().matchId(), record.request().snapshot().digest(), record.incarnation(),
+                        State.COMPLETED, revision, outcomes);
+                ended = withStatus(record, status(record, State.COMPLETED, revision, result));
+            } else ended = terminalRecord(record, State.INTERRUPTED); // No structured winner: never invent one.
+        } else {
+            if (!removing && record.status().state() == State.ACTIVE) return; // A game draw may continue this match.
+            var game = match.getGame();
+            if (game != null && !game.hasEnded()) game.end();
+            ended = terminalRecord(record, State.INTERRUPTED);
+        }
+        save(ended); // A failed acknowledged write throws and prevents native cleanup.
+        revokeAccount(record);
+    }
     public synchronized SeatAccess getSeatAccess(UUID match, OwnerRequest request) {
         checkWorld(request.worldId());
         var record = record(match);

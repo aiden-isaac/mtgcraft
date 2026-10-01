@@ -11,5 +11,12 @@ mapfile -t shared_sources < <(rg --files shared -g '*.java')
 javac --release 25 -cp "$gson_jar" -d .cache/project/shared "${shared_sources[@]}"
 mapfile -t service_sources < <(rg --files service/src -g '*.java')
 javac --release 25 -cp ".cache/project/shared:$engine_cp" -d .cache/project/service "${service_sources[@]}"
+mkdir -p .cache/project/patched/mage/server
+for name in TableController TableManagerImpl; do
+    cp "$mage_dir/Mage.Server/src/main/java/mage/server/$name.java" ".cache/project/patched/mage/server/$name.java"
+done
+patch --batch --fuzz=0 -p1 -d .cache/project/patched < service/patches/lifecycle.patch
+javac --release 25 -cp ".cache/project/shared:.cache/project/service:$engine_cp" -d .cache/project/service \
+    .cache/project/patched/mage/server/TableController.java .cache/project/patched/mage/server/TableManagerImpl.java
 jar --create --file .cache/project/mtgcraft-shared.jar -C .cache/project/shared .
 jar --create --file .cache/project/mtgcraft-service.jar -C .cache/project/service .

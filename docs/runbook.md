@@ -18,10 +18,10 @@ live state or run a second service with the same credential in another directory
 The lock stays held until process exit, after engine workers stop.
 
 HTTP health authenticates the world/token and reports pinned compatibility,
-incarnation, admission readiness and configured capacity. Current managed orchestration
-is still under implementation: `ready=false`. Preparation/status/start are implemented;
-owner-scoped seat access is implemented; cancellation fails NOT_READY until the result hook lands.
-Native XMage listening alone is not admission readiness. Keep physical admission off.
+incarnation, service readiness and configured capacity. Preparation/status/start,
+owner-scoped seat access and cancellation are implemented. Service readiness is
+independent of Minecraft custody verification. Keep physical admission off until
+the custody experiment passes.
 
 `python3 tests/service-smoke.py` starts and terminates two real pinned XMage JVMs,
 checks authenticated HTTP health/native listening and persisted incarnation changes.
@@ -46,7 +46,8 @@ seat installation; an ambiguous retry fences the marker and returns a stable fai
 tombstone. Restart acquires the exclusive process lock and records nonterminal old
 matches as interrupted, with no winner. A world stamp prevents state-directory reuse
 by another world. Health stays unavailable for physical admission until native policy
-and authoritative terminal persistence are verified.
+and authoritative terminal persistence are verified; Minecraft admission still needs
+its separate custody gate.
 
 The native deployment is dedicated to managed matches: registration/reset/admin
 login, client table/tournament creation/join/leave, deck submit/save, native start,
@@ -57,3 +58,22 @@ The native session test uses a separate stock session-library JVM and verifies t
 original human UUID and 60 Plains survive all tested mutations. It is not Swing UI
 or active-game reconnect acceptance. Seat access checks the persisted Minecraft
 owner and uses private control responses, never a public table name as authorization.
+
+`service/patches/lifecycle.patch` inserts three acknowledged cleanup callbacks into
+the pinned TableController/TableManagerImpl sources. The build copies and patches
+those two files under `.cache/project/patched/`, compiles them into the service jar
+and places that jar before the upstream server jar on the classpath. The upstream
+checkout is unchanged. Review this patch together with the upstream commit; do not
+run the extension against another XMage revision. The installed Mage.Sets SHA-256
+must match the mapping manifest before readiness.
+
+The native controller callback records structured match-winner flags and bound
+human/AI UUIDs before controller/deck cleanup. A game draw which continues the
+match stays active. Polling reads the acknowledged journal; it does not derive a
+winner from a message or advance engine state. Failed persistence prevents cleanup.
+Cancellation aborts outstanding engine prompts, commits one terminal record, then
+cleans up. Completion/cancellation share the service lock and first terminal commit
+wins. Account access is revoked and persisted terminal records discard passwords.
+The native fixture waits for an actual choice prompt before using XMage's concede
+action, then stays attached until the service acknowledges terminal persistence and
+cleanup. An immediate quit/disconnect fixture did not establish native completion.
