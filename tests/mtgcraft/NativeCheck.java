@@ -17,6 +17,12 @@ import mage.utils.MageVersion;
 public final class NativeCheck implements MageClient {
     private volatile boolean prompt;
     private volatile boolean gameOver;
+    private boolean timing;
+    private SessionImpl session;
+    private UUID human;
+    private int lastTurn;
+    private long aiStarted;
+    private final java.util.concurrent.ConcurrentLinkedQueue<Double> aiTurnMs = new java.util.concurrent.ConcurrentLinkedQueue<>();
     public MageVersion getVersion() { return new MageVersion(mage.server.Main.class); }
     public void connected(String message) { }
     public void disconnected(boolean reconnect, boolean keepSession) { }
@@ -26,6 +32,26 @@ public final class NativeCheck implements MageClient {
     public void onCallback(ClientCallback callback) {
         if (callback.getMethod().getType() == mage.interfaces.callback.ClientCallbackType.DIALOG) prompt = true;
         if (callback.getMethod() == mage.interfaces.callback.ClientCallbackMethod.GAME_OVER) gameOver = true;
+        if (!timing) return;
+        callback.decompressData();
+        var data = callback.getData();
+        var message = data instanceof mage.view.GameClientMessage value ? value : null;
+        var view = message != null ? message.getGameView() : data instanceof mage.view.GameView value ? value : null;
+        if (view != null && view.getTurn() > 0 && view.getTurn() != lastTurn) {
+            lastTurn = view.getTurn();
+            if (human.equals(view.getActivePlayerId())) {
+                if (aiStarted != 0) { aiTurnMs.add((System.nanoTime() - aiStarted) / 1_000_000.0); aiStarted = 0; }
+            } else aiStarted = System.nanoTime();
+        }
+        if (aiTurnMs.size() >= 2 || message == null) return;
+        switch (callback.getMethod()) {
+            case GAME_TARGET -> {
+                if (message.getMessage().startsWith("Select a starting player")) session.sendPlayerUUID(callback.getObjectId(), human);
+                else if (message.getMessage().startsWith("Select a card to discard")) session.sendPlayerUUID(callback.getObjectId(), view.getMyHand().values().iterator().next().getId());
+            }
+            case GAME_ASK, GAME_SELECT -> session.sendPlayerBoolean(callback.getObjectId(), false);
+            default -> { }
+        }
     }
     public static void main(String[] args) {
         org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
@@ -42,6 +68,7 @@ public final class NativeCheck implements MageClient {
         var player = UUID.fromString(access.getProperty("player"));
         var secondClient = new NativeCheck();
         var first = new SessionImpl(new NativeCheck()); var second = new SessionImpl(secondClient);
+        secondClient.timing = Boolean.parseBoolean(access.getProperty("timing", "false")); secondClient.session = second; secondClient.human = player;
         try {
             assert first.connectStart(connection);
             assert !first.isTableOwner(room, table);
@@ -73,10 +100,11 @@ public final class NativeCheck implements MageClient {
                 } while (games.isEmpty());
                 var game = games.getLast();
                 assert second.joinGame(game);
-                while (!secondClient.prompt) {
+                while (!secondClient.prompt || secondClient.timing && secondClient.aiTurnMs.size() < 2) {
                     if (System.nanoTime() > deadline) throw new AssertionError("native human prompt did not arrive");
                     Thread.sleep(20);
                 }
+                if (secondClient.timing) System.out.println("MEASURE observed_ai_turn_ms=" + secondClient.aiTurnMs);
                 Files.writeString(Path.of(path + ".playing"), "ready");
                 while (access.getProperty("hold", "false").equals("true") && !Files.exists(Path.of(path + ".release"))) {
                     if (System.nanoTime() > deadline) throw new AssertionError("Fixture hold was not released");

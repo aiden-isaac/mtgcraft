@@ -139,6 +139,7 @@ public final class EngineCheck {
         properties.setProperty("room", table.getRoomId().toString()); properties.setProperty("table", table.getId().toString());
         properties.setProperty("player", human.getPlayer().getId().toString()); properties.setProperty("otherTable", otherTable.getId().toString());
         properties.setProperty("play", "true");
+        properties.setProperty("timing", "true"); properties.setProperty("hold", "true");
         properties.setProperty("race", Boolean.toString(race));
         var path = directory.resolve("native-access.properties");
         java.nio.file.Files.createFile(path, java.nio.file.attribute.PosixFilePermissions.asFileAttribute(java.nio.file.attribute.PosixFilePermissions.fromString("rw-------")));
@@ -155,6 +156,20 @@ public final class EngineCheck {
             assert service.startMatch(request.matchId(), operation).state() == State.ACTIVE;
             assert service.startMatch(request.matchId(), operation).state() == State.ACTIVE;
             deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(45);
+            while (!java.nio.file.Files.exists(Path.of(path + ".playing"))) {
+                if (!process.isAlive() || System.nanoTime() > deadline) throw new AssertionError("Two AI turns were not observed");
+                Thread.sleep(20);
+            }
+            var game = table.getMatch().getGame();
+            var measuredAi = game.getPlayers().values().stream().filter(p -> !p.isHuman()).findFirst().orElseThrow().copy();
+            measuredAi.getHand().clear(); game.getCards().stream().filter(c -> c.getOwnerId().equals(measuredAi.getId())).limit(7).forEach(c -> measuredAi.getHand().add(c.getId()));
+            assert measuredAi.getHand().size() == 7;
+            var decisions = new java.util.ArrayList<Double>();
+            for (int sample = 0; sample < 10; sample++) {
+                long began = System.nanoTime(); assert measuredAi.chooseMulligan(game); decisions.add((System.nanoTime() - began) / 1_000_000.0);
+            }
+            System.out.println("MEASURE ai_mulligan_decision_ms=" + decisions);
+            java.nio.file.Files.writeString(Path.of(path + ".release"), "continue");
             if (race) {
                 while (!java.nio.file.Files.exists(Path.of(path + ".conceding"))) {
                     if (!process.isAlive() || System.nanoTime() > deadline) {
@@ -188,7 +203,7 @@ public final class EngineCheck {
         } finally {
             if (process.isAlive()) process.destroyForcibly().waitFor();
             java.nio.file.Files.deleteIfExists(path);
-            for (var suffix : List.of(".ready", ".done", ".conceding")) java.nio.file.Files.deleteIfExists(Path.of(path + suffix));
+            for (var suffix : List.of(".ready", ".done", ".conceding", ".playing", ".release")) java.nio.file.Files.deleteIfExists(Path.of(path + suffix));
         }
     }
 }
