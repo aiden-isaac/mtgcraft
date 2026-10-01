@@ -22,3 +22,5 @@ bash .cache/upstream/mtgcard/gradlew -p addon -Dcustody.runDir="$probe_dir" runC
 rg 'PASS live custody|CUSTODY_GATE_BLOCKED' "$probe_dir/logs/latest.log"
 if rg -q CUSTODY_GATE_BLOCKED "$probe_dir/logs/latest.log"; then exit 2; fi
 rg -q 'PASS live custody' "$probe_dir/logs/latest.log"
+rg -q 'PASS commands/async HTTP' "$probe_dir/logs/latest.log"
+if rg -q 'private-fixture-password' "$probe_dir/logs/latest.log"; then exit 1; fi

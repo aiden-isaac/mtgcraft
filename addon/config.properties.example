@@ -1,0 +1,6 @@
+# Copy to Minecraft config/mtgcraft.properties; use the same private token as the service.
+# Run /mtgcraft world, then configure that worldId in the separate service properties.
+endpoint=http://127.0.0.1:17180
+tokenFile=control-token
+# Keep false until crash/return/full-lifecycle acceptance passes.
+admissionEnabled=false

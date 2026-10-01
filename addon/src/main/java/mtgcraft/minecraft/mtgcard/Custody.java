@@ -108,6 +108,7 @@ public final class Custody {
         }
     }
     void proveAdmissionForProbe() { onThread(); admissionProven = true; }
+    void enableVerifiedAdmission() { onThread(); admissionProven = true; }
     // Only the lifecycle coordinator may call this, after committing a verified terminal result.
     void returnPending(UUID match) throws IOException {
         onThread(); var record = require(match);

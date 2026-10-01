@@ -103,3 +103,18 @@ The return keeps original item components plus a project custody marker; no card
 ownership or prize changes occur. Production admission remains disabled while the
 complete crash matrix and authenticated lifecycle integration are incomplete.
 No background test server remains running after a successful probe.
+
+Copy `addon/config.properties.example` to Minecraft `config/mtgcraft.properties`.
+Set its endpoint and a private token file (mode 0600), shared with the service.
+Use `/mtgcraft world` to get the durable world UUID for the service configuration.
+The compiled addon pins the mapping/catalog/engine compatibility; changing the
+manifest requires rebuilding it. Keep `admissionEnabled=false` until acceptance.
+
+Players hold one eligible box and use `/mtgcraft submit`. The server validates its
+own snapshot asynchronously and rechecks the source before transfer. Use
+`/mtgcraft access <match UUID>` for private native credentials, attach in XMage,
+then `/mtgcraft start <match UUID>`. Status/cancel use the same owner-scoped ID.
+`/mtgcraft claim <match UUID>` delivers only a durable return-ready claim.
+Terminal-result verification/reconciliation is still being implemented; a status
+display alone does not release custody. The live command probe uses an authenticated
+HTTP engine fixture and captured private player messages, without an engine game.

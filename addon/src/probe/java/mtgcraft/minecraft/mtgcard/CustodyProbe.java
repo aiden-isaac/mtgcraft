@@ -117,7 +117,7 @@ public final class CustodyProbe implements ModInitializer {
                 reject(() -> recovered.claim(player, uncertain.matchId()));
                 System.out.println("PASS live custody: survival breaking keeps one original box/UUID/tint, placed rejection, durable physical transfer, storage guards, cached alias guards, placement rejection and journal reload");
                 System.out.println("PASS return claims: offline/full pending, owner binding, one original item, durable tombstone, re-placement, fresh alias cache and crash quarantine");
-                server.halt(false);
+                CommandProbe.run(server, card);
             } catch (Throwable failure) { failure.printStackTrace(); server.halt(false); }
         });
     }

@@ -16,6 +16,8 @@ sourceSets {
     probe {
         compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
         runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+        compileClasspath += files('../.cache/project/mtgcraft-service.jar')
+        runtimeClasspath += files('../.cache/project/mtgcraft-service.jar')
     }
 }
 loom {
@@ -42,3 +44,15 @@ tasks.register('adapterCheck', JavaExec) {
     enableAssertions = true
 }
 tasks.check { dependsOn adapterCheck }
+tasks.processResources {
+    inputs.file('../service/catalog/manifest.json')
+    doLast {
+        def bytes = file('../service/catalog/manifest.json').bytes
+        def manifest = new groovy.json.JsonSlurper().parse(bytes)
+        def compatibility = [protocolVersion: 1, format: manifest.format, formatVersion: manifest.formatVersion,
+                mappingDigest: java.security.MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString(),
+                engineBuild: manifest.engineBuild, catalogDigest: manifest.catalogDigest]
+        def target = new File(destinationDir, 'mtgcraft-compatibility.json')
+        target.text = groovy.json.JsonOutput.toJson(compatibility)
+    }
+}
