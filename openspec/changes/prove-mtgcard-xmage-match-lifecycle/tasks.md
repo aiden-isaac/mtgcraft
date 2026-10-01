@@ -40,7 +40,7 @@ and acknowledged native-controller result persistence (3.5); prove each before 6
 
 ## 4. Integrate MTGCard and reserve the physical deck
 
-- [ ] 4.1 Build a narrow MTGCard adapter for held-deckbox selection, server-side source reading, metadata extraction, section validation, source fingerprinting, and canonical conversion.
+- [x] 4.1 Build a narrow MTGCard adapter for held-deckbox selection, server-side source reading, metadata extraction, section validation, source fingerprinting, and canonical conversion. Evidence: `MtgcardAdapter.java`, `bash scripts/check-addon.sh`; pinned Fabric addon builds and actual MTGCard metadata/backing decoding checks preserve faces, finish and quantities, rejecting conflicting identities, repeated/auxiliary slots and malformed stacks. Held-source checks are server-only; admission is still disabled pending 4.2/4.5.
 - [ ] 4.2 Implement durable admission intent, escrow journal, exclusive backing-store/alias protection, and a recheck immediately before the physical transfer; reject sources whose exclusivity cannot be enforced.
 - [ ] 4.3 Implement durable one-time return claims and quarantined crash ambiguity; verify offline and full-inventory returns do not lose or duplicate the original deckbox.
 - [ ] 4.4 Add the player command/minimal interaction, useful validation errors, owner-only seat access/status, and an asynchronous Minecraft-to-service client that never trusts client-provided deck or result data.

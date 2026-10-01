@@ -1,0 +1,24 @@
+plugins {
+    id 'net.fabricmc.fabric-loom-remap' version '1.17.21'
+}
+
+version = '0.1.0'
+group = 'mtgcraft'
+repositories { mavenCentral() }
+dependencies {
+    minecraft 'com.mojang:minecraft:26.3'
+    implementation 'net.fabricmc:fabric-loader:0.19.5'
+    implementation 'net.fabricmc.fabric-api:fabric-api:0.160.5+26.3'
+    implementation files('../.cache/upstream/mtgcard/fabric/build/libs/MtgCard-fabric-1.7.0-26.3.jar')
+}
+sourceSets.main.java.srcDirs += ['../shared/src/main/java']
+java { sourceCompatibility = JavaVersion.VERSION_25; targetCompatibility = JavaVersion.VERSION_25 }
+tasks.withType(JavaCompile).configureEach { options.release = 25 }
+tasks.test { failOnNoDiscoveredTests = false }
+tasks.register('adapterCheck', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'mtgcraft.minecraft.mtgcard.AdapterCheck'
+    enableAssertions = true
+}
+tasks.check { dependsOn adapterCheck }

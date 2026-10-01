@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "mtgcraft",
+  "version": "0.1.0",
+  "name": "MTGCraft integration",
+  "environment": "server",
+  "license": "MIT",
+  "depends": {
+    "fabricloader": "0.19.5",
+    "minecraft": "26.3",
+    "java": ">=25",
+    "fabric-api": "0.160.5+26.3",
+    "mtgcard": "1.7.0-26.3"
+  }
+}

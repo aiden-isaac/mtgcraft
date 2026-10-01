@@ -2,3 +2,7 @@
 graphify-out/
 research-corpus/
 **/__pycache__/
+addon/.gradle/
+addon/build/
+addon/logs/
+addon/run/
