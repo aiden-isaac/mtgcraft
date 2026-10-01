@@ -126,3 +126,13 @@ replacement issuance. Ambiguous intents/deliveries remain quarantined and protec
 the addon provides no automatic quarantine override. Retain their journal and backing
 files for an operator audit. The regular live probe also blocks hopper, sleeve and
 sulfur-cube fallback access, including embedded container data.
+
+Lifecycle reconciliation polls reserved matches asynchronously with at most sixteen
+requests in flight. Failed requests back off (4, 8, 16, then 30 seconds); owner commands
+can retry immediately. Timeouts, connection failures, unknown matches after an
+acknowledged creation, and changed health incarnation alone retain custody. Only
+an authenticated, correctly bound terminal record schedules return. In this pinned
+deployment the service's exclusive state-directory lock proves the former process
+has exited; restart persists `INTERRUPTED` under the match's original incarnation,
+with all seat outcomes `NONE`, before serving it. Losing or replacing that history
+requires operator investigation, never an automatic box replacement or winner.

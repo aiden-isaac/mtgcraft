@@ -28,6 +28,8 @@ public final class Matches implements AutoCloseable {
     private final boolean admissions;
     private final Set<UUID> busy = new HashSet<>();
     private final Set<UUID> reconciling = new HashSet<>();
+    private record Retry(int failures, long after) {}
+    private final Map<UUID, Retry> retries = new HashMap<>();
     private long nextPoll;
     public Matches(MinecraftServer server, Custody custody, ControlClient client, Compatibility expected, boolean admissions) {
         this.server = server; this.custody = custody; this.client = client; this.expected = expected; this.admissions = admissions;
@@ -151,7 +153,7 @@ public final class Matches implements AutoCloseable {
         nextPoll = now + Duration.ofSeconds(2).toNanos();
         for (var record : custody.records()) {
             var match = record.request().matchId();
-            if (record.phase() != Custody.Phase.RESERVED || record.observed() != null && terminal(record.observed().state()) || reconciling.size() >= 16 || !reconciling.add(match)) continue;
+            if (retries.containsKey(match) && now < retries.get(match).after() || record.phase() != Custody.Phase.RESERVED || record.observed() != null && terminal(record.observed().state()) || reconciling.size() >= 16 || !reconciling.add(match)) continue;
             var request = record.request();
             tracked(match, client.getStatus(match).exceptionallyCompose(failure -> {
                 var cause = failure; while (cause.getCause() != null) cause = cause.getCause();
@@ -166,7 +168,12 @@ public final class Matches implements AutoCloseable {
                 };
             }).whenComplete((status, failure) -> server.execute(() -> {
                 reconciling.remove(match);
-                if (current != this || failure != null) return; // Unknown: keep the intent and physical reservation.
+                if (current != this) return;
+                if (failure == null) retries.remove(match);
+                else {
+                    int count = Math.min(4, retries.getOrDefault(match, new Retry(0, 0)).failures() + 1);
+                    retries.put(match, new Retry(count, System.nanoTime() + Duration.ofSeconds(Math.min(30, 2L << count)).toNanos()));
+                } // Unknown: keep the intent and physical reservation. Health/incarnation changes alone never release it.
             }));
         }
     }
